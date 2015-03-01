@@ -4,9 +4,9 @@
 \name{ahp}
 \alias{ahp}
 \alias{ahp-package}
-\title{ahp AHP (Analytical Hierarchy Process) Modeling for R}
+\title{ahp AHP (Analytic Hierarchy Process) Modeling for R}
 \description{
-AHP (Analytical Hierarchy Process) is a decision making framework developed by Thomas Saaty.
+AHP (Analytic Hierarchy Process) is a decision making framework developed by Thomas Saaty.
 This package lets you model complex decision problems according to the AHP framework.
 }
 

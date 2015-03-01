@@ -2,21 +2,57 @@
 title: "AHP Car Example"
 author: "Christoph Glur"
 date: '`r Sys.Date()`'
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{AHP Car Example}
 output: 
-  knitr:::html_vignette
+  html_document:
+    theme: united
+    toc: yes
+    toc_depth: 3
 ---
+
+
+<!--
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{AHP Car Example Walk-through}
+-->
+
 
 ## Introduction
 
-In this example, the Jones family wants to buy a new car.
-This document follows the [Wikipedia AHP Car Example](http://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%94_Car_example). Even though a few details are different, the original article is required to follow along.
+### What is AHP?
+
+AHP is a method allowing individuals or groups to make complex decisions. The core concept of AHP is that alternatives are always compared pairwise, and not, say, by giving a score, or sorting alternatives. AHP is used in many fields, from finance to criminal investigation.
+
+For a general introduction to AHP, you might be interested in [this](http://en.wikipedia.org/wiki/Analytic_hierarchy_process).
+
+Another good introduction is [here](http://bpmsg.com/ahp-introduction/)
+
+For a more formal introduction to the subject, see: Saaty, T. L. (2001). Decision Making for Leaders: The Analytic Hierarchy Process for Decisions in a Complex World, New Edition 2001 (3 Revised). Pittsburgh, PA: RWS Publications.
+
+### About this Package
+
+This package is built on top of the data.tree package, and uses `R6` reference classes. To learn more about these, you might be interested in the Introduction:
+
+```{r}
+library(R6)
+vignette('Introduction', package = 'R6')
+```
+
+
+Even though this is not required, the data.tree Introduction vignette might also be helpful:
+
+```{r}
+library(data.tree)
+vignette('Introduction', package = 'data.tree')
+```
+
+### What is in this Document?
+
+This vignette follows a well-known AHP example that you can also find e.g. on [Wikipedia](http://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%94_Car_example). In this example, the Jones family wants to buy a new car and uses AHP to decide systematically which car they should buy. Even though a few details are different from the original article, it is recommended to consider this vignette as an extension of that article, and not as a self sufficient document.
+
 
 ## Creating the AHP criteria tree
 
-When deciding which car to buy, the family considers the following criteria: cost, safety, style, and capacity, and their sub-criteria. 
+When deciding which car to buy, the family considers the following criteria: cost, safety, style, capacity. Additionally, some of the criteria have sub-criteria. 
 
 The Jones' have a shortlist of 6 cars.
 
@@ -48,13 +84,23 @@ print(goal, "level")
 
 ## Criteria
 
-What is more important, style or safety? AHP allows expressing an individual's or a group's opinion by polling the pairwise preferences on a scale of 1 to 9, and their inverse. 1 means two categories are equally important. 9 means A is strictly preferred to B. 1/9 means B is strictly preferrable to A.
+What is more important, style or safety? AHP allows expressing an individual's or a group's opinion by polling the pairwise preferences on a scale of 1 to 9, and their inverse. 1 means two categories are equally important. 9 means A is strictly preferred to B. 1/9 means B is strictly preferable to A.
 
-In order to apply the AHP algorithm in order to calculate the *priorities*, one needs to construct a *preference matrix*. The ahp package, however, provides a utility method to construct such a matrix.
+In order to apply the AHP algorithm by calculating the *priorities*, we need to construct a *preference matrix*. The ahp package provides a utility method to construct such a matrix. The basic workflow is this, for each criteria node:
+
+* define your preference matrix for the node's children. There are two ways to do this:
+    + directly, all by yourself
+    + use the helper methods `printForInput` and `AhpMatrix`
+* add the preference matrix to the node by calling `node$SetChildPreferenceMatrix(preferenceMatrix)`
+* review the priorities and the consistency by calling
+    + `priorities(node)`
+    + node$consistency
+  
+In more detail, step by step:
 
 ### Setting the Preferences
 
-We start by setting the level one criteria preferences. These are:
+We start by setting the level one criteria preferences on the root, our `goal` node. These level one criterias are:
 
 ```{r}
 names(goal$children)
@@ -73,7 +119,7 @@ Note that, by default, all preferences are set to 1. The cost criteria, say, is 
 printForInput(pp)
 ```
 
-We can copy and paste the output and replace the 1's with the appropriate subjective value:
+The idea of `printForInput` is that we copy and paste the output, and then replace the 1's with the appropriate subjective values:
 
 
 
@@ -86,7 +132,7 @@ pp <- setPreference(pp, "Safety" , "Capacity", 1) #safety and capacity are equal
 pp <- setPreference(pp, "Style"  , "Capacity", 1/7) #capacity is much more important than style
 ```
 
-A technical side node: you may have realised that `pp`, the pairwise child combinations of our categories, is a standard `data.frame`, and not an R6 reference class. As a result, we must re-assign `pp`, using e.g. `pp <- setPreference(pp, "Cost"   , "Safety"  , 3)`.
+A technical side note: you may have realized that `pp`, the pairwise child combinations of our categories, is a standard `data.frame`, and not an R6 reference class. As a result, we must re-assign `pp`, using e.g. `pp <- setPreference(pp, "Cost"   , "Safety"  , 3)`.
 
 From the pairwise preferences, we create the ahp preference matrix:
 
@@ -127,10 +173,11 @@ goal
 
 ## Sub-Criteria
 
+The AHP tree still looks incomplete. We need to set pairwise preferences for each combination, at each node. Let us continue with the preferences of the sub-categories below the *Cost* node.
+
 ### Cost
 
-The AHP tree looks still incomplete. We need to set pairwise preferences for each combination, at each node. Let us continue with the preferences of the sub-categories below the *Cost* node:
-
+Just as above, we use the `printForInput` helper:
 
 ```{r}
 pp <- goal$Find("Cost")$GetChildCombinations()
@@ -203,8 +250,8 @@ We establish that consistency is acceptable everywhere, and that for example pur
 
 ## Alternatives
 
-We are now ready to move to the next steps: Alternatives.
-The Jones family has researched and has 6 cars on their shortlist.
+We are now ready to move to the next step: Alternatives.
+The Jones family has researched and has 6 cars on their shortlist. Let's create them, analougous to the Nodes:
 
 ```{r}
 accord_sedan <- Alternative$new("Accord Sedan")
@@ -237,7 +284,7 @@ This method adds each alternative to each leaf-category. Our AHP tree now looks 
 head(as.data.frame(goal), 20)
 ```
 
-The next step is to set our alternative-preferences for each category. The principle is the same: for each leaf criteria, we create a preference matrix containing the comparison of all alternative combinations.
+The next step is to set our alternative-preferences for each category. The principle is the same as above: for each leaf criteria, we create a preference matrix containing the comparison of all alternative combinations.
 
 Let us start with the purchase price.
 
@@ -262,7 +309,7 @@ We could now set the preferences according to these rules manually. Luckily, tho
 
 By convention, the function passed to `CalculatePreferences` must take two `Alternative` instances as input. It must return the pairwise preference in ahp manner (1/9, 1/8 ... 1/2, 1, 2, ... 9)
 
-Note that, to keep it simple, the function we use is slightly different from the tutorial on wikipedia.
+Note that, to keep it simple, the function we use is slightly different from the tutorial on Wikipedia.
 
 ```{r}
 purchasePricePreference <- function(car1, car2) {
@@ -426,7 +473,7 @@ odyssey$curb_weight <- 4385
 ```
 
 The Jones' believe that a heavier car is safer. 
-We use the ahp package utility function `LinearComparison`, assuming that the overall lightest existing car is 3000, and the heaviest ist 5000.
+We use the ahp package utility function `LinearComparison`, assuming that the overall lightest existing car is 3000, and the heaviest is 5000.
 Note that we pass along additional parameters to the LinearComparison function.
 
 ```{r}
@@ -650,14 +697,21 @@ Finally, we can analyse our tree, in order to understand the source of our decis
 print(alternatives)
 ```
 
-Looking at the solution, we might find that Safety is Curb Weight has too much influence, so let's adjust:
+Looking at the solution, we might find that the Curb Weight has too much influence, so let's adjust.
+
+First, what was the preference matrix?
+
+```{r}
+goal$Find("Safety")$preferenceMatrix
+```
+
 
 ```{r}
 pp <- goal$Find("Safety")$GetChildCombinations()
 #printForInput(pp)
 
-pp <- setPreference(pp, "Curb Weight"   , "Safety Class", 3)
-pp <- setPreference(pp, "Curb Weight"   , "Crash Rating", 2)
+pp <- setPreference(pp, "Curb Weight"   , "Safety Class", 2)
+pp <- setPreference(pp, "Curb Weight"   , "Crash Rating", 1)
 pp <- setPreference(pp, "Safety Class"  , "Crash Rating", 1/2)
 
 preferenceMatrix <- AhpMatrix(pp)

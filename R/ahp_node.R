@@ -40,8 +40,8 @@ AhpNode <- R6Class("AhpNode",
                     }
                     
                    
-                    preferenceMatrix <- AhpMatrix(pp)
-                    self$SetChildPreferenceMatrix(preferenceMatrix)
+                    l_preferenceMatrix <- AhpMatrix(pp)
+                    self$SetChildPreferenceMatrix(l_preferenceMatrix)
                     invisible (self)
                   },
                   
@@ -89,7 +89,7 @@ AhpNode <- R6Class("AhpNode",
                   SetChildPreferenceMatrix = function(preferenceMatrix) {
                     #cannot use active, as chaining doesn't work (e.g. root$Find("Cost")$childPreferenceMatrix <- p)
                                         
-                    self$preferenceMatrix <- preferenceMatrix
+                    self$p_preferenceMatrix <- preferenceMatrix
                     
                     ahpResult <- Ahp(preferenceMatrix)
                     
@@ -116,6 +116,7 @@ AhpNode <- R6Class("AhpNode",
                     self$SetChildPreferenceMatrix(mat)
                   },
                   
+                  
                                    
                   GetAlternativePriority = function(alternativeName) {
                     
@@ -141,6 +142,17 @@ AhpNode <- R6Class("AhpNode",
                 
                 
                 active = list(
+                  
+                  preferenceMatrix = function(value) {
+                    if (missing(value)) {
+                      return(self$p_preferenceMatrix)
+                    } else {
+                      stop("Cannot assign a value. Use SetChildPreferenceMatrix instead.")
+      
+                    }
+                  },
+                  
+                  
                   
                   priority = function(value) {
                     
@@ -173,8 +185,9 @@ AhpNode <- R6Class("AhpNode",
                 
                 private = list(
                   p_priority = NA,
+                  p_preferenceMatrix = NA
                   
-                  preferenceMatrix = NA
+                  
                 )
 )
 
