@@ -8,7 +8,8 @@ Maintainer: Christoph Glur <christoph.glur@ipub.ch>
 VignetteBuilder: knitr
 Imports:
     R6,
-    data.tree (>= 0.1.1)
+    data.tree (>= 0.1.1),
+    magrittr
 Suggests:
     testthat,
     knitr

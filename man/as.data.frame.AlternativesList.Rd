@@ -5,7 +5,8 @@
 \title{Convert an AlternativesList object into a dataframe.
 This is particularly useful for printing the results of an AHP study.}
 \usage{
-\method{as.data.frame}{AlternativesList}(alternatives)
+\method{as.data.frame}{AlternativesList}(alternatives, row.names = NULL,
+  optional = FALSE, ...)
 }
 \description{
 Convert an AlternativesList object into a dataframe.

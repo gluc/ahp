@@ -1,3 +1,5 @@
+library(magrittr)
+
 #' @include alternative_node.R
 NULL
 
@@ -46,8 +48,8 @@ AlternativesList <- function(...) {
 
 
 #' @export
-print.AlternativesList <- function(alternatives) {
-  print(as.data.frame(alternatives))
+print.AlternativesList <- function(alternatives, ...) {
+  print(as.data.frame(alternatives, formatAlternative = data.tree:::FormatPercent, formatDecimal = data.tree:::PrintFixedDecimal))
 }
 
 
@@ -55,20 +57,34 @@ print.AlternativesList <- function(alternatives) {
 #' This is particularly useful for printing the results of an AHP study.
 #' 
 #' @export
-as.data.frame.AlternativesList <- function(alternatives) {
+as.data.frame.AlternativesList <- function(alternatives, row.names = NULL, optional = FALSE, ...) {
+  
+  el <- list(...) 
+  if (!is.null(el$formatAlternative)) {
+    fAlt <- el$formatAlternative
+  } else {
+    fAlt <- function(x) x
+  }
+
+  if (!is.null(el$formatDec)) {
+    fDec <- el$formatDec
+  } else {
+    fDec <- function(x) x
+  }
+  
   
   goal <- alternatives[[1]]$alternativeNodes[[1]]$root
   
   o <- order(sapply(alternatives, function(x) goal$GetAlternativePriority(x$name)), decreasing = TRUE)
   alternatives <- alternatives[o]
   
-  cols <- lapply(alternatives, function(x) goal$Get("GetAlternativePriority", x$name, format = data.tree:::FormatPercent))
+  cols <- lapply(alternatives, function(x) goal$Get("GetAlternativePriority", x$name, format = fAlt))
   names(cols) <- names(alternatives)
   
   l <- list(
                 isLeaf = goal$Get("isLeaf"),
-                consistency = goal$Get("consistency", format = data.tree:::PrintFixedDecimal),
-                globalPriority = goal$Get("globalPriority", format = data.tree:::PrintFixedDecimal)
+                consistency = goal$Get("consistency", format = fDec),
+                globalPriority = goal$Get("globalPriority", format = fDec)
   )
   
   cols <- append(l, cols)
@@ -85,4 +101,11 @@ as.data.frame.AlternativesList <- function(alternatives) {
 #' @export
 priorities.AlternativesList <- function(alternatives) {
   sapply(alternatives, function(y) sum(sapply(y$alternativeNodes, function(x) x$globalPriority)))
+}
+
+
+#' @export
+plotHeatmap <- function(alternatives) {
+  alternatives %>% as.data.frame %>% set_rownames(.$levelName) %>% subset(select = 4:9) %>% as.matrix -> hm
+  heatmap(hm, Rowv = NA, Colv = NA, revC = TRUE)
 }

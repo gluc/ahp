@@ -15,6 +15,12 @@ output:
   %\VignetteIndexEntry{AHP Car Example Walk-through}
 -->
 
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width=120)
+#opts_chunk$set(comment = "", warning = FALSE, message = FALSE, echo = TRUE, tidy = FALSE, size="small")
+#read_chunk("some/script/I/want/to/load.R")
+```
+
 
 ## Introduction
 
@@ -720,6 +726,14 @@ goal$Find("Safety")$SetChildPreferenceMatrix(preferenceMatrix)
 
 Our decision is now:
 
-```{r}
+```{r }
 print(alternatives)
 ```
+
+Or, as a heatmap:
+
+```{r}
+library(magrittr)
+plotHeatmap(alternatives)
+```
+
