@@ -733,7 +733,6 @@ print(alternatives)
 Or, as a heatmap:
 
 ```{r}
-library(magrittr)
 plotHeatmap(alternatives)
 ```
 

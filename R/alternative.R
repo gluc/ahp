@@ -1,4 +1,4 @@
-library(magrittr)
+
 
 #' @include alternative_node.R
 NULL
@@ -105,7 +105,11 @@ priorities.AlternativesList <- function(alternatives) {
 
 
 #' @export
-plotHeatmap <- function(alternatives) {
-  alternatives %>% as.data.frame %>% set_rownames(.$levelName) %>% subset(select = 4:9) %>% as.matrix -> hm
+plotHeatmap <- function(alternativesList) {
+  # alternatives %>% as.data.frame %>% set_rownames(.$levelName) %>% subset(select = 4:9) %>% as.matrix -> hm
+  df <- as.data.frame(alternatives)
+  rownames(df) <- df$levelName
+  df <- df[,4:9]
+  hm <- as.matrix(df)
   heatmap(hm, Rowv = NA, Colv = NA, revC = TRUE)
 }

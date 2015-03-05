@@ -130,8 +130,8 @@ AhpNode <- R6Class("AhpNode",
                       v <- sum(sapply(self$children, function(x) x$GetAlternativePriority(alternativeName)))
                       return (v)
                     }
-                  }  
-
+                  }
+                  
                   
                   
                   
@@ -152,7 +152,9 @@ AhpNode <- R6Class("AhpNode",
                     }
                   },
                   
-                  
+                  priorities = function() {
+                    return (priorities(self)) 
+                  },
                   
                   priority = function(value) {
                     
