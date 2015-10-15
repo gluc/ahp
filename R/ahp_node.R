@@ -9,7 +9,7 @@ library(data.tree)
 #' @seealso \code{\link{Node}}
 AhpNode <- R6Class("AhpNode",
                 inherit = data.tree::Node,
-                lock = FALSE,
+                lock_objects = FALSE,
                 public = list(
                   
                   initialize=function(name, priority, ...) {

@@ -46,9 +46,9 @@ vignette('Introduction', package = 'R6')
 
 Even though this is not required, the data.tree Introduction vignette might also be helpful:
 
-```{r}
+```{r, eval=FALSE}
 library(data.tree)
-vignette('Introduction', package = 'data.tree')
+vignette('data.tree')
 ```
 
 ### What is in this Document?
@@ -186,7 +186,7 @@ The AHP tree still looks incomplete. We need to set pairwise preferences for eac
 Just as above, we use the `printForInput` helper:
 
 ```{r}
-pp <- goal$Find("Cost")$GetChildCombinations()
+pp <- goal$Cost$GetChildCombinations()
 #printForInput(pp)
 
 pp <- setPreference(pp, "Purchase Price"   , "Fuel Costs"       , 2)

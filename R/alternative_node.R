@@ -10,7 +10,7 @@ NULL
 #' @seealso \code{\link{AhpNode}}
 AlternativeNode <- R6Class("AlternativeNode",
                         inherit = AhpNode,
-                        lock = FALSE,
+                        lock_objects = FALSE,
                         public = list(
                           alternative = NULL,
                           

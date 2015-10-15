@@ -14,7 +14,7 @@ NULL
 #' @usage Alternative$new()
 #' @keywords ahp
 Alternative <- R6Class("Alternative",
-                        lock = FALSE,
+                        lock_objects = FALSE,
                         public = list(
                           name = "",
                           alternativeNodes = list(),
