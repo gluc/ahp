@@ -49,7 +49,7 @@ AlternativesList <- function(...) {
 
 #' @export
 print.AlternativesList <- function(alternatives, ...) {
-  print(as.data.frame(alternatives, formatAlternative = data.tree:::FormatPercent, formatDecimal = data.tree:::PrintFixedDecimal))
+  print(as.data.frame(alternatives, formatAlternative = data.tree:::FormatPercent, formatDecimal = data.tree:::FormatFixedDecimal))
 }
 
 

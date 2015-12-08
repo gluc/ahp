@@ -160,7 +160,7 @@ AhpNode <- R6Class("AhpNode",
                     
                     if (missing(value)) {
                               
-                      if(self$isRoot) {
+                      if(data.tree::isRoot(self)) {
                         
                         return (1)
                       } else {
@@ -209,13 +209,14 @@ globalPriorities <- function(ahpNode) {
   sapply(ahpNode$children, function(x) x$globalPriority)
 }
 
+
 #' @export
 as.data.frame.AhpNode <- function(x, row.names = NULL, optional = FALSE, ...) {
   if(length(list(...)) > 0) return(data.tree:::as.data.frame.Node(x = x, row.names = row.names, optional = optional, ...))
   data.tree:::as.data.frame.Node(x = x, row.names = row.names, optional = optional, 
                      priority = x$Get("priority", format = data.tree:::FormatPercent),
                      globalPriority = x$Get("globalPriority", format = data.tree:::FormatPercent),
-                     consistency = x$Get("consistency", format = data.tree:::PrintFixedDecimal)
+                     consistency = x$Get("consistency", format = data.tree:::FormatFixedDecimal)
                     )
   
 }
