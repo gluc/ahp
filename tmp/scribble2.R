@@ -52,3 +52,5 @@ AhpMatrix <- function(preferenceCombinations) {
 }
 
 tr$Do(fun = function(x) {print(x$name); x$preferenceMatrix <- AhpMatrix(x$preferences)}, filterFun = isNotLeaf)
+
+
