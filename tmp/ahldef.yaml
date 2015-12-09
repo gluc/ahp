@@ -1,0 +1,195 @@
+Alternatives: &alternatives
+              Accord Sedan:
+                price: 20360
+                mpg: 31
+                passengers: 5
+                cargo: 14
+                curb weight: 3289
+                safety class: Midsize Car
+                crash rating: 4 in Side Impact Front
+                residual value: 0.52
+              Accord Hybrid:
+                price: 31090
+                mpg: 35
+                passengers: 5
+                cargo: 14
+                curb weight: 3501
+                safety class: Midsize Car
+                crash rating: 4 in Side Impact Front
+                residual value: 0.46
+              Pilot SUV:
+                price: 27595
+                mpg: 22
+                passengers: 8
+                cargo: 87.6
+                curb weight: 4264
+                safety class: Midsize SUV
+                crash rating: 4 in Rollover
+                residual value: 0.4
+              CR-V SUV:
+                price: 20700
+                mpg: 27
+                passengers: 5
+                cargo: 72.9
+                curb weight: 3389
+                safety class: Small SUV
+                crash rating: 4 in Rollover
+                residual value: 0.55
+              Element SUV:
+                price: 18980
+                mpg: 25
+                passengers: 4
+                cargo: 74.6
+                curb weight: 3433
+                safety class: Small SUV
+                crash rating: 3 in Rollover
+                residual value: 0.48
+              Odyssey Minivan:
+                price: 25645
+                mpg: 26
+                passengers: 8
+                cargo: 147.4
+                curb weight: 4385
+                safety class: Minivan
+                crash rating: All 5 Stars
+                residual value: 0.48
+Goal:
+    name: Buy Car
+    preferences:
+      - [Cost, Safety, 3]
+      - [Cost, Style, 7]
+      - [Cost, Capacity, 3]
+      - [Safety, Style, 9]
+      - [Safety, Capacity, 1]
+      - [Style, Capacity, 1/7]
+    criteria: 
+      Cost:
+        preferences:
+          - [Purchase Price, Fuel Cost, 2]
+          - [Purchase Price, Maintenance Cost, 5]
+          - [Purchase Price, Resale Value, 3]
+          - [Fuel Cost, Maintenance Cost, 2]
+          - [Fuel Cost, Resale Value, 2]
+          - [Maintenance Cost, Resale Value, 1/2]
+        criteria:
+          Purchase Price:
+            preferences: 
+              - [Accord Sedan, Accord Hybrid, 9]
+              - [Accord Sedan, Pilot, 9]
+              - [Accord Sedan, CR-V, 1]
+              - [Accord Sedan, Element, 1/2]
+              - [Accord Sedan, Odyssey, 5]
+              - [Accord Hybrid, Pilot, 1]
+              - [Accord Hybrid, CR-V, 1/9]
+              - [Accord Hybrid, Element, 1/9]
+              - [Accord Hybrid, Odyssey, 1/7]
+              - [Pilot, CR-V, 1/9]
+              - [Pilot, Element, 1/9]
+              - [Pilot, Odyssey, 1/7]
+              - [CR-V, Element, 1/2]
+              - [CR-V, Odyssey, 5]
+              - [Element, Odyssey, 6]
+            criteria: *alternatives
+          Fuel Costs:
+            preferenceFunction: 
+              function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
+            criteria: *alternatives
+          Maintenance Costs: 
+            preferences: 
+              - [Accord Sedan, Accord Hybrid, 1.5]
+              - [Accord Sedan, Pilot, 4]
+              - [Accord Sedan, CR-V, 4]
+              - [Accord Sedan, Element, 4]
+              - [Accord Sedan, Odyssey, 5]
+              - [Accord Hybrid, Pilot, 4]
+              - [Accord Hybrid, CR-V, 4]
+              - [Accord Hybrid, Element, 4]
+              - [Accord Hybrid, Odyssey, 5]
+              - [Pilot, CR-V, 1]
+              - [Pilot, Element, 1.2]
+              - [Pilot, Odyssey, 1]
+              - [CR-V, Element, 1]
+              - [CR-V, Odyssey, 3]
+              - [Element, Odyssey, 2]
+            criteria: *alternatives
+          Resale Value:
+            preferenceFunction: >
+              GetResalePreference <- function(a1, a2) {
+                if (a1$`residual value` < a2$`residual value`) return (1/GetResalePreference(a2, a1))
+                ratio <- a1$`residual value` / a2$`residual value`
+                if (ratio < 1.05) return (1)
+                if (ratio < 1.1) return (2)
+                if (ratio < 1.15) return (3)
+                if (ratio < 1.2) return (4)
+                if (ratio < 1.25) return (5)
+                return (5)
+              }
+            criteria: *alternatives 
+      Safety: 
+        preferences:
+          - [Accord Sedan, Accord Hybrid, 1]
+          - [Accord Sedan, Pilot, 5]
+          - [Accord Sedan, CR-V, 7]
+          - [Accord Sedan, Element, 9]
+          - [Accord Sedan, Odyssey, 1/3]
+          - [Accord Hybrid, Pilot, 5]
+          - [Accord Hybrid, CR-V, 7]
+          - [Accord Hybrid, Element, 9]
+          - [Accord Hybrid, Odyssey, 1/3]
+          - [Pilot, CR-V, 2]
+          - [Pilot, Element, 9]
+          - [Pilot, Odyssey, 1/8]
+          - [CR-V, Element, 2]
+          - [CR-V, Odyssey, 1/8]
+          - [Element, Odyssey, 1/9]
+        criteria: *alternatives
+      Style: 
+        preferences: 
+              - [Accord Sedan, Accord Hybrid, 1]
+              - [Accord Sedan, Pilot, 7]
+              - [Accord Sedan, CR-V, 5]
+              - [Accord Sedan, Element, 9]
+              - [Accord Sedan, Odyssey, 6]
+              - [Accord Hybrid, Pilot, 7]
+              - [Accord Hybrid, CR-V, 5]
+              - [Accord Hybrid, Element, 9]
+              - [Accord Hybrid, Odyssey, 6]
+              - [Pilot, CR-V, 6]
+              - [Pilot, Element, 3]
+              - [Pilot, Odyssey, 3]
+              - [CR-V, Element, 7]
+              - [CR-V, Odyssey, 5]
+              - [Element, Odyssey, 5]
+        criteria: *alternatives
+      Capacity:
+        preferences:
+          - [Cargo Capacity, Passenger Capacity, 1/5]
+        criteria:
+          Cargo Capacity: 
+            preferenceFunction: >
+              CargoPreference <- function(a1, a2) {
+                if (a1$cargo < a2$cargo) return (1/CargoPreference(a2, a1))
+                ratio <- a1$cargo / a2$cargo
+                if (ratio < 3) return (1)
+                if (ratio < 8) return (2)
+                return (3)
+              }
+            criteria: *alternatives
+          Passenger Capacity: 
+            preferences:
+              - [Accord Sedan, Accord Hybrid, 1]
+              - [Accord Sedan, Pilot, 1/2]
+              - [Accord Sedan, CR-V, 1]
+              - [Accord Sedan, Element, 3]
+              - [Accord Sedan, Odyssey, 1/2]
+              - [Accord Hybrid, Pilot, 1/2]
+              - [Accord Hybrid, CR-V, 1]
+              - [Accord Hybrid, Element, 3]
+              - [Accord Hybrid, Odyssey, 1/2]
+              - [Pilot, CR-V, 2]
+              - [Pilot, Element, 6]
+              - [Pilot, Odyssey, 1]
+              - [CR-V, Element, 3]
+              - [CR-V, Odyssey, 1/2]
+              - [Element, Odyssey, 1/6]
+            criteria: *alternatives
