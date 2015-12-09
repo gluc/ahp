@@ -24,16 +24,31 @@ tr$Do(fun = function(x) x$preferences <- GetPreferences(x$preferences),
       filterFun = function(x) !is.null(x$preferences)
       )
 
-#parse functions
-GetPreferencesFromFunction <- function(prefFunString) {
-  eval(parse(text = prefFunString))
+#TODO: test validity of tree
+
+t <- Traverse(tr, filterFun = function(x) !is.null(x$preferenceFunction))
+Do(t, fun = function(x) x$preferenceFunction <- eval(parse(text = x$preferenceFunction)))
+
+#create table from function
+GetPreferences <- function(node) {
+  #combn(names(node$children), m = 2, FUN = function(x) node$preferenceFunction(node[[x[[1]]]], node[[x[[2]]]]))
+  prefs <- data.frame(t(combn(node$children, m = 2, FUN = function(x) c(x[[1]]$name, x[[2]]$name, node$preferenceFunction(x[[1]], x[[2]])))))
+  colnames(prefs) <- c('c1', 'c2', 'preference')
+  return (prefs)
 }
 
+Do(t, fun = function(x) x$preferences <- GetPreferences(x))
 
-tr$Do(fun = function(x) x$preferenceFunction <- GetPreferencesFromFunction(x$preferenceFunction), 
-      filterFun = function(x) !is.null(x$preferenceFunction)
-      )
+#create matrix from table
 
-#TODO: create table from function
-#TODO: create matrix from table
-#TODO: test validity of tree
+AhpMatrix <- function(preferenceCombinations) {
+  cats <- unlist(unique(c(preferenceCombinations$c1, preferenceCombinations$c2)))
+  mat <- matrix(1, nrow = length(cats), ncol = length(cats), byrow = TRUE, dimnames = list(cats, cats))
+  for (i in 1:nrow(preferenceCombinations)) {
+    mat[preferenceCombinations[[i,1]], preferenceCombinations[[i,2]]] <- preferenceCombinations[[i,3]]
+    mat[preferenceCombinations[[i,2]], preferenceCombinations[[i,1]]] <- 1 / preferenceCombinations[[i,3]]
+  }
+  return(mat)
+}
+
+tr$Do(fun = function(x) {print(x$name); x$preferenceMatrix <- AhpMatrix(x$preferences)}, filterFun = isNotLeaf)
