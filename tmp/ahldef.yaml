@@ -17,7 +17,7 @@ Alternatives: &alternatives
                 safety class: Midsize Car
                 crash rating: 4 in Side Impact Front
                 residual value: 0.46
-              Pilot SUV:
+              Pilot:
                 price: 27595
                 mpg: 22
                 passengers: 8
@@ -26,7 +26,7 @@ Alternatives: &alternatives
                 safety class: Midsize SUV
                 crash rating: 4 in Rollover
                 residual value: 0.4
-              CR-V SUV:
+              CR-V:
                 price: 20700
                 mpg: 27
                 passengers: 5
@@ -35,7 +35,7 @@ Alternatives: &alternatives
                 safety class: Small SUV
                 crash rating: 4 in Rollover
                 residual value: 0.55
-              Element SUV:
+              Element:
                 price: 18980
                 mpg: 25
                 passengers: 4
@@ -44,7 +44,7 @@ Alternatives: &alternatives
                 safety class: Small SUV
                 crash rating: 3 in Rollover
                 residual value: 0.48
-              Odyssey Minivan:
+              Odyssey:
                 price: 25645
                 mpg: 26
                 passengers: 8
@@ -90,11 +90,11 @@ Goal:
               - [CR-V, Odyssey, 5]
               - [Element, Odyssey, 6]
             criteria: *alternatives
-          Fuel Costs:
+          Fuel Cost:
             preferenceFunction: 
               function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
             criteria: *alternatives
-          Maintenance Costs: 
+          Maintenance Cost: 
             preferences: 
               - [Accord Sedan, Accord Hybrid, 1.5]
               - [Accord Sedan, Pilot, 4]
