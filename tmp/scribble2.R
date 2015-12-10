@@ -74,3 +74,22 @@ tr$weight <- 1
 Do(t, fun = function(x) DoAhp(x))
 
 print(tr, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
+
+GetPath <- function(n) {
+    f <- function(x) {
+            if (x$level > n)  return (x$path[[n]])
+            return (NA)
+         }
+    return (f)
+}
+
+GetPathV <- Vectorize(GetPath)
+
+pathArgs <- GetPathV(2:(tr$height - 1))
+names(pathArgs) <- paste0('l', 2:(tr$height - 1))
+
+df <- do.call(ToDataFrameTable, c(tr, pathArgs, 'name', weight = function(x) prod(x$Get('weight', traversal = 'ancestor'))))
+
+library(treemap)
+treemap(df, index = c('name', names(pathArgs)), vSize = 'weight', type = "value")
+
