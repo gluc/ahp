@@ -91,5 +91,15 @@ names(pathArgs) <- paste0('l', 2:(tr$height - 1))
 df <- do.call(ToDataFrameTable, c(tr, pathArgs, 'name', weight = function(x) prod(x$Get('weight', traversal = 'ancestor'))))
 
 library(treemap)
-treemap(df, index = c('name', names(pathArgs)), vSize = 'weight', type = "value")
+treemap(df, index=c("name", "l2", "l3"), vSize="weight", vColor="name", type="categorical") 
+#treemap(df, index=c("name", "l2", "l3"), vSize="weight", vColor="l3", type="categorical") 
 
+
+#itreemap(df, index = c('name', names(pathArgs)), vSize = 'weight', type = "value")
+
+df$pathString <- paste('tree', df$name, df$l2, df$l3, sep = "/")
+analysisTree <- FromDataFrameTable(df[,c('weight', 'pathString')])
+
+Aggregate(analysisTree, attribute = "weight", aggFun = sum, cacheAttribute = "weight")
+
+print(analysisTree, "weight")
