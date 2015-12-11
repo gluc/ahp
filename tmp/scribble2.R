@@ -75,6 +75,9 @@ Do(t, fun = function(x) DoAhp(x))
 
 print(tr, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
 
+#treemap
+
+
 GetPath <- function(n) {
     f <- function(x) {
             if (x$level > n)  return (x$path[[n]])
@@ -92,14 +95,73 @@ df <- do.call(ToDataFrameTable, c(tr, pathArgs, 'name', weight = function(x) pro
 
 library(treemap)
 treemap(df, index=c("name", "l2", "l3"), vSize="weight", vColor="name", type="categorical") 
-#treemap(df, index=c("name", "l2", "l3"), vSize="weight", vColor="l3", type="categorical") 
 
+#breakdown
 
-#itreemap(df, index = c('name', names(pathArgs)), vSize = 'weight', type = "value")
-
-df$pathString <- paste('tree', df$name, df$l2, df$l3, sep = "/")
+df$pathString <- paste('Breakdown', df$name, df$l2, df$l3, sep = "/")
 analysisTree <- FromDataFrameTable(df[,c('weight', 'pathString')])
 
 Aggregate(analysisTree, attribute = "weight", aggFun = sum, cacheAttribute = "weight")
 
-print(analysisTree, "weight")
+print(analysisTree, weight = function(x) FormatPercent(x$weight))
+
+
+#tree table
+alternatives <- names(oMat$Alternatives)
+
+tr$Do(function(x) x$weightContribution <- prod(x$Get("weight", traversal = "ancestor")),
+      filterFun = isLeaf)
+
+#put into array
+tr$Do(function(x) x$weightContribution <- sapply(x$children, function(x) x$weightContribution),
+      filterFun = function(x) x$height == 2)
+
+#sum up (custom aggregation)
+tr$Do(function(x) x$weightContribution <- rowSums(sapply(x$children, function(x) c(x$weightContribution))),
+      traversal = 'post-order',
+      filterFun = function(x) x$height >= 3)
+
+GetWeightContribution <- function(alternative, formatter = identity) {
+  f <- function(node) {
+    formatter(node$weightContribution[alternative])
+  }
+  return (f)
+}
+
+GetWeightContributionV <- Vectorize(GetWeightContribution, vectorize.args = 'alternative')
+#GetWeightContributionV(tr, names(oMat$Alternatives))
+
+
+
+df <- do.call(ToDataFrameTree, 
+              c(tr,
+              'name',
+              weightContribution = function(x) sum(x$weightContribution),
+              'consistency',
+              GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
+              filterFun = isNotLeaf))
+
+#print
+do.call(ToDataFrameTree, 
+        c(tr,
+          weightContribution = function(x) FormatPercent(sum(x$weightContribution), 1),
+          consistency = function(x) FormatPercent(x$consistency, 1),
+          `|` = function(x) '|',
+          GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE)), formatter = function(x) FormatPercent(x, 1)),
+          filterFun = isNotLeaf))
+
+
+#heatmap
+#lets you see which alternatives are similar, and why
+library(d3heatmap)
+hmdf <- do.call(ToDataFrameTree, 
+                      c(tr,
+                        'name',
+                        GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
+                        filterFun = function(x) x$height == 2))[,-1]
+row.names(hmdf) <- hmdf[ ,1]
+hmdf <- hmdf[,-1]
+hmdf <- t(hmdf)
+dg <- as.dendrogram(Clone(tr, pruneFun = isNotLeaf)) 
+                    #heightAttribute = function(x) 1 - x$weightContribution)
+d3heatmap(hmdf, scale = "column", Colv = NULL)
