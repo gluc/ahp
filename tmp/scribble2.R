@@ -156,15 +156,15 @@ do.call(ToDataFrameTree,
 library(d3heatmap)
 hmdf <- do.call(ToDataFrameTree, 
                       c(tr,
-                        'name',
+                        name = function(x) paste0(c(rep('*', x$level - 1), ' ', x$name), collapse = ""),
                         GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
-                        filterFun = function(x) x$height == 2))[,-1]
+                        filterFun = isNotLeaf)
+                )[,-1]
 row.names(hmdf) <- hmdf[ ,1]
 hmdf <- hmdf[,-1]
-hmdf <- t(hmdf)
-dg <- as.dendrogram(Clone(tr, pruneFun = isNotLeaf)) 
-                    #heightAttribute = function(x) 1 - x$weightContribution)
-d3heatmap(hmdf, scale = "column", Colv = NULL)
+
+
+d3heatmap(hmdf, scale = "row", Colv = NULL, Rowv = NULL, colors = "Blues")
 
 
 #
@@ -172,3 +172,5 @@ library(ggplot2)
 library(reshape2)
 qplot(x=Var1, y=Var2, data=melt(hmdf), fill=value, geom="tile") +
   scale_fill_gradient2(limits=c(0, max(hmdf)))
+
+#corrplot
