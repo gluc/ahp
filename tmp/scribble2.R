@@ -165,3 +165,10 @@ hmdf <- t(hmdf)
 dg <- as.dendrogram(Clone(tr, pruneFun = isNotLeaf)) 
                     #heightAttribute = function(x) 1 - x$weightContribution)
 d3heatmap(hmdf, scale = "column", Colv = NULL)
+
+
+#
+library(ggplot2)
+library(reshape2)
+qplot(x=Var1, y=Var2, data=melt(hmdf), fill=value, geom="tile") +
+  scale_fill_gradient2(limits=c(0, max(hmdf)))
