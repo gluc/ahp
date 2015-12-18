@@ -19,7 +19,7 @@ RI <- function(n){ #see handout
 #' @return the ahp preference weights
 #' 
 #' @export
-Ahp <- function(mat, allowedConsistency = 1){ 
+CalculateAhpMatrix <- function(mat, allowedConsistency = 1){ 
   # weigthing vector
   eig <- eigen(mat, symmetric=FALSE)
   

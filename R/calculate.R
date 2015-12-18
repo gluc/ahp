@@ -26,12 +26,6 @@ Calculate <- function(tr) {
 
 
 
-#' Get the names of the alternatives in the tree
-#' 
-#' @param tr The ahp tree
-#' @return a character vector containing the names of all the alternatives
-#' 
-#' @export
 GetAlternativesNames <- function(tr) {
   unique(tr$Get("name", filterFun = isLeaf))
 }
@@ -53,7 +47,7 @@ GetPreferencesFromFunction <- function(node) {
 
 #calculate weights
 DoAhp <- function(node) {
-  ahp <- Ahp(node$preferenceMatrix)
+  ahp <- CalculateAhpMatrix(node$preferenceMatrix)
   node$consistency <- ahp$consistency
   for (cat in names(ahp$ahp)) node[[cat]]$weight <- ahp$ahp[[cat]]
 }
