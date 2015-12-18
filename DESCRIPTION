@@ -8,7 +8,9 @@ Maintainer: Christoph Glur <christoph.glur@ipub.com>
 VignetteBuilder: knitr
 Imports:
     R6,
-    data.tree
+    data.tree,
+    yaml,
+    formattable
 Suggests:
     testthat,
     knitr
@@ -20,10 +22,3 @@ URL: http://github.com/gluc/ahp
 BugReports: http://github.com/gluc/ahp/issues
 Depends:
     R (>= 3.0)
-Collate:
-    'ahp.package.R'
-    'ahp_functions.R'
-    'ahp_node.R'
-    'alternative_node.R'
-    'alternative.R'
-    'preference_table.R'
