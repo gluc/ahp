@@ -4,7 +4,7 @@
 \alias{Ahp}
 \title{Calculate the ahp weights from the symmetric AHP matrix}
 \usage{
-Ahp(mat)
+Ahp(mat, allowedConsistency = 1)
 }
 \arguments{
 \item{mat}{The symmetric AHP preference matrix}

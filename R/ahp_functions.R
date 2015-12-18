@@ -17,7 +17,7 @@ RI <- function(n){ #see handout
 #' @return the ahp preference weights
 #' 
 #' @export
-Ahp <- function(mat){ 
+Ahp <- function(mat, allowedConsistency = 1){ 
   # weigthing vector
   eig <- eigen(mat, symmetric=FALSE)
   
@@ -28,8 +28,8 @@ Ahp <- function(mat){
   CI = (lambdaMax - dim(mat)[1]) / (dim(mat)[1]-1)
   CR = CI / RI(dim(mat)[1])
   
-  #we accept a consistency up to 20% which is very borderline (10% is normal)
-  if (is.nan(CI) || CR < 0.2) res <- (Re(eig$vectors[,1])/sum(Re(eig$vectors[,1]))) else res <- (matrix(1/dim(mat)[1],1,dim(mat)[1]))
+  #consistency
+  if (is.nan(CI) || CR < allowedConsistency) res <- (Re(eig$vectors[,1])/sum(Re(eig$vectors[,1]))) else res <- (matrix(1/dim(mat)[1],1,dim(mat)[1]))
   names(res) <- dimnames(mat)[[1]]
   list(ahp = res, consistency = CR)
 }

@@ -3,6 +3,8 @@
 library(yaml)
 library(data.tree)
 library(ahp)
+library(formattable)
+
 oMat <- yaml.load_file('tmp/ahldef.yaml')
 
 tr <- FromListExplicit(oMat[["Goal"]], childrenName = "criteria")
@@ -75,36 +77,6 @@ Do(t, fun = function(x) DoAhp(x))
 
 print(tr, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
 
-#treemap
-
-
-GetPath <- function(n) {
-    f <- function(x) {
-            if (x$level > n)  return (x$path[[n]])
-            return (NA)
-         }
-    return (f)
-}
-
-GetPathV <- Vectorize(GetPath)
-
-pathArgs <- GetPathV(2:(tr$height - 1))
-names(pathArgs) <- paste0('l', 2:(tr$height - 1))
-
-df <- do.call(ToDataFrameTable, c(tr, pathArgs, 'name', weight = function(x) prod(x$Get('weight', traversal = 'ancestor'))))
-
-library(treemap)
-treemap(df, index=c("name", "l2", "l3"), vSize="weight", vColor="name", type="categorical") 
-
-#breakdown
-
-df$pathString <- paste('Breakdown', df$name, df$l2, df$l3, sep = "/")
-analysisTree <- FromDataFrameTable(df[,c('weight', 'pathString')])
-
-Aggregate(analysisTree, attribute = "weight", aggFun = sum, cacheAttribute = "weight")
-
-print(analysisTree, weight = function(x) FormatPercent(x$weight))
-
 
 #tree table
 alternatives <- names(oMat$Alternatives)
@@ -136,7 +108,7 @@ GetWeightContributionV <- Vectorize(GetWeightContribution, vectorize.args = 'alt
 #print
 dfp <- do.call(ToDataFrameTree, 
                c(tr,
-                 weightContribution = function(x) FormatPercent(sum(x$weightContribution), 1),
+                 weight = function(x) FormatPercent(sum(x$weightContribution), 1),
                  consistency = function(x) FormatPercent(x$consistency, 1),
                  `|` = function(x) '|',
                  GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE)), formatter = function(x) FormatPercent(x, 1)),
@@ -147,14 +119,12 @@ df <- do.call(ToDataFrameTree,
               c(tr,
               'name',
               'level',
-              weightContribution = function(x) sum(x$weightContribution),
+              weight = function(x) sum(x$weightContribution),
               'consistency',
               GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
               filterFun = isNotLeaf))[,-1]
 
-
-library(formattable)
-library(htmltools)
+percent1 <- function(x) percent(x, digits = 1)
 
 ColorTileWithFormatting <- function(c1, c2, format) {
 
@@ -186,74 +156,49 @@ ColorTileRowWithFormatting <- function(cols, format) {
 ConsistencyFormatter <- function(c1, c2, format) {
   
   formatter("span", 
-            style = style(
+            style = x ~ style(
               display = "block", 
               padding = "0 4px", 
               `border-radius` = "4px", 
-              `background-color` = csscolor(gradient(c(0, 0.1), c1, c2))),
-            x ~ icontext(ifelse(x > 0.1 , "alert", NA), format(x))
+              `background-color` = csscolor(gradient(pmin(x, 0.1), c1, c2))),
+            x ~ icontext(ifelse(x > 0.1 , "exclamation-sign", NA), format(x))
   )
 }
 
 
 
+weightCol <- "honeydew3"
+goodCol <- "white"
+badCol <- "wheat2"
+alternativeCol <- "thistle4"
 
-cols <- df[,-(1:4)]/max(df[,-(1:4)]) + df[,-(1:4)]/df$weightContribution
+
+cols <- 2*df[,-(1:4)]/max(df[,-(1:4)]) + df[,-(1:4)]/df$weight
 #cols <- df[,-(1:4)]
 cols$zero <- 0
 cols$max <- max(cols)
-cols <- t(apply(cols, MARGIN = 1, function(x) csscolor(gradient(x, "white", "violet"))))
+cols <- t(apply(cols, MARGIN = 1, function(x) csscolor(gradient(x, "white", alternativeCol))))
 cols <- cols[,1:(ncol(cols)-2)]
 names(df)[1] <- " "
 
-weightCol <- "green"
-badCol <- "orange"
 myFormatters <- vector("list", length(oMat$Alternatives))
-for(i in 1:length(myFormatters)) myFormatters[[i]] <- percent
+for(i in 1:length(myFormatters)) myFormatters[[i]] <- percent1
 names(myFormatters) <- names(oMat$Alternatives)
 
 
-myFormatters$weightContribution <- ColorTileWithFormatting("white", weightCol, percent)
-myFormatters$consistency <- ConsistencyFormatter("green", badCol, percent)
+myFormatters$weight <- ColorTileWithFormatting("white", weightCol, percent1)
+myFormatters$consistency <- ConsistencyFormatter(goodCol, badCol, percent1)
 myFormatters$` ` <- formatter("span", 
                               style = style(`white-space` = "nowrap",
                                               `text-align` = "left",
                                               float = "left",
+                                              `font-weight` = "bold",
                                               `text-indent` = paste0((df$level-1), "em")
                               ))
 
-for(a in names(oMat$Alternatives)) myFormatters[[a]] <- ColorTileRowWithFormatting(cols[,a], percent)
+for(a in names(oMat$Alternatives)) myFormatters[[a]] <- ColorTileRowWithFormatting(cols[,a], percent1)
                                   
 
 formattable(df[ , -2], formatters = myFormatters)
                        
 
-
-y#heatmap
-#lets you see which alternatives are similar, and why
-library(d3heatmap)
-hmdf <- do.call(ToDataFrameTree, 
-                      c(tr,
-                        name = function(x) paste0(c(rep('*', x$level - 1), ' ', x$name), collapse = ""),
-                        GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
-                        filterFun = isNotLeaf)
-                )[,-1]
-row.names(hmdf) <- hmdf[ ,1]
-hmdf <- hmdf[,-1]
-
-
-d3heatmap(hmdf, 
-          scale = "row", 
-          Colv = NULL, 
-          Rowv = NULL, 
-          cellnote = apply(hmdf, MARGIN = c(1, 2), FormatPercent),
-          colors = "Blues")
-
-
-#
-library(ggplot2)
-library(reshape2)
-qplot(x=Var1, y=Var2, data=melt(hmdf), fill=value, geom="tile") +
-  scale_fill_gradient2(limits=c(0, max(hmdf)))
-
-#corrplot

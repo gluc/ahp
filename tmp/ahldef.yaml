@@ -154,12 +154,12 @@ Goal:
               - [Accord Hybrid, CR-V, 5]
               - [Accord Hybrid, Element, 9]
               - [Accord Hybrid, Odyssey, 6]
-              - [Pilot, CR-V, 6]
+              - [Pilot, CR-V, 1/6]
               - [Pilot, Element, 3]
-              - [Pilot, Odyssey, 3]
+              - [Pilot, Odyssey, 1/3]
               - [CR-V, Element, 7]
               - [CR-V, Odyssey, 5]
-              - [Element, Odyssey, 5]
+              - [Element, Odyssey, 1/5]
         criteria: *alternatives
       Capacity:
         preferences:
