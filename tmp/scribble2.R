@@ -133,25 +133,103 @@ GetWeightContributionV <- Vectorize(GetWeightContribution, vectorize.args = 'alt
 
 
 
+#print
+dfp <- do.call(ToDataFrameTree, 
+               c(tr,
+                 weightContribution = function(x) FormatPercent(sum(x$weightContribution), 1),
+                 consistency = function(x) FormatPercent(x$consistency, 1),
+                 `|` = function(x) '|',
+                 GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE)), formatter = function(x) FormatPercent(x, 1)),
+                 filterFun = isNotLeaf))
+
+
 df <- do.call(ToDataFrameTree, 
               c(tr,
               'name',
+              'level',
               weightContribution = function(x) sum(x$weightContribution),
               'consistency',
               GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
-              filterFun = isNotLeaf))
-
-#print
-do.call(ToDataFrameTree, 
-        c(tr,
-          weightContribution = function(x) FormatPercent(sum(x$weightContribution), 1),
-          consistency = function(x) FormatPercent(x$consistency, 1),
-          `|` = function(x) '|',
-          GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE)), formatter = function(x) FormatPercent(x, 1)),
-          filterFun = isNotLeaf))
+              filterFun = isNotLeaf))[,-1]
 
 
-#heatmap
+library(formattable)
+library(htmltools)
+
+ColorTileWithFormatting <- function(c1, c2, format) {
+
+  formatter("span", 
+             style = x ~ style(
+               display = "block", 
+               padding = "0 4px", 
+               `border-radius` = "4px", 
+               `background-color` = csscolor(gradient(x, c1, c2))),
+               x ~ format(x)
+             )
+}
+
+
+ColorTileRowWithFormatting <- function(cols, format) {
+  
+  formatter("span", 
+            style = style(
+              display = "block", 
+              padding = "0 4px", 
+              `border-radius` = "4px", 
+              `background-color` = cols),
+            x ~ format(x)
+  )
+}
+
+
+
+ConsistencyFormatter <- function(c1, c2, format) {
+  
+  formatter("span", 
+            style = style(
+              display = "block", 
+              padding = "0 4px", 
+              `border-radius` = "4px", 
+              `background-color` = csscolor(gradient(c(0, 0.1), c1, c2))),
+            x ~ icontext(ifelse(x > 0.1 , "alert", NA), format(x))
+  )
+}
+
+
+
+
+cols <- df[,-(1:4)]/max(df[,-(1:4)]) + df[,-(1:4)]/df$weightContribution
+#cols <- df[,-(1:4)]
+cols$zero <- 0
+cols$max <- max(cols)
+cols <- t(apply(cols, MARGIN = 1, function(x) csscolor(gradient(x, "white", "violet"))))
+cols <- cols[,1:(ncol(cols)-2)]
+names(df)[1] <- " "
+
+weightCol <- "green"
+badCol <- "orange"
+myFormatters <- vector("list", length(oMat$Alternatives))
+for(i in 1:length(myFormatters)) myFormatters[[i]] <- percent
+names(myFormatters) <- names(oMat$Alternatives)
+
+
+myFormatters$weightContribution <- ColorTileWithFormatting("white", weightCol, percent)
+myFormatters$consistency <- ConsistencyFormatter("green", badCol, percent)
+myFormatters$` ` <- formatter("span", 
+                              style = style(`white-space` = "nowrap",
+                                              `text-align` = "left",
+                                              float = "left",
+                                              `text-indent` = paste0((df$level-1), "em")
+                              ))
+
+for(a in names(oMat$Alternatives)) myFormatters[[a]] <- ColorTileRowWithFormatting(cols[,a], percent)
+                                  
+
+formattable(df[ , -2], formatters = myFormatters)
+                       
+
+
+y#heatmap
 #lets you see which alternatives are similar, and why
 library(d3heatmap)
 hmdf <- do.call(ToDataFrameTree, 
@@ -164,7 +242,12 @@ row.names(hmdf) <- hmdf[ ,1]
 hmdf <- hmdf[,-1]
 
 
-d3heatmap(hmdf, scale = "row", Colv = NULL, Rowv = NULL, colors = "Blues")
+d3heatmap(hmdf, 
+          scale = "row", 
+          Colv = NULL, 
+          Rowv = NULL, 
+          cellnote = apply(hmdf, MARGIN = c(1, 2), FormatPercent),
+          colors = "Blues")
 
 
 #
