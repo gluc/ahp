@@ -7,7 +7,10 @@
 Ahp(mat, allowedConsistency = 1)
 }
 \arguments{
-\item{mat}{The symmetric AHP preference matrix}
+\item{mat}{The AHP preference matrix}
+
+\item{allowedConsistency}{if the AHP consistency ratio is larger
+than this value, AHP is not applied and equal weights are returned.}
 }
 \value{
 the ahp preference weights

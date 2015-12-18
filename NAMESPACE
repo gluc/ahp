@@ -2,3 +2,6 @@
 
 export(Ahp)
 export(AhpMatrix)
+export(CalculateAhp)
+export(GetAlternativesNames)
+export(LoadAhpFile)

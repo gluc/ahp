@@ -2,31 +2,20 @@
 % Please edit documentation in R/ahp_functions.R
 \name{AhpMatrix}
 \alias{AhpMatrix}
-\title{Create the AHP pairwise preference matrix from vectors}
+\title{Create the AHP preference matrix from a dataframe containing
+the pairwiswe preferences.}
 \usage{
 AhpMatrix(preferenceCombinations)
 }
 \arguments{
-\item{cat1}{A vector of n category names}
-
-\item{cat2}{A vector of n category names}
-
-\item{pref}{A vector of preferences}
+\item{preferenceCombinations}{a data.frame containing category or alternative
+A in the first column, B in the second colum, and the preference in the third column.}
+}
+\value{
+an AHP preference matrix
 }
 \description{
-Create the AHP pairwise preference matrix from vectors
-}
-\details{
-Creates and fills a AHP conform matrix given the category vectors cat1, cat2, and the preference vector pref.
-}
-\examples{
-categories <- combn(c('red','blue','green'),2)
-cat1 <- categories[1,]
-cat2 <- categories[2,]
-pref <- c(1,5,4)
-AhpMatrix(cat1, cat2, pref)
-}
-\seealso{
-\code{\link{ahp}}
+Create the AHP preference matrix from a dataframe containing
+the pairwiswe preferences.
 }
 

@@ -13,7 +13,9 @@ RI <- function(n){ #see handout
 
 #' Calculate the ahp weights from the symmetric AHP matrix
 #' 
-#' @param mat The symmetric AHP preference matrix
+#' @param mat The AHP preference matrix
+#' @param allowedConsistency if the AHP consistency ratio is larger 
+#' than this value, AHP is not applied and equal weights are returned.
 #' @return the ahp preference weights
 #' 
 #' @export
@@ -34,31 +36,25 @@ Ahp <- function(mat, allowedConsistency = 1){
   list(ahp = res, consistency = CR)
 }
 
-#' Create the AHP pairwise preference matrix from vectors
-#' 
-#' @details Creates and fills a AHP conform matrix given the category vectors cat1, cat2, and the preference vector pref.
-#' @param cat1 A vector of n category names
-#' @param cat2 A vector of n category names
-#' @param pref A vector of preferences
-#' @examples
-#' categories <- combn(c('red','blue','green'),2)
-#' cat1 <- categories[1,]
-#' cat2 <- categories[2,]
-#' pref <- c(1,5,4)
-#' AhpMatrix(cat1, cat2, pref)
-#' @seealso \code{\link{ahp}}
-#' @export
-AhpMatrix <- function(preferenceCombinations){
-	cats <- unique(c(levels(preferenceCombinations$a), levels(preferenceCombinations$b)))
-	mat <- matrix(1, nrow = length(cats), length(cats), byrow = TRUE, dimnames = list(cats, cats))
-	for (i in 1:dim(preferenceCombinations)[1])
-	{
-		mat[as.character(preferenceCombinations[i,1]), as.character(preferenceCombinations[i,2])] <- preferenceCombinations[i,3]
-		mat[as.character(preferenceCombinations[i,2]), as.character(preferenceCombinations[i,1])] <- 1/ preferenceCombinations[i,3]
-	}
-	
-	return(mat)
 
+#' Create the AHP preference matrix from a dataframe containing
+#' the pairwiswe preferences. 
+#' 
+#' @param preferenceCombinations a data.frame containing category or alternative
+#' A in the first column, B in the second colum, and the preference in the third column.
+#' @return an AHP preference matrix
+#' 
+#' @export
+AhpMatrix <- function(preferenceCombinations) {
+  cats <- unlist(unique(c(preferenceCombinations[,1], preferenceCombinations[,2])))
+  mat <- matrix(1, nrow = length(cats), ncol = length(cats), byrow = TRUE, dimnames = list(cats, cats))
+  for (i in 1:nrow(preferenceCombinations)) {
+    mat[preferenceCombinations[[i,1]], preferenceCombinations[[i,2]]] <- preferenceCombinations[[i,3]]
+    mat[preferenceCombinations[[i,2]], preferenceCombinations[[i,1]]] <- 1 / preferenceCombinations[[i,3]]
+  }
+  return(mat)
 }
+
+
 
 
