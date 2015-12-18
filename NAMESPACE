@@ -2,6 +2,10 @@
 
 export(Ahp)
 export(AhpMatrix)
-export(CalculateAhp)
+export(Analyse)
+export(Calculate)
 export(GetAlternativesNames)
-export(LoadAhpFile)
+export(LoadFile)
+export(ShowTable)
+import(data.tree)
+import(formattable)

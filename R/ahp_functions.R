@@ -29,7 +29,7 @@ Ahp <- function(mat, allowedConsistency = 1){
   lambdaMax <- max(Re(eig$values))
   CI = (lambdaMax - dim(mat)[1]) / (dim(mat)[1]-1)
   CR = CI / RI(dim(mat)[1])
-  
+  CR <- max(CR, 0) #due to numerical inprecision
   #consistency
   if (is.nan(CI) || CR < allowedConsistency) res <- (Re(eig$vectors[,1])/sum(Re(eig$vectors[,1]))) else res <- (matrix(1/dim(mat)[1],1,dim(mat)[1]))
   names(res) <- dimnames(mat)[[1]]

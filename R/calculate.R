@@ -4,8 +4,10 @@
 #'
 #'@param tr a data.tree tree containing the Ahp model specification
 #'
+#'@import data.tree
+#'
 #'@export
-CalculateAhp <- function(tr) {
+Calculate <- function(tr) {
   t <- Traverse(tr, filterFun = function(x) !is.null(x$preferenceFunction))
   
   Do(t, fun = function(x) x$preferences <- GetPreferencesFromFunction(x))
@@ -18,7 +20,7 @@ CalculateAhp <- function(tr) {
   
   Do(t, fun = function(x) DoAhp(x))
   
-  print(tr, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
+  #print(tr, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
   
 }
 

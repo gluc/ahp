@@ -1,8 +1,3 @@
-library(yaml)
-library(data.tree)
-
-
-
 
 GetPreferences <- function(prefNode) {
   if (is.character(prefNode)) prefNode <- eval(parse(text = prefNode))
@@ -21,9 +16,9 @@ GetPreferences <- function(prefNode) {
 #' @return a data.tree containing the model specification
 #'
 #'@export
-LoadAhpFile <- function(file) {
+LoadFile <- function(file) {
 
-  oMat <- yaml.load_file(file)
+  oMat <- yaml::yaml.load_file(file)
   
   tr <- FromListExplicit(oMat[["Goal"]], childrenName = "criteria")
   

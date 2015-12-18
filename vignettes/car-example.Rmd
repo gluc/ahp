@@ -48,7 +48,7 @@ Even though this is not required, the data.tree Introduction vignette might also
 
 ```{r, eval = FALSE}
 library(data.tree)
-vignette('data.tree')
+vignette(package = 'data.tree')
 ```
 
 ### What is in this Document?
@@ -58,7 +58,7 @@ This vignette follows a well-known AHP example that you can also find e.g. on [W
 
 ## Creating the AHP criteria tree
 
-When deciding which car to buy, the family considers the following criteria: cost, safety, style, capacity. Additionally, some of the criteria have sub-criteria. 
+When deciding which car to buy, the family considers the following criteria: cost, safety, style, and capacity. Additionally, some of the criteria have sub-criteria. 
 
 The Jones' have a shortlist of 6 cars.
 
@@ -66,4 +66,19 @@ We can draw the hierarchy like this:
 
 ![Ahp Tree](AHP_tree.png)
 
-Using the ahp package, the ahp hierarchy tree can be constructed like so:
+Using the ahp package, the ahp hierarchy tree can be defined in an ahp file, which is a yaml file with a few specific properties.
+
+TODO: continue
+
+## Running the analysis
+
+```{r}
+library(ahp)
+tr <- LoadFile("../inst/extdata/car.ahp")
+Calculate(tr)
+df <- Analyse(tr)
+ShowTable(df)
+
+```
+
+
