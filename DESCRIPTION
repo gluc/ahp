@@ -12,7 +12,8 @@ Imports:
     formattable
 Suggests:
     testthat,
-    knitr
+    knitr,
+    rmarkdown
 Description: AHP (Analytic Hierarchy Process) is a decision making framework
     developed by Thomas Saaty. This package lets you model and analyse complex 
     decision problems according to the AHP framework.
