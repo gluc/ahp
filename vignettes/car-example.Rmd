@@ -26,7 +26,7 @@ options(width=120)
 
 ### What is AHP?
 
-AHP is a method allowing individuals or groups to make complex decisions. The core concept of AHP is that alternatives are always compared pairwise, and not, say, by giving a score, or sorting alternatives. AHP is used in many fields, from finance to criminal investigation.
+AHP is a method allowing individuals or groups to make complex decisions. The core concept of AHP is that alternatives are always compared pairwise (and not, say, by giving a score, or sorting alternatives). AHP is used in many fields, from finance to criminal investigation.
 
 For a general introduction to AHP, you might be interested in [this](http://en.wikipedia.org/wiki/Analytic_hierarchy_process).
 
@@ -66,9 +66,125 @@ We can draw the hierarchy like this:
 
 ![Ahp Tree](AHP_tree.png)
 
-Using the ahp package, the ahp hierarchy tree can be defined in an ahp file, which is a yaml file with a few specific properties.
+### The ahp file format
 
-TODO: continue
+Using the ahp package, the AHP hierarchy tree can be defined in an ahp file. An ahp file is a text file in yaml format, following a few conventions. For example:
+
+```{r, echo=FALSE}
+fileName <- "../inst/extdata/car.ahp"
+cat(readChar(fileName, file.info(fileName)$size))
+```
+
+Let's look at the various elements of this file.
+
+#### Alternatives
+
+The first section is a list of alternatives. Note that they have properties. For example: 
+
+```
+Alternatives: &alternatives
+              Accord Sedan:
+                price: 20360
+                mpg: 31
+                passengers: 5
+                cargo: 14
+                curb weight: 3289
+                safety class: Midsize Car
+                crash rating: 4 in Side Impact Front
+                residual value: 0.52
+              Accord Hybrid:
+                price: 31090
+                mpg: 35
+                passengers: 5
+                ...
+```
+
+You are entirely free regarding the type and format of information you store in your alternatives. Some models can do without any properties at all. However, often you would like to define your preferences as a function of properties. Later, you will see how you can define functions that refer to these properties to derive the pairwise preferences of alternatives with respect to a specific criteria. 
+
+#### Goal
+
+The second section of the ahp file is the *Goal*. Here, you define your criteria tree, your pairwise preferences, and - if applicable - your preference functions.
+
+##### Criteria
+
+Criteria are grouped hierarchically. Each criteria has at least the following sections:
+
+1. a name of the criteria (e.g. Cost)
+2. the preferences, either 
+    + pairwise preferences, or
+    + a preferenceFunction
+3. its sub-criteria (e.g. Maintenance Cost) or alternatives, as we'll see in the next section
+
+An example of a criteria which has explicit pairwise preference is the 
+
+```
+Cost:
+  preferences:
+    - [Purchase Price, Fuel Cost, 2]
+    - [Purchase Price, Maintenance Cost, 5]
+    - [Purchase Price, Resale Value, 3]
+    - [Fuel Cost, Maintenance Cost, 2]
+    - [Fuel Cost, Resale Value, 2]
+    - [Maintenance Cost, Resale Value, 1/2]
+  criteria:
+    Purchase Price:
+      preferences: 
+      ...
+```
+
+Here, we say, for instance, that Purchase Price is slightly more important to Fuel Cost. Purchase Price is, however, much more important than maintenance cost.
+
+##### Alternatives
+
+To keep the ahp file short, you can reference to the alternatives defined above. In order for this to work, your alternatives need to be defined as an anchor, using the & sign:
+
+```
+Alternatives: &alternatives
+              Accord Sedan:
+                price: 20360
+                ...
+```
+
+Note that this is a standard YAML feature.
+
+You can then later refer to the anchor using the * reference feature:
+
+```
+Style: 
+  preferences: 
+    - [Accord Sedan, Accord Hybrid, 1]
+    - [Accord Sedan, Pilot, 7]
+    - [Accord Sedan, CR-V, 5]
+    - [Accord Sedan, Element, 9]
+    - [Accord Sedan, Odyssey, 6]
+    - [Accord Hybrid, Pilot, 7]
+    - [Accord Hybrid, CR-V, 5]
+    - [Accord Hybrid, Element, 9]
+    - [Accord Hybrid, Odyssey, 6]
+    - [Pilot, CR-V, 1/6]
+    - [Pilot, Element, 3]
+    - [Pilot, Odyssey, 1/3]
+    - [CR-V, Element, 7]
+    - [CR-V, Odyssey, 5]
+    - [Element, Odyssey, 1/5]
+  criteria: *alternatives
+```
+
+#### Preference Function
+
+Instead of defining the preferences explicitly in a pairwise manner, you can define a preference function. For example, you can define
+
+```
+Fuel Cost:
+  preferenceFunction: 
+    function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
+  criteria: *alternatives
+  ...
+```
+
+Note that, in this case, we have a field *preferenceFunction* instead of *preferences*. The function itself is a standard R function, and the arguments a1 and a2 are pairwise combinations of the criteria, i.e. in this case, the alternatives. 
+
+Here, we simply say that the AHP preference is the ratio of the mpg (i.e. miles per gallon) a car uses. And since we store properties mpg on the alternatives, we can reference them directly here. We want the ratio to be between 1/9 and 9, as these are the typical AHP acceptable preferences.
 
 ## Running the analysis
 
