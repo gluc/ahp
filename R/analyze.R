@@ -1,7 +1,8 @@
 
 CalculateWeightContribution <- function(tr) {
   
-  tr$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
+  #TODO: add whenever newest version of data.tree is on CRAN
+  #tr$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
   
   #calculate weight contribution for leaves
   tr$Do(function(x) x$weightContribution <- prod(x$Get("weight", traversal = "ancestor")),
