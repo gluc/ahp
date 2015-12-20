@@ -31,7 +31,7 @@ For more information, see the package vignette using `vignette("AHP car example"
 ```{code = R} 
 
 devtools::install_github("gluc/ahp", build_vignettes = TRUE)
-vignette("AHP car example")
+vignette("car-example", package = "ahp")
 
 # run analysis
 library(ahp)
