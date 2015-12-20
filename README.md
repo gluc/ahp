@@ -1,10 +1,13 @@
-# Master
+# Badges
+
+## Master
+
 [![Build Status master](https://travis-ci.org/gluc/ahp.svg?branch=master)](https://travis-ci.org/gluc/ahp)
 [![Windows Build status]( https://ci.appveyor.com/api/projects/status/github/gluc/ahp?branch=master&svg=true)](https://ci.appveyor.com/project/gluc/ahp)
 [![codecov.io](http://codecov.io/github/gluc/ahp/coverage.svg?branch=master)](http://codecov.io/github/gluc/ahp?branch=master)
 [![CRAN Version](http://www.r-pkg.org/badges/version/ahp)](http://cran.rstudio.com/web/packages/ahp)
 
-# Dev
+## Dev
 
 [![Build Status dev](https://travis-ci.org/gluc/ahp.svg?branch=dev)](https://travis-ci.org/gluc/ahp)
 [![Windows Build status]( https://ci.appveyor.com/api/projects/status/github/gluc/ahp?branch=dev&svg=true)](https://ci.appveyor.com/project/gluc/ahp)
