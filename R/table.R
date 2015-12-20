@@ -38,7 +38,7 @@ ShowTable <- function(tr,
   
   myFormatters <- vector("list", length(alternatives))
   names(myFormatters) <- alternatives
-  for(a in alternatives) myFormatters[[a]] <- ahp:::ColorTileRowWithFormatting(cols[,a], percent1)
+  for(a in alternatives) myFormatters[[a]] <- ColorTileRowWithFormatting(cols[,a], percent1)
   
   myFormatters$Weight <- ColorTileWithFormatting("white", weightColor, percent1)
   myFormatters$Consistency <- ConsistencyFormatter("white", consistencyColor, percent1)
