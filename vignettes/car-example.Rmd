@@ -186,15 +186,70 @@ Note that, in this case, we have a field *preferenceFunction* instead of *prefer
 
 Here, we simply say that the AHP preference is the ratio of the mpg (i.e. miles per gallon) a car uses. And since we store properties mpg on the alternatives, we can reference them directly here. We want the ratio to be between 1/9 and 9, as these are the typical AHP acceptable preferences.
 
-## Running the analysis
+You can even define a named preference function that you can use for recursion:
+
+```
+Resale Value:
+  preferenceFunction: >
+    GetResalePreference <- function(a1, a2) {
+      if (a1$`residual value` < a2$`residual value`) return (1/GetResalePreference(a2, a1))
+      ratio <- a1$`residual value` / a2$`residual value`
+      if (ratio < 1.05) return (1)
+      if (ratio < 1.1) return (2)
+      if (ratio < 1.15) return (3)
+      if (ratio < 1.2) return (4)
+      if (ratio < 1.25) return (5)
+      return (5)
+    }
+  criteria: *alternatives 
+```
+
+### Loading the ahp file
+
+Loading the file is done by calling `LoadFile`:
 
 ```{r}
 library(ahp)
-tr <- LoadFile("../inst/extdata/car.ahp")
-Calculate(tr)
-df <- Analyse(tr)
-ShowTable(df)
+carAhp <- LoadFile("../inst/extdata/car.ahp")
+```
 
+```{r, eval=FALSE, echo=FALSE}
+#for manual testing
+#do not remove
+library(ahp)
+carAhp <- LoadFile("inst/extdata/car.ahp")
+```
+
+### The ahp tree structure
+
+`carAhp`, the return value of `LoadFile`, is a `data.tree` structure. Its structure is the same as the one of the file. If you are interested in solving AHP problems programmatically, all you need to do is to create a tree with that structure, using the `data.tree` functions.
+
+```{r}
+library(data.tree)
+print(carAhp, filterFun = isNotLeaf)
+```
+
+## Calculating the AHP problem
+
+```{r}
+Calculate(carAhp)
+print(carAhp, "weight")
+```
+
+
+## Running the analysis
+
+```{r}
+
+GetDataFrame(carAhp)
+
+```
+Note that, thanks to the `formattable` package, the columns are `numerics`, even though they are formatted as percentages.
+
+Another way to display the AHP analysis is with the `ShowTable` function, which displays an html table with color codings to help interpret the numbers:
+
+```{r}
+ShowTable(carAhp)
 ```
 
 

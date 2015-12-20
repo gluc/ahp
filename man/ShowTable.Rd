@@ -5,11 +5,11 @@
 \title{Displays the AHP analysis in form of an html table, with gradient
 colors and nicely formatted.}
 \usage{
-ShowTable(df, weightColor = "honeydew3", consistencyColor = "wheat2",
+ShowTable(tr, weightColor = "honeydew3", consistencyColor = "wheat2",
   alternativeColor = "thistle4")
 }
 \arguments{
-\item{df}{The ahp data.frame, typically obtained with \code{GetAHPAnalysis}}
+\item{tr}{The calculated ahp tree}
 
 \item{weightColor}{The name of the color to be used to emphasize weights of categories. See \code{color} for a list of possible colors.}
 

@@ -9,7 +9,6 @@
 #'@export
 Calculate <- function(tr) {
   t <- Traverse(tr, filterFun = function(x) !is.null(x$preferenceFunction))
-  
   Do(t, fun = function(x) x$preferences <- GetPreferencesFromFunction(x))
 
   #create matrix from table
@@ -21,7 +20,7 @@ Calculate <- function(tr) {
   Do(t, fun = function(x) DoAhp(x))
   
   #print(tr, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
-  
+  CalculateWeightContribution(tr)
 }
 
 
@@ -51,4 +50,27 @@ DoAhp <- function(node) {
   node$consistency <- ahp$consistency
   for (cat in names(ahp$ahp)) node[[cat]]$weight <- ahp$ahp[[cat]]
 }
+
+
+CalculateWeightContribution <- function(tr) {
+  
+  #TODO: add whenever newest version of data.tree is on CRAN
+  #tr$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
+  
+  #calculate weight contribution for leaves
+  tr$Do(function(x) x$weightContribution <- prod(x$Get("weight", traversal = "ancestor")),
+        filterFun = isLeaf)
+  
+  #put into array on parent of leaves
+  tr$Do(function(x) x$weightContribution <- sapply(x$children, function(x) x$weightContribution),
+        filterFun = function(x) x$height == 2)
+  
+  #sum up (custom aggregation)
+  tr$Do(function(x) x$weightContribution <- rowSums(sapply(x$children, function(x) c(x$weightContribution))),
+        traversal = 'post-order',
+        filterFun = function(x) x$height >= 3)
+  
+  
+}
+
 
