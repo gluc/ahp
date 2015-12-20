@@ -12,8 +12,20 @@ GetPreferences <- function(prefNode) {
 
 #' Load an ahp model from file
 #' 
-#' @param file the path and name of the file to load
-#' @return a data.tree containing the model specification
+#' ahp files are in YAML format, and they are self-contained, fully specified ahp problems. They contain two sections: alternatives and goal.
+#' The goal section is a tree of criteria, each criteria having a name, a preference attribute, and possible child criteria or alternatives.
+#' 
+#' @param file The full path to the file to be loaded.
+#' @return A \code{\link{data.tree}} containing the model specification.
+#' 
+#' @examples 
+#' ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+#' 
+#' #look at a sample file
+#' cat(readChar(ahpFile, file.info(ahpFile)$size))
+#' 
+#' #load the file into R
+#' carAhp <- LoadFile(ahpFile)
 #'
 #'@export
 LoadFile <- function(file) {

@@ -71,8 +71,8 @@ We can draw the hierarchy like this:
 Using the ahp package, the AHP hierarchy tree can be defined in an ahp file. An ahp file is a text file in yaml format, following a few conventions. For example:
 
 ```{r, echo=FALSE}
-fileName <- "../inst/extdata/car.ahp"
-cat(readChar(fileName, file.info(fileName)$size))
+ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+cat(readChar(ahpFile, file.info(ahpFile)$size))
 ```
 
 Let's look at the various elements of this file.

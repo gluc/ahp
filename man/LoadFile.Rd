@@ -7,12 +7,22 @@
 LoadFile(file)
 }
 \arguments{
-\item{file}{the path and name of the file to load}
+\item{file}{The full path to the file to be loaded.}
 }
 \value{
-a data.tree containing the model specification
+A \code{\link{data.tree}} containing the model specification.
 }
 \description{
-Load an ahp model from file
+ahp files are in YAML format, and they are self-contained, fully specified ahp problems. They contain two sections: alternatives and goal.
+The goal section is a tree of criteria, each criteria having a name, a preference attribute, and possible child criteria or alternatives.
+}
+\examples{
+ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+
+#look at a sample file
+cat(readChar(ahpFile, file.info(ahpFile)$size))
+
+#load the file into R
+carAhp <- LoadFile(ahpFile)
 }
 

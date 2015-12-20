@@ -18,7 +18,7 @@ ShowTable(tr, weightColor = "honeydew3", consistencyColor = "wheat2",
 \item{alternativeColor}{The name of the color used to highlight big contributors to alternative choices.}
 }
 \value{
-a \code{formattable} object which, in most environments, will be displayed as an HTML table
+a \code{\link{formattable}} object which, in most environments, will be displayed as an HTML table
 }
 \description{
 Displays the AHP analysis in form of an html table, with gradient

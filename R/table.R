@@ -8,7 +8,7 @@
 #' @param weightColor The name of the color to be used to emphasize weights of categories. See \code{color} for a list of possible colors.
 #' @param consistencyColor The name of the color to be used to highlight bad consistency
 #' @param alternativeColor The name of the color used to highlight big contributors to alternative choices.
-#' @return a \code{formattable} object which, in most environments, will be displayed as an HTML table
+#' @return a \code{\link{formattable}} object which, in most environments, will be displayed as an HTML table
 #' 
 #' @import formattable
 #' @export 
