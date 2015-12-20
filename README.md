@@ -18,6 +18,7 @@
 An R package to model complex decision making problems using AHP (Analytic Hierarchy Process).
 
 The basic workflow with this package is:
+
 1. specify your ahp problem in an ahp file
 2. load ahp file, using `LoadFile`
 3. calculate model, using `Calculate`
