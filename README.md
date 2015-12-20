@@ -19,11 +19,11 @@ An R package to model complex decision making problems using AHP (Analytic Hiera
 
 The basic workflow with this package is:
 1. specify your ahp problem in an ahp file
-2. load ahp file, using \code{\link{LoadFile}}
-3. calculate model, using \code{\link{Calculate}}
-4. output model analysis, either using \code{\link{GetDataFrame}} or using \code{\link{ShowTable}}
+2. load ahp file, using `LoadFile`
+3. calculate model, using `Calculate`
+4. output model analysis, either using `GetDataFrame` or using `ShowTable`
  
-For more information, see the package vignette using \code{vignette("AHP car example")}
+For more information, see the package vignette using `vignette("AHP car example")`
 
 # Example
 
