@@ -1,8 +1,8 @@
 context("ahp integration")
 
-
-
-carAhp <- LoadFile("../../inst/extdata/car.ahp")
+#carAhp <- LoadFile("../../inst/extdata/car.ahp")
+ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+carAhp <- LoadFile(ahpFile)
 Calculate(carAhp)
 df <- GetDataFrame(carAhp)
 

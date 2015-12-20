@@ -210,15 +210,10 @@ Loading the file is done by calling `LoadFile`:
 
 ```{r}
 library(ahp)
-carAhp <- LoadFile("../inst/extdata/car.ahp")
+ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+carAhp <- LoadFile(ahpFile)
 ```
 
-```{r, eval=FALSE, echo=FALSE}
-#for manual testing
-#do not remove
-library(ahp)
-carAhp <- LoadFile("inst/extdata/car.ahp")
-```
 
 ### The ahp tree structure
 
