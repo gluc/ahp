@@ -1,8 +1,8 @@
 Package: ahp
 Type: Package
 Title: Creating Analytic Hierarchy Process (AHP) Models
-Version: 0.0.2
-Date: 2015-12-18
+Version: 0.1.0
+Date: 2015-12-20
 Author: Christoph Glur
 Maintainer: Christoph Glur <christoph.glur@ipub.com>
 VignetteBuilder: knitr
@@ -16,7 +16,7 @@ Suggests:
     rmarkdown
 Description: AHP (Analytic Hierarchy Process) is a decision making framework
     developed by Thomas Saaty. This package lets you model and analyse complex 
-    decision problems according to the AHP framework.
+    decision making problems according to the AHP framework.
 License: GPL (>= 2)
 URL: http://github.com/gluc/ahp
 BugReports: http://github.com/gluc/ahp/issues

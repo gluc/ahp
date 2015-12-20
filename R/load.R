@@ -12,8 +12,17 @@ GetPreferences <- function(prefNode) {
 
 #' Load an ahp model from file
 #' 
-#' ahp files are in YAML format, and they are self-contained, fully specified ahp problems. They contain two sections: alternatives and goal.
-#' The goal section is a tree of criteria, each criteria having a name, a preference attribute, and possible child criteria or alternatives.
+#' ahp files are in YAML format, and they are self-contained, fully specified ahp problems. 
+#' They contain two sections: \bold{alternatives} and \bold{goal}. 
+#' 
+#' The \bold{alternatives} section contains a list of alternatives, where each alternative
+#' may have a number of attributes.
+#' 
+#' The \bold{goal} section is a tree of criteria, 
+#' each criteria having a \code{name}, a \code{preferences} or a \code{preferenceFunction} 
+#' attribute, and possible child criteria or alternatives.
+#' 
+#' To look at a sample file, type, see examples below.
 #' 
 #' @param file The full path to the file to be loaded.
 #' @return A \code{\link{data.tree}} containing the model specification.
@@ -32,7 +41,7 @@ LoadFile <- function(file) {
 
   oMat <- yaml::yaml.load_file(file)
   
-  tr <- FromListExplicit(oMat[["Goal"]], childrenName = "criteria")
+  tr <- FromListExplicit(oMat[["Goal"]])
   
   tr$Do(fun = function(x) x$preferences <- GetPreferences(x$preferences),
         filterFun = function(x) !is.null(x$preferences)

@@ -13,8 +13,18 @@ LoadFile(file)
 A \code{\link{data.tree}} containing the model specification.
 }
 \description{
-ahp files are in YAML format, and they are self-contained, fully specified ahp problems. They contain two sections: alternatives and goal.
-The goal section is a tree of criteria, each criteria having a name, a preference attribute, and possible child criteria or alternatives.
+ahp files are in YAML format, and they are self-contained, fully specified ahp problems.
+They contain two sections: \bold{alternatives} and \bold{goal}.
+}
+\details{
+The \bold{alternatives} section contains a list of alternatives, where each alternative
+may have a number of attributes.
+
+The \bold{goal} section is a tree of criteria,
+each criteria having a \code{name}, a \code{preferences} or a \code{preferenceFunction}
+attribute, and possible child criteria or alternatives.
+
+To look at a sample file, type, see examples below.
 }
 \examples{
 ahpFile <- system.file("extdata", "car.ahp", package="ahp")

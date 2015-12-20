@@ -126,7 +126,7 @@ Cost:
     - [Fuel Cost, Maintenance Cost, 2]
     - [Fuel Cost, Resale Value, 2]
     - [Maintenance Cost, Resale Value, 1/2]
-  criteria:
+  children:
     Purchase Price:
       preferences: 
       ...
@@ -167,7 +167,7 @@ Style:
     - [CR-V, Element, 7]
     - [CR-V, Odyssey, 5]
     - [Element, Odyssey, 1/5]
-  criteria: *alternatives
+  children: *alternatives
 ```
 
 #### Preference Function
@@ -178,7 +178,7 @@ Instead of defining the preferences explicitly in a pairwise manner, you can def
 Fuel Cost:
   preferenceFunction: 
     function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
-  criteria: *alternatives
+  children: *alternatives
   ...
 ```
 
@@ -201,7 +201,7 @@ Resale Value:
       if (ratio < 1.25) return (5)
       return (5)
     }
-  criteria: *alternatives 
+  children: *alternatives 
 ```
 
 ### Loading the ahp file
