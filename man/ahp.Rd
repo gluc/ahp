@@ -16,7 +16,7 @@ The basic workflow with this package is:
 3. calculate model, using \code{\link{Calculate}}
 4. output model analysis, either using \code{\link{GetDataFrame}} or using \code{\link{ShowTable}}
 
-For more information, see the package vignette using \code{vignette("AHP car example")}
+For more information, see the package vignette using \code{vignette("car-example", package = "ahp")}
 }
 \examples{
 library(ahp)
