@@ -7,13 +7,12 @@ output:
     theme: united
     toc: yes
     toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{AHP Car Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
-
-<!--
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{AHP Car Example Walk-through}
--->
 
 ```{r set-options, echo=FALSE, cache=FALSE}
 options(width=120)

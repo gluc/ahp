@@ -29,6 +29,11 @@ For more information, see the package vignette using `vignette("AHP car example"
 # Example
 
 ```{code = R} 
+
+devtools::install_github("gluc/ahp", build_vignettes = TRUE)
+vignette("AHP car example")
+
+# run analysis
 library(ahp)
 ahpFile <- system.file("extdata", "car.ahp", package="ahp")
 carAhp <- LoadFile(ahpFile)
