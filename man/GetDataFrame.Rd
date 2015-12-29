@@ -8,7 +8,7 @@ to the overall decision.}
 GetDataFrame(ahpTree, decisionMaker = "Total")
 }
 \arguments{
-\item{ahpTree}{the calculated AHP \code{\link{data.tree}}}
+\item{ahpTree}{the calculated AHP \code{data.tree}}
 
 \item{decisionMaker}{the name of the decision maker. The default returns the joint decision.}
 }
