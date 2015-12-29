@@ -4,22 +4,23 @@
 #' Converts the tree into a data.frame, containing all the weights contributions 
 #' to the overall decision.
 #' 
-#' @param tr the calculated AHP \code{\link{data.tree}}
+#' @param ahpTree the calculated AHP \code{\link{data.tree}}
+#' @param decisionMaker the name of the decision maker. The default returns the joint decision.
 #' @return a \code{data.frame} containing the contribution of each criteria
 #' 
 #' @export
-GetDataFrame <- function(tr) {
+GetDataFrame <- function(ahpTree, decisionMaker = "Total") {
 
   df <- do.call(ToDataFrameTree, 
-                c(tr,
-                  Weight = function(x) sum(x$weightContribution),
-                  GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
-                  Consistency = function(x) x$consistency,
+                c(ahpTree,
+                  Weight = function(x) sum(x$weightContribution[decisionMaker, ]),
+                  GetWeightContributionV(names(sort( ahpTree$weightContribution[decisionMaker, ], decreasing = TRUE)), decisionMaker),
+                  Consistency = function(x) x$consistency[decisionMaker],
                   filterFun = isNotLeaf))
 
   names(df)[1] <- " "
   
-  for (i in 2:ncol(df)) df[ , i] <- percent1(df[ , i])
+  for (i in 2:ncol(df)) df[ , i] <- ahp:::percent1(df[ , i])
   
   return (df)
   
@@ -27,9 +28,9 @@ GetDataFrame <- function(tr) {
 
 
 
-GetWeightContribution <- function(alternative, formatter = identity) {
+GetWeightContribution <- function(alternative, decisionMaker, formatter = identity) {
   f <- function(node) {
-    formatter(node$weightContribution[alternative])
+    formatter(node$weightContribution[decisionMaker, alternative])
   }
   return (f)
 }

@@ -72,6 +72,12 @@ LoadFile <- function(file) {
         filterFun = function(x) !is.null(x$preferences)
   )
   
+  if (!is.null(tr$`decision-makers`)) {
+    wc <- unlist(tr$`decision-makers`)
+    wc <- sapply(wc, FUN = function(x) eval(parse(text = x)))
+    tr$`decision-makers` <- wc
+  }
+  
   #TODO: test validity of tree
   
   return (tr)

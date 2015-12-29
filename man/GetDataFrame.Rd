@@ -5,13 +5,15 @@
 \title{Converts the tree into a data.frame, containing all the weights contributions
 to the overall decision.}
 \usage{
-GetDataFrame(tr)
+GetDataFrame(ahpTree, decisionMaker = "Total")
 }
 \arguments{
-\item{tr}{the calculated AHP data.tree}
+\item{ahpTree}{the calculated AHP \code{\link{data.tree}}}
+
+\item{decisionMaker}{the name of the decision maker. The default returns the joint decision.}
 }
 \value{
-a data.frame containing the contribution of each criteria
+a \code{data.frame} containing the contribution of each criteria
 }
 \description{
 Converts the tree into a data.frame, containing all the weights contributions

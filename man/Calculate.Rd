@@ -4,10 +4,10 @@
 \alias{Calculate}
 \title{Calculate the Ahp tree}
 \usage{
-Calculate(tr)
+Calculate(ahpTree)
 }
 \arguments{
-\item{tr}{a data.tree tree containing the Ahp model specification}
+\item{ahpTree}{a data.tree tree containing the Ahp model specification}
 }
 \description{
 Calculate the Ahp tree

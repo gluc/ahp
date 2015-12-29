@@ -2,12 +2,12 @@
 
 #'Calculate the Ahp tree
 #'
-#'@param tr a data.tree tree containing the Ahp model specification
+#'@param ahpTree a data.tree tree containing the Ahp model specification
 #'
 #'@import data.tree
 #'
 #'@export
-Calculate <- function(tr) {
+Calculate <- function(ahpTree) {
   
   # go from
   # 1. function to pairwise
@@ -16,7 +16,7 @@ Calculate <- function(tr) {
   # 4. from weight into weight matrix
   
   
-  prefTrees <- tr$Get(attribute = function(x) x$preferences, filterFun = function(x) !is.null(x$preferences))
+  prefTrees <- ahpTree$Get(attribute = function(x) x$preferences, filterFun = function(x) !is.null(x$preferences))
   
   
   for(prefTree in prefTrees) {
@@ -66,14 +66,18 @@ Calculate <- function(tr) {
   
   
   
-  #print(tr, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
-  CalculateWeightContribution(tr)
+  #print(ahpTree, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
+  CalculateWeightContribution(ahpTree)
+  
+  CalculateTotalWeightContribution(ahpTree)
+  CalculateTotalConsistency(ahpTree)
+  
 }
 
 
 
-GetAlternativesNames <- function(tr) {
-  unique(tr$Get("name", filterFun = isLeaf))
+GetAlternativesNames <- function(ahpTree) {
+  unique(ahpTree$Get("name", filterFun = isLeaf))
 }
 
 
@@ -92,21 +96,21 @@ GetPreference <- function(node, type, decisionMaker, attribute = "preferences") 
   node$preferences[[decisionMaker]][[type]][[attribute]]
 }
 
-GetDecisionMakers <- function(tr) {
-  decisionMakers <- unique(c(tr$Get(attribute = function(x) names(x$preferences$children), filterFun = function(x) !is.null(x$preferences))))
+GetDecisionMakers <- function(ahpTree) {
+  decisionMakers <- unique(c(ahpTree$Get(attribute = function(x) names(x$preferences$children), filterFun = function(x) !is.null(x$preferences))))
   return (decisionMakers)
 }
 
 
 
-CalculateWeightContribution <- function(tr) {
+CalculateWeightContribution <- function(ahpTree) {
   
   #TODO: add whenever newest version of data.tree is on CRAN
-  #tr$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
+  #ahpTree$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
   
   #calculate weight contribution for alternatives
-  dm <- GetDecisionMakers(tr)
-  tr$Do(function(x) {
+  dm <- GetDecisionMakers(ahpTree)
+  ahpTree$Do(function(x) {
           x$weightContribution <- apply(sapply(x$Get("weight", traversal = "ancestor")[-length(dm)], cbind), MARGIN = 1, prod)
           names(x$weightContribution) <- dm
         },
@@ -114,15 +118,39 @@ CalculateWeightContribution <- function(tr) {
   
   
   #put into matrix on parent of alternatives
-  tr$Do(function(x) x$weightContribution <- sapply(x$children, function(x) x$weightContribution),
+  ahpTree$Do(function(x) x$weightContribution <- sapply(x$children, function(x) x$weightContribution),
         filterFun = function(x) x$height == 2)
   
   #sum up for criteria (custom aggregation)
-  tr$Do(function(x) x$weightContribution <- Reduce('+', Get(x$children, "weightContribution", simplify = FALSE)),
+  ahpTree$Do(function(x) x$weightContribution <- Reduce('+', Get(x$children, "weightContribution", simplify = FALSE)),
         traversal = 'post-order',
         filterFun = function(x) x$height >= 3)
+  
+  
   
   
 }
 
 
+CalculateTotalWeightContribution <- function(ahpTree) {
+  
+  ahpTree$Do(function(x) {
+                dm <- GetAttribute(x, attribute = "decision-makers", inheritFromAncestors = TRUE, nullAsNa = FALSE)
+                if (is.null(dm)) dm <- rep(1/nrow(x$weightContribution), nrow(x$weightContribution))
+                totals <- t(t(x$weightContribution) %*% dm)
+                rownames(totals) <- "Total"
+                x$weightContribution <- rbind(x$weightContribution, Total = totals)
+              },
+             filterFun = isNotLeaf
+  )
+  
+}
+
+
+CalculateTotalConsistency <- function(ahpTree) {
+  
+  ahpTree$Do(function(x) x$consistency <- c(x$consistency, Total = max(x$consistency, na.rm = TRUE)),
+             filterFun = isNotLeaf
+             )
+  
+}

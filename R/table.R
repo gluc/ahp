@@ -4,26 +4,28 @@
 #' Displays the AHP analysis in form of an html table, with gradient
 #' colors and nicely formatted.
 #' 
-#' @param tr The calculated ahp tree
+#' @param ahpTree The calculated ahp tree
+#' @param decisionMaker the name of the decision maker. The default returns the joint decision.
 #' @param weightColor The name of the color to be used to emphasize weights of categories. See \code{color} for a list of possible colors.
 #' @param consistencyColor The name of the color to be used to highlight bad consistency
 #' @param alternativeColor The name of the color used to highlight big contributors to alternative choices.
-#' @return a \code{\link{formattable}} object which, in most environments, will be displayed as an HTML table
+#' @return a \code{\link{formattable}} data.frame object which, in most environments, will be displayed as an HTML table
 #' 
 #' @import formattable
 #' @export 
-ShowTable <- function(tr, 
+ShowTable <- function(ahpTree,
+                      decisionMaker = "Total",
                       weightColor = "honeydew3", 
                       consistencyColor = "wheat2",
                       alternativeColor = "thistle4") {
 
   df <- do.call(ToDataFrameTree, 
-                c(tr,
+                c(ahpTree,
                   'name',
                   'level',
-                  Weight = function(x) sum(x$weightContribution),
-                  GetWeightContributionV(names(sort( tr$weightContribution, decreasing = TRUE))),
-                  Consistency = function(x) x$consistency,
+                  Weight = function(x) sum(x$weightContribution[decisionMaker, ]),
+                  GetWeightContributionV(names(sort( ahpTree$weightContribution[decisionMaker, ], decreasing = TRUE)), decisionMaker),
+                  Consistency = function(x) x$consistency[decisionMaker],
                   filterFun = isNotLeaf))[,-1]
   
   alternatives <- names(df)[-c(1:3, ncol(df))]
