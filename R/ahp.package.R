@@ -23,9 +23,9 @@
 #' ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
 #' vacationAhp <- LoadFile(ahpFile)
 #' Calculate(vacationAhp)
-#' GetDataFrame(carAhp, "Dad")
-#' ShowTable(carAhp, "Mom")
-#' ShowTable(carAhp)
+#' GetDataFrame(vacationAhp, "Dad")
+#' ShowTable(vacationAhp, "Mom")
+#' ShowTable(vacationAhp)
 #'
 #' @docType package
 #' @name ahp

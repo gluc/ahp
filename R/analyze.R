@@ -4,7 +4,7 @@
 #' Converts the tree into a data.frame, containing all the weights contributions 
 #' to the overall decision.
 #' 
-#' @param ahpTree the calculated AHP \code{\link{data.tree}}
+#' @param ahpTree the calculated AHP \code{data.tree}
 #' @param decisionMaker the name of the decision maker. The default returns the joint decision.
 #' @return a \code{data.frame} containing the contribution of each criteria
 #' 
