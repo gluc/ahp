@@ -4,8 +4,8 @@
 #' Converts the tree into a data.frame, containing all the weights contributions 
 #' to the overall decision.
 #' 
-#' @param tr the calculated AHP data.tree
-#' @return a data.frame containing the contribution of each criteria
+#' @param tr the calculated AHP \code{\link{data.tree}}
+#' @return a \code{data.frame} containing the contribution of each criteria
 #' 
 #' @export
 GetDataFrame <- function(tr) {

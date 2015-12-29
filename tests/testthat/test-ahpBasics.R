@@ -5,6 +5,7 @@ ahpFile <- system.file("extdata", "car.ahp", package="ahp")
 carAhp <- LoadFile(ahpFile)
 Calculate(carAhp)
 df <- GetDataFrame(carAhp)
+tbl <- ShowTable(carAhp)
 
 test_that("ncol", {
   expect_equal(ncol(df), 9)
@@ -33,4 +34,20 @@ test_that("row sum", {
 test_that("alternatives order", {
   aw <-  df[1 , 3:8] 
   expect_equal(aw, sort(aw, decreasing = TRUE))
+})
+
+
+test_that("alternatives order", {
+  aw <-  df[1 , 3:8] 
+  expect_equal(aw, sort(aw, decreasing = TRUE))
+})
+
+
+test_that("table", {
+  expect_true(is.data.frame(tbl))
+  expect_true(is.formattable(tbl))
+})
+
+test_that("table values", {
+  expect_true(all(as.data.frame(tbl)[,2:9] == df[,2:9]))
 })

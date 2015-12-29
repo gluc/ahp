@@ -1,12 +1,37 @@
 
-GetPreferences <- function(prefNode) {
-  if (is.character(prefNode)) prefNode <- eval(parse(text = prefNode))
-  prefs <- t(mapply(c, prefNode))
-  prefs[,3] <- sapply(prefs[,3], FUN = function(x) eval(parse(text = x)))
-  prefs <- as.data.frame(prefs, stringsAsFactors = FALSE)
-  prefs[,3] <- as.numeric(prefs[,3])
-  colnames(prefs) <- c('c1', 'c2', 'preference')
-  return (prefs)
+  
+GetPreferences <- function(criteriaNode) {
+  newPreferences <- Node$new(name = "preferences")
+  newPreferences$myParent <- criteriaNode
+  for(decisionMaker in names(criteriaNode$preferences)) {
+    preferences <- criteriaNode$preferences[[decisionMaker]]
+    #derive type
+    type <- names(preferences)
+
+    prefNode <- preferences[[type]]
+    
+    if (type == 'pairwise') {
+      if (is.character(prefNode)) prefNode <- eval(parse(text = prefNode)) #to handle single pref
+      prefs <- t(mapply(c, prefNode))
+      prefs[,3] <- sapply(prefs[,3], FUN = function(x) eval(parse(text = x)))
+      prefs <- as.data.frame(prefs, stringsAsFactors = FALSE)
+      prefs[,3] <- as.numeric(prefs[,3])
+      colnames(prefs) <- c('c1', 'c2', 'preference')
+    } else if (type == "function") {
+      prefs <- eval(parse(text = prefNode))
+    } else if (type == "weight") {
+      prefs <- unlist(prefNode)
+      prefs <- sapply(prefs, FUN = function(x) eval(parse(text = x)))
+    } else {
+      stop(paste0("Unknown preference type <", type, "> for node ", criteriaNode$pathString, "! Must be <pairwise>, <function>, or <weight>."))
+    }
+    
+    prefTr <- newPreferences$AddChild(name = decisionMaker)
+    prefType <- prefTr$AddChild(name = type)
+    prefType$preferences <- prefs
+    
+  }
+  return (newPreferences)
 }
 
 
@@ -43,14 +68,11 @@ LoadFile <- function(file) {
   
   tr <- FromListExplicit(oMat[["Goal"]])
   
-  tr$Do(fun = function(x) x$preferences <- GetPreferences(x$preferences),
+  tr$Do(fun = function(x) x$preferences <- GetPreferences(x),
         filterFun = function(x) !is.null(x$preferences)
   )
   
   #TODO: test validity of tree
-  
-  t <- Traverse(tr, filterFun = function(x) !is.null(x$preferenceFunction))
-  Do(t, fun = function(x) x$preferenceFunction <- eval(parse(text = x$preferenceFunction)))
   
   return (tr)
   

@@ -1,0 +1,67 @@
+Version: 0.2.0
+Alternatives: &alternatives
+  Beach:
+    cost: 10000
+  Mountains:
+    cost: 5000
+Goal:
+  name: Vacation
+  decision-makers:
+    weights:
+      - Dad: 0.4
+      - Mom: 0.4
+      - Kid: 0.2
+  preferences:
+    Dad:
+      pairwise:
+      - [Costs, Fun, 4]
+      - [Costs, Spa, 9]
+      - [Fun, Spa, 9]
+    Mom:
+      pairwise:
+      - [Costs, Fun, 4]
+      - [Costs, Spa, 1/9]
+      - [Fun, Spa, 1/5]
+    Kid:
+      pairwise:
+      - [Costs, Fun, 1/9]
+      - [Costs, Spa, 1]
+      - [Fun, Spa, 9]
+  children:
+    Costs:
+      preferences:
+        Dad:
+          function: 
+            function(a1, a2) min(9, max(1/9, a1$cost/a2$cost))
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 3]
+        Kid:
+          weight:
+            - Beach: 1/2
+            - Mountains: 0.5
+      children: *alternatives
+    Fun:
+      preferences:
+        Dad:
+          pairwise:
+            - [Beach, Mountains, 1/4]
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 3]
+        Kid:
+          pairwise:
+            - [Beach, Mountains, 7]
+      children: *alternatives
+    Spa:
+      preferences:
+        Dad:
+          pairwise:
+            - [Beach, Mountains, 2]
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 6]
+        Kid:
+          pairwise:
+            - [Beach, Mountains, 1/2]
+      children: *alternatives
