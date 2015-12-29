@@ -1,0 +1,147 @@
+---
+title: "AHP Multiple Decision Makers Example"
+author: "Christoph Glur"
+date: '`r Sys.Date()`'
+output: 
+  html_document:
+    theme: united
+    toc: yes
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{AHP Multiple Decision Makers Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width=120)
+#opts_chunk$set(comment = "", warning = FALSE, message = FALSE, echo = TRUE, tidy = FALSE, size="small")
+#read_chunk("some/script/I/want/to/load.R")
+```
+
+
+## Introduction
+
+The `ahp` package also supports multiple decision makers, as shown by the vacation example, provided with the `ahp` package.
+The basic idea is that multiple people get to formulate their pairwise preferences, and then the AHP calculates the average. Often, each decision maker has the same voting weight, but that does not need to be the case. 
+
+In this example we look at a family that wants to decide where to go on vacation. There are two options: to the mountains, or to the beach. The family has already found a suitable hotel at each destination, and has calculated to total price of each destination. All three family members can vote on the destination, but mom and dad have twice the voting power of the kid.
+
+## vacation.ahp File
+
+The file is provided by the `ahp` package, and you may look at its content as so:
+
+```{r}
+ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+cat(readChar(ahpFile, file.info(ahpFile)$size))
+```
+
+## File Structure
+
+The file structure is similar to the car.ahp file. There are two main differences, however:
+
+* there is a `decision-maker` section
+* for each `preferences` section, there are sub-nodes, one for each decision maker
+
+### The `decision-maker` section
+
+In our example, this section is directly below the Goal:
+
+```
+  decision-makers:
+    #optional node, needed only if not all decision-makers have equal voting power
+    - Dad: 0.4
+    - Mom: 2/5
+    - Kid: 0.2
+```
+
+The node contains a map of decision makers, together with their respective weights. As the commentary says, this section is optional, and only required if you do not have equal voting power.
+
+Additionally, there may be more than a single `decision-makers` section. If, for example, Dad has more voting power on the Cost criteria, and Mom more on the Spa, then you can add multiple `decision-makers` nodes. These weights are *inherited*, i.e. each criteria node checks if it has a `decision-makers` directive. If it doesn't, it walks toward the root and checks on each ancestor. If it cannot find a directive, even at the root, it assumes equal voting power.
+
+### The `preferences` section
+
+In the case of multiple decision makers, the preferences look like this:
+
+```
+  preferences:
+    Dad:
+      pairwise:
+      - [Costs, Fun, 4]
+      - [Costs, Spa, 9]
+      - [Fun, Spa, 4]
+    Mom:
+      pairwise:
+      - [Costs, Fun, 1/4]
+      - [Costs, Spa, 1/9]
+      - [Fun, Spa, 1/5]
+    Kid:
+      pairwise:
+      - [Costs, Fun, 1/9]
+      - [Costs, Spa, 1]
+      - [Fun, Spa, 9]
+```
+
+Note, however, that different decision-makers can have different types of preferences, for instance:
+
+```
+    Costs:
+      preferences:
+        Dad:
+          function: 
+            function(a1, a2) min(9, max(1/9, a2$cost/a1$cost))
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 1/3]
+        Kid:
+          weight:
+            - Beach: 1/2
+            - Mountains: 0.5
+      children: *alternatives
+    
+```
+
+Here, Dad says that if alternative 1 has half the cost of alternative 2, it is twice as preferred. Mom wants to keep it simple and says that, cost-wise, whe prefers the mountains over the beach. The kid, finally, has not yet fully grasped the concept of money, so he simply gives a 0.5 weight to each alternative, essentially saying he's indifferent.
+
+## Calculation
+
+To make the full analysis, averaging the decision-makers' preferences, you use the same functions as for the single decision-maker case:
+
+```{r}
+library(ahp)
+ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+carAhp <- LoadFile(ahpFile)
+Calculate(carAhp)
+
+```
+
+## Analysis
+
+### Total
+
+```{r}
+ShowTable(carAhp)
+```
+
+However, you may also drill down into each decision maker.
+
+### Dad
+
+```{r}
+ShowTable(carAhp, decisionMaker = "Dad")
+```
+
+### Mom
+
+```{r}
+ShowTable(carAhp, decisionMaker = "Mom")
+```
+
+
+### Kid
+
+```{r}
+ShowTable(carAhp, decisionMaker = "Kid")
+```
+

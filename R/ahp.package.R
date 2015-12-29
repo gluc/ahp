@@ -18,6 +18,14 @@
 #' Calculate(carAhp)
 #' GetDataFrame(carAhp)
 #' ShowTable(carAhp)
+#' 
+#' #the vacation.ahp file provides an example with multiple decision makers
+#' ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+#' vacationAhp <- LoadFile(ahpFile)
+#' Calculate(vacationAhp)
+#' GetDataFrame(carAhp, "Dad")
+#' ShowTable(carAhp, "Mom")
+#' ShowTable(carAhp)
 #'
 #' @docType package
 #' @name ahp

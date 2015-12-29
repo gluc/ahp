@@ -4,6 +4,7 @@
 - ADD: Support for multiple decision makers
 - CHANGE: Major change in file format, without backwards compatibility
 - CHANGE: Renamed all tr attributes to ahpTree
+- ADD: vignette vacation / multiple decision makers: vignette("multiple-decisionmakers")
 
 ## Version 0.1.0
 - ADD: Define ahp YAML file format

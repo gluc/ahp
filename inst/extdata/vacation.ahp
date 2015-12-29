@@ -6,8 +6,8 @@ Alternatives: &alternatives
     cost: 5000
 Goal:
   name: Vacation
-  decision-makersX:
-    #optional node, if not all decision-makers have equal voting power
+  decision-makers:
+    #optional node, needed only if not all decision-makers have equal voting power
     - Dad: 0.4
     - Mom: 2/5
     - Kid: 0.2
@@ -35,7 +35,7 @@ Goal:
             function(a1, a2) min(9, max(1/9, a2$cost/a1$cost))
         Mom:
           pairwise:
-            - [Beach, Mountains, 3]
+            - [Beach, Mountains, 1/3]
         Kid:
           weight:
             - Beach: 1/2
@@ -48,7 +48,7 @@ Goal:
             - [Beach, Mountains, 1/6]
         Mom:
           pairwise:
-            - [Beach, Mountains, 3]
+            - [Beach, Mountains, 2]
         Kid:
           pairwise:
             - [Beach, Mountains, 7]
