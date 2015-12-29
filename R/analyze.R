@@ -14,7 +14,7 @@ GetDataFrame <- function(ahpTree, decisionMaker = "Total") {
   df <- do.call(ToDataFrameTree, 
                 c(ahpTree,
                   Weight = function(x) sum(x$weightContribution[decisionMaker, ]),
-                  GetWeightContributionV(names(sort( ahpTree$weightContribution[decisionMaker, ], decreasing = TRUE)), decisionMaker),
+                  GetWeightContributionV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), decisionMaker),
                   Consistency = function(x) x$consistency[decisionMaker],
                   filterFun = isNotLeaf))
 

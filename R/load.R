@@ -3,6 +3,13 @@
 GetPreferences <- function(criteriaNode) {
   newPreferences <- Node$new(name = "preferences")
   newPreferences$myParent <- criteriaNode
+  
+  #shortcut if single decision maker
+  if (length(names(criteriaNode$preferences)) == 1 &&
+      names(criteriaNode$preferences) %in% c('pairwise', 'function', 'weight')) {
+    criteriaNode$preferences <- list(DecisionMaker = criteriaNode$preferences)
+  }
+  
   for(decisionMaker in names(criteriaNode$preferences)) {
     preferences <- criteriaNode$preferences[[decisionMaker]]
     #derive type

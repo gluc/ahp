@@ -75,43 +75,46 @@ Goal:
 # The goal spans a tree of criteria and the alternatives
   name: Buy Car
   preferences:
-    # preferences are defined pairwise
+    # preferences are typically defined pairwise
     # 1 means: A is equal to B
     # 9 means: A is highly preferrable to B
     # 1/9 means: B is highly preferrable to A
-    - [Cost, Safety, 3]
-    - [Cost, Style, 7]
-    - [Cost, Capacity, 3]
-    - [Safety, Style, 9]
-    - [Safety, Capacity, 1]
-    - [Style, Capacity, 1/7]
+    pairwise:
+      - [Cost, Safety, 3]
+      - [Cost, Style, 7]
+      - [Cost, Capacity, 3]
+      - [Safety, Style, 9]
+      - [Safety, Capacity, 1]
+      - [Style, Capacity, 1/7]
   children: 
     Cost:
       preferences:
-        - [Purchase Price, Fuel Cost, 2]
-        - [Purchase Price, Maintenance Cost, 5]
-        - [Purchase Price, Resale Value, 3]
-        - [Fuel Cost, Maintenance Cost, 2]
-        - [Fuel Cost, Resale Value, 2]
-        - [Maintenance Cost, Resale Value, 1/2]
+        pairwise:
+          - [Purchase Price, Fuel Cost, 2]
+          - [Purchase Price, Maintenance Cost, 5]
+          - [Purchase Price, Resale Value, 3]
+          - [Fuel Cost, Maintenance Cost, 2]
+          - [Fuel Cost, Resale Value, 2]
+          - [Maintenance Cost, Resale Value, 1/2]
       children:
         Purchase Price:
           preferences: 
-            - [Accord Sedan, Accord Hybrid, 9]
-            - [Accord Sedan, Pilot, 9]
-            - [Accord Sedan, CR-V, 1]
-            - [Accord Sedan, Element, 1/2]
-            - [Accord Sedan, Odyssey, 5]
-            - [Accord Hybrid, Pilot, 1]
-            - [Accord Hybrid, CR-V, 1/9]
-            - [Accord Hybrid, Element, 1/9]
-            - [Accord Hybrid, Odyssey, 1/7]
-            - [Pilot, CR-V, 1/9]
-            - [Pilot, Element, 1/9]
-            - [Pilot, Odyssey, 1/7]
-            - [CR-V, Element, 1/2]
-            - [CR-V, Odyssey, 5]
-            - [Element, Odyssey, 6]
+            pairwise:
+              - [Accord Sedan, Accord Hybrid, 9]
+              - [Accord Sedan, Pilot, 9]
+              - [Accord Sedan, CR-V, 1]
+              - [Accord Sedan, Element, 1/2]
+              - [Accord Sedan, Odyssey, 5]
+              - [Accord Hybrid, Pilot, 1]
+              - [Accord Hybrid, CR-V, 1/9]
+              - [Accord Hybrid, Element, 1/9]
+              - [Accord Hybrid, Odyssey, 1/7]
+              - [Pilot, CR-V, 1/9]
+              - [Pilot, Element, 1/9]
+              - [Pilot, Odyssey, 1/7]
+              - [CR-V, Element, 1/2]
+              - [CR-V, Odyssey, 5]
+              - [Element, Odyssey, 6]
           children: *alternatives
           # We don't need to retype the alternatives here. Instead
           # we can simply make a reference to the alternatives anchor
@@ -124,107 +127,115 @@ Goal:
           # of alternatives to this function, and the function
           # is expected to return the pairwise preference, i.e.
           # a number between 1/9 and 9.
-          preferenceFunction: 
-            function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
+          preferences: 
+            function:
+              function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
           children: *alternatives
         Maintenance Cost: 
-          preferences: 
-            - [Accord Sedan, Accord Hybrid, 1.5]
-            - [Accord Sedan, Pilot, 4]
-            - [Accord Sedan, CR-V, 4]
-            - [Accord Sedan, Element, 4]
-            - [Accord Sedan, Odyssey, 5]
-            - [Accord Hybrid, Pilot, 4]
-            - [Accord Hybrid, CR-V, 4]
-            - [Accord Hybrid, Element, 4]
-            - [Accord Hybrid, Odyssey, 5]
-            - [Pilot, CR-V, 1]
-            - [Pilot, Element, 1.2]
-            - [Pilot, Odyssey, 1]
-            - [CR-V, Element, 1]
-            - [CR-V, Odyssey, 3]
-            - [Element, Odyssey, 2]
+          preferences:
+            pairwise:
+              - [Accord Sedan, Accord Hybrid, 1.5]
+              - [Accord Sedan, Pilot, 4]
+              - [Accord Sedan, CR-V, 4]
+              - [Accord Sedan, Element, 4]
+              - [Accord Sedan, Odyssey, 5]
+              - [Accord Hybrid, Pilot, 4]
+              - [Accord Hybrid, CR-V, 4]
+              - [Accord Hybrid, Element, 4]
+              - [Accord Hybrid, Odyssey, 5]
+              - [Pilot, CR-V, 1]
+              - [Pilot, Element, 1.2]
+              - [Pilot, Odyssey, 1]
+              - [CR-V, Element, 1]
+              - [CR-V, Odyssey, 3]
+              - [Element, Odyssey, 2]
           children: *alternatives
         Resale Value:
-          preferenceFunction: >
-            GetResalePreference <- function(a1, a2) {
-              if (a1$`residual value` < a2$`residual value`) return (1/GetResalePreference(a2, a1))
-              ratio <- a1$`residual value` / a2$`residual value`
-              if (ratio < 1.05) return (1)
-              if (ratio < 1.1) return (2)
-              if (ratio < 1.15) return (3)
-              if (ratio < 1.2) return (4)
-              if (ratio < 1.25) return (5)
-              return (5)
-            }
+          preferences:
+            function: >
+              GetResalePreference <- function(a1, a2) {
+                if (a1$`residual value` < a2$`residual value`) return (1/GetResalePreference(a2, a1))
+                ratio <- a1$`residual value` / a2$`residual value`
+                if (ratio < 1.05) return (1)
+                if (ratio < 1.1) return (2)
+                if (ratio < 1.15) return (3)
+                if (ratio < 1.2) return (4)
+                if (ratio < 1.25) return (5)
+                return (5)
+              }
           children: *alternatives 
     Safety: 
       preferences:
-        - [Accord Sedan, Accord Hybrid, 1]
-        - [Accord Sedan, Pilot, 5]
-        - [Accord Sedan, CR-V, 7]
-        - [Accord Sedan, Element, 9]
-        - [Accord Sedan, Odyssey, 1/3]
-        - [Accord Hybrid, Pilot, 5]
-        - [Accord Hybrid, CR-V, 7]
-        - [Accord Hybrid, Element, 9]
-        - [Accord Hybrid, Odyssey, 1/3]
-        - [Pilot, CR-V, 2]
-        - [Pilot, Element, 9]
-        - [Pilot, Odyssey, 1/8]
-        - [CR-V, Element, 2]
-        - [CR-V, Odyssey, 1/8]
-        - [Element, Odyssey, 1/9]
+        pairwise:
+          - [Accord Sedan, Accord Hybrid, 1]
+          - [Accord Sedan, Pilot, 5]
+          - [Accord Sedan, CR-V, 7]
+          - [Accord Sedan, Element, 9]
+          - [Accord Sedan, Odyssey, 1/3]
+          - [Accord Hybrid, Pilot, 5]
+          - [Accord Hybrid, CR-V, 7]
+          - [Accord Hybrid, Element, 9]
+          - [Accord Hybrid, Odyssey, 1/3]
+          - [Pilot, CR-V, 2]
+          - [Pilot, Element, 9]
+          - [Pilot, Odyssey, 1/8]
+          - [CR-V, Element, 2]
+          - [CR-V, Odyssey, 1/8]
+          - [Element, Odyssey, 1/9]
       children: *alternatives
     Style: 
       preferences: 
-            - [Accord Sedan, Accord Hybrid, 1]
-            - [Accord Sedan, Pilot, 7]
-            - [Accord Sedan, CR-V, 5]
-            - [Accord Sedan, Element, 9]
-            - [Accord Sedan, Odyssey, 6]
-            - [Accord Hybrid, Pilot, 7]
-            - [Accord Hybrid, CR-V, 5]
-            - [Accord Hybrid, Element, 9]
-            - [Accord Hybrid, Odyssey, 6]
-            - [Pilot, CR-V, 1/6]
-            - [Pilot, Element, 3]
-            - [Pilot, Odyssey, 1/3]
-            - [CR-V, Element, 7]
-            - [CR-V, Odyssey, 5]
-            - [Element, Odyssey, 1/5]
+        pairwise:
+          - [Accord Sedan, Accord Hybrid, 1]
+          - [Accord Sedan, Pilot, 7]
+          - [Accord Sedan, CR-V, 5]
+          - [Accord Sedan, Element, 9]
+          - [Accord Sedan, Odyssey, 6]
+          - [Accord Hybrid, Pilot, 7]
+          - [Accord Hybrid, CR-V, 5]
+          - [Accord Hybrid, Element, 9]
+          - [Accord Hybrid, Odyssey, 6]
+          - [Pilot, CR-V, 1/6]
+          - [Pilot, Element, 3]
+          - [Pilot, Odyssey, 1/3]
+          - [CR-V, Element, 7]
+          - [CR-V, Odyssey, 5]
+          - [Element, Odyssey, 1/5]
       children: *alternatives
     Capacity:
       preferences:
-        - [Cargo Capacity, Passenger Capacity, 1/5]
+        pairwise:
+          - [Cargo Capacity, Passenger Capacity, 1/5]
       children:
         Cargo Capacity: 
-          preferenceFunction: >
-            CargoPreference <- function(a1, a2) {
-              if (a1$cargo < a2$cargo) return (1/CargoPreference(a2, a1))
-              ratio <- a1$cargo / a2$cargo
-              if (ratio < 3) return (1)
-              if (ratio < 8) return (2)
-              return (3)
-            }
+          preferences:
+            function: >
+              CargoPreference <- function(a1, a2) {
+                if (a1$cargo < a2$cargo) return (1/CargoPreference(a2, a1))
+                ratio <- a1$cargo / a2$cargo
+                if (ratio < 3) return (1)
+                if (ratio < 8) return (2)
+                return (3)
+              }
           children: *alternatives
         Passenger Capacity: 
           preferences:
-            - [Accord Sedan, Accord Hybrid, 1]
-            - [Accord Sedan, Pilot, 1/2]
-            - [Accord Sedan, CR-V, 1]
-            - [Accord Sedan, Element, 3]
-            - [Accord Sedan, Odyssey, 1/2]
-            - [Accord Hybrid, Pilot, 1/2]
-            - [Accord Hybrid, CR-V, 1]
-            - [Accord Hybrid, Element, 3]
-            - [Accord Hybrid, Odyssey, 1/2]
-            - [Pilot, CR-V, 2]
-            - [Pilot, Element, 6]
-            - [Pilot, Odyssey, 1]
-            - [CR-V, Element, 3]
-            - [CR-V, Odyssey, 1/2]
-            - [Element, Odyssey, 1/6]
+            pairwise:
+              - [Accord Sedan, Accord Hybrid, 1]
+              - [Accord Sedan, Pilot, 1/2]
+              - [Accord Sedan, CR-V, 1]
+              - [Accord Sedan, Element, 3]
+              - [Accord Sedan, Odyssey, 1/2]
+              - [Accord Hybrid, Pilot, 1/2]
+              - [Accord Hybrid, CR-V, 1]
+              - [Accord Hybrid, Element, 3]
+              - [Accord Hybrid, Odyssey, 1/2]
+              - [Pilot, CR-V, 2]
+              - [Pilot, Element, 6]
+              - [Pilot, Odyssey, 1]
+              - [CR-V, Element, 3]
+              - [CR-V, Odyssey, 1/2]
+              - [Element, Odyssey, 1/6]
           children: *alternatives
 
 #

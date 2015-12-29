@@ -111,15 +111,24 @@ CalculateWeightContribution <- function(ahpTree) {
   #calculate weight contribution for alternatives
   dm <- GetDecisionMakers(ahpTree)
   ahpTree$Do(function(x) {
-          x$weightContribution <- apply(sapply(x$Get("weight", traversal = "ancestor")[-length(dm)], cbind), MARGIN = 1, prod)
+          weights <- sapply(x$Get("weight", traversal = "ancestor")[-x$level], cbind)
+          if (!is.matrix(weights)) weights <- matrix(weights, nrow = 1)
+          x$weightContribution <- apply(weights, MARGIN = 1, FUN = prod)
           names(x$weightContribution) <- dm
         },
         filterFun = isLeaf)
   
   
   #put into matrix on parent of alternatives
-  ahpTree$Do(function(x) x$weightContribution <- sapply(x$children, function(x) x$weightContribution),
-        filterFun = function(x) x$height == 2)
+  ahpTree$Do(function(x) {
+              x$weightContribution <- sapply(x$children, function(x) x$weightContribution)
+              if (!is.matrix(x$weightContribution)) {
+                x$weightContribution <- matrix(x$weightContribution, nrow = 1)
+                rownames(x$weightContribution) <- dm
+                colnames(x$weightContribution) <- names(x$children)
+              }
+            },
+            filterFun = function(x) x$height == 2)
   
   #sum up for criteria (custom aggregation)
   ahpTree$Do(function(x) x$weightContribution <- Reduce('+', Get(x$children, "weightContribution", simplify = FALSE)),
