@@ -32,6 +32,7 @@ For more information, see the package vignette using `vignette("AHP car example"
 
 devtools::install_github("gluc/ahp", build_vignettes = TRUE)
 vignette("car-example", package = "ahp")
+vignette("multiple-decisionmakers", package = "ahp")
 
 # run analysis
 library(ahp)
@@ -40,6 +41,31 @@ carAhp <- LoadFile(ahpFile)
 Calculate(carAhp)
 GetDataFrame(carAhp)
 ShowTable(carAhp)
+
+# looking at the vacation example
+ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+vacationAhp <- LoadFile(ahpFile)
+Calculate(vacationAhp)
+GetDataFrame(vacationAhp, decisionMaker = "Dad")
+ShowTable(vacationAhp, decisionMaker = "Mom")
+ShowTable(vacationAhp)
+```
+
+To play around with the example files, you may want to copy them out of the lib path, e.g. like so:
+
+```
+# On Windows
+file.copy(ahpFile, "C:\\tmp")
+
+# Or, on Linux:
+file.copy(ahpFile, "~")
+
+```
+
+Then, open them in the text editor of your choice, and modify them. To run the analysis, do, for instance:
+
+```
+myVacation <- LoadFile("C:\\tmp\\vacation.ahp")
 ```
 
 # NOTE:
