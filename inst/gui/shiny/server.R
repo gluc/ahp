@@ -36,8 +36,12 @@ shinyServer(function(input, output, session) {
   })
   
   output$downloadFile <- downloadHandler(
+    
     filename = function() {
-      'model.ahp'
+      modelString <- input$ace
+      myAhpTree <- LoadString(modelString)
+      nme <- paste0(gsub('[^a-zA-Z]', '', myAhpTree$name), ".ahp")
+      return (nme)
     },
     content = function(file) {
       writeChar(input$ace, file)
@@ -47,6 +51,11 @@ shinyServer(function(input, output, session) {
   observeEvent(input$uploadFile, {
     fileContent <- readChar(input$uploadFile$datapath, file.info(input$uploadFile$datapath)$size)
     updateAceEditor(session, "ace", value = fileContent)
+  })
+  
+  output$uploadFileOutput <- renderUI({
+    input$uploadFile
+    fileInput('uploadFile', NULL, width="80%")
   })
   
 })

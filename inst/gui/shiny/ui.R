@@ -19,12 +19,7 @@ shinyUI(
             ),
             column(
               4,
-              fileInput(
-                inputId = 'uploadFile', 
-                label = 'Load file: ',
-                multiple = FALSE,
-                accept = c('ahp')
-              )
+              uiOutput("uploadFileOutput")
             ),
             column(
               4,
