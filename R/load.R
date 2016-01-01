@@ -56,7 +56,7 @@ GetPreferences <- function(criteriaNode) {
 #' 
 #' To look at a sample file, type, see examples below.
 #' 
-#' @param file The full path to the file to be loaded.
+#' @param file The full path to the file to be loaded, or a connection.
 #' @return A \code{\link{data.tree}} containing the model specification.
 #' 
 #' @examples 
@@ -68,11 +68,28 @@ GetPreferences <- function(criteriaNode) {
 #' #load the file into R
 #' carAhp <- LoadFile(ahpFile)
 #'
-#'@export
+#' @export
 LoadFile <- function(file) {
 
   oMat <- yaml::yaml.load_file(file)
   
+  return (DoLoad(oMat))
+  
+  
+}
+
+
+#' @param string A character string to load.
+#' 
+#' @rdname LoadFile
+#' @export
+LoadString <- function(string) {
+  oMat <- yaml::yaml.load(string)
+  return (DoLoad(oMat))
+}
+
+
+DoLoad <- function(oMat) {
   tr <- FromListExplicit(oMat[["Goal"]])
   
   tr$Do(fun = function(x) x$preferences <- GetPreferences(x),
@@ -88,6 +105,4 @@ LoadFile <- function(file) {
   #TODO: test validity of tree
   
   return (tr)
-  
-  
 }

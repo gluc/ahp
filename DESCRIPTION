@@ -11,6 +11,8 @@ Imports:
     yaml,
     formattable
 Suggests:
+    shiny,
+    shinyAce,
     testthat,
     knitr,
     rmarkdown

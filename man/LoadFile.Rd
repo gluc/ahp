@@ -2,12 +2,17 @@
 % Please edit documentation in R/load.R
 \name{LoadFile}
 \alias{LoadFile}
+\alias{LoadString}
 \title{Load an ahp model from file}
 \usage{
 LoadFile(file)
+
+LoadString(string)
 }
 \arguments{
-\item{file}{The full path to the file to be loaded.}
+\item{file}{The full path to the file to be loaded, or a connection.}
+
+\item{string}{A character string to load.}
 }
 \value{
 A \code{\link{data.tree}} containing the model specification.
