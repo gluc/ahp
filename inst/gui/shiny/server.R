@@ -1,5 +1,6 @@
 library(shiny)
 
+ahpTree <- NULL
 
 shinyServer(function(input, output, session) {
   
@@ -10,27 +11,27 @@ shinyServer(function(input, output, session) {
     updateAceEditor(session, "ace", value = fileContent)
   })
   
-  observeEvent(input$calculate, {
-    modelString <- input$ace
-    print(modelString)
-    ahpTree <- LoadString(modelString)
-    Calculate(ahpTree)
-    #print(GetDataFrame(ahpTree))
-    decisionMakers <- ahp:::GetDecisionMakers(ahpTree)
-    if(length(decisionMakers) > 1) {
-      output$decisionMaker <- renderUI({
-        radioButtons("decisionMaker", "Decision Maker: ", choices = c("Total", decisionMakers))
-      })
+  observeEvent(input$navbar, {
+    if (input$navbar == "analysis") {
+      modelString <- input$ace
+      print(modelString)
+      ahpTree <<- LoadString(modelString)
+      Calculate(ahpTree)
+      #print(GetDataFrame(ahpTree))
+      decisionMakers <- ahp:::GetDecisionMakers(ahpTree)
+      if(length(decisionMakers) > 1) {
+        output$decisionMaker <- renderUI({
+          radioButtons("decisionMaker", "Decision Maker: ", choices = c("Total", decisionMakers))
+        })
+      } else {
+        output$decisionMaker <- renderUI("")
+      }
+      output$table <- renderFormattable(ahp::ShowTable(ahpTree))
     }
-    output$table <- renderFormattable(ahp::ShowTable(ahpTree))
   })
   
   observeEvent(input$decisionMaker, {
-    modelString <- input$ace
-    print(modelString)
-    ahpTree <- LoadString(modelString)
-    Calculate(ahpTree)
-    #print(GetDataFrame(ahpTree))
+    #browser()
     output$table <- renderFormattable(ahp::ShowTable(ahpTree, input$decisionMaker))
   })
   

@@ -17,21 +17,21 @@ shinyUI(
             multiple = FALSE,
             accept = c('ahp')
           ),
-          downloadButton('downloadFile', 'Download'),
-          br(),
-          actionButton('calculate', label = "Calculate", icon = icon("calculator"))
+          downloadButton('downloadFile', 'Download')
         ),
         mainPanel(
           aceEditor("ace", mode = "yaml", theme = "clouds", value = "define ahp model here")
         )
       )
     ),
+    
     tabPanel(
       "Analysis", 
       mainPanel(
         uiOutput("decisionMaker"),
         formattableOutput("table")
-      )
+      ),
+      value = "analysis"
     ),
     navbarMenu(
       "More",
@@ -43,7 +43,8 @@ shinyUI(
         "Help",
         fluidRow(column(6, "Help"))
         )
-    )
+    ),
+    id = "navbar"
   )
  
   
