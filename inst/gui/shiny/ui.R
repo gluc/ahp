@@ -7,19 +7,34 @@ shinyUI(
     "AHP",
     tabPanel(
       "Model", 
-      sidebarLayout(
-        sidebarPanel(
-          
-          selectInput("examples", "Examples: ", choices = c("car.ahp", "vacation.ahp"), selected = "car.ahp"),
-          fileInput(
-            inputId = 'uploadFile', 
-            label = 'Load file: ',
-            multiple = FALSE,
-            accept = c('ahp')
+      
+      
+      
+      mainPanel(
+        fluidPage(
+          fluidRow(
+            column(
+              4,
+              selectInput("examples", "Examples: ", choices = c("car.ahp", "vacation.ahp"), selected = "car.ahp")
+            ),
+            column(
+              4,
+              fileInput(
+                inputId = 'uploadFile', 
+                label = 'Load file: ',
+                multiple = FALSE,
+                accept = c('ahp')
+              )
+            ),
+            column(
+              4,
+              HTML('<label class="control-label" for="examples">Save file to disk: </label>'),
+              br(),
+              downloadButton('downloadFile', 'Download')
+            )
           ),
-          downloadButton('downloadFile', 'Download')
-        ),
-        mainPanel(
+        
+          
           aceEditor("ace", mode = "yaml", theme = "clouds", value = "define ahp model here")
         )
       )

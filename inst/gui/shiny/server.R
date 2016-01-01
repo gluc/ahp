@@ -35,4 +35,18 @@ shinyServer(function(input, output, session) {
     output$table <- renderFormattable(ahp::ShowTable(ahpTree, input$decisionMaker))
   })
   
+  output$downloadFile <- downloadHandler(
+    filename = function() {
+      'model.ahp'
+    },
+    content = function(file) {
+      writeChar(input$ace, file)
+    }
+  )
+  
+  observeEvent(input$uploadFile, {
+    fileContent <- readChar(input$uploadFile$datapath, file.info(input$uploadFile$datapath)$size)
+    updateAceEditor(session, "ace", value = fileContent)
+  })
+  
 })
