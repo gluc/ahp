@@ -61,7 +61,10 @@ ShowTable <- function(ahpTree,
 
 
 #' @import formattable
-percent1 <- function(x) percent(x, digits = 1)
+percent1 <- function(x) {
+  if (all(is.na(x))) return (x)
+  percent(x, digits = 1)
+}
 
 ColorTileWithFormatting <- function(c1, c2, format) {
   

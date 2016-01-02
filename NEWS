@@ -2,6 +2,9 @@
 
 ## Version 0.2.0
 - ADD: Support for multiple decision makers
+- ADD: Support for scores / scales
+- ADD: Multiple methods to derive priorities from scores and pairwise matrix
+- ADD: Shiny GUI. Use ahp::RunGUI()
 - CHANGE: Major change in file format, without backwards compatibility
 - CHANGE: Renamed all tr attributes to ahpTree
 - ADD: vignette vacation / multiple decision makers: vignette("multiple-decisionmakers")

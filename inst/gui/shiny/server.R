@@ -2,6 +2,24 @@ library(shiny)
 
 ahpTree <- NULL
 
+
+DoCalculation <- function(input) {
+  modelString <- input$ace
+  print(modelString)
+  ahpTree <<- LoadString(modelString)
+  Calculate(ahpTree, GetMethod(input))
+  return (ahpTree)
+}
+
+GetMethod <- function(input) {
+  switch (input$ahpmethod,
+          `Eigenvalues` = PrioritiesFromPairwiseMatrixEigenvalues,
+          `Mean of Normalized Values` = PrioritiesFromPairwiseMatrixMeanNormalization,
+          `Geometric Mean` = PrioritiesFromPairwiseMatrixGeometricMean
+  )
+}
+
+
 shinyServer(function(input, output, session) {
   
   observeEvent(input$examples, {
@@ -13,26 +31,31 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$navbar, {
     if (input$navbar == "analysis") {
-      modelString <- input$ace
-      print(modelString)
-      ahpTree <<- LoadString(modelString)
-      Calculate(ahpTree)
+      ahpTree <- DoCalculation(input)
       #print(GetDataFrame(ahpTree))
       decisionMakers <- ahp:::GetDecisionMakers(ahpTree)
       if(length(decisionMakers) > 1) {
         output$decisionMaker <- renderUI({
-          radioButtons("decisionMaker", "Decision Maker: ", choices = c("Total", decisionMakers))
+          radioButtons("decisionMaker", "Decision Maker: ", choices = c("Total", decisionMakers), selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
         })
       } else {
         output$decisionMaker <- renderUI("")
       }
-      output$table <- renderFormattable(ahp::ShowTable(ahpTree))
+      output$table <- renderFormattable(ShowTable(ahpTree, decisionMaker =  ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker)))
     }
   })
   
   observeEvent(input$decisionMaker, {
     #browser()
-    output$table <- renderFormattable(ahp::ShowTable(ahpTree, input$decisionMaker))
+    output$table <- renderFormattable(ShowTable(ahpTree, input$decisionMaker))
+  })
+  
+  observeEvent(input$ahpmethod, {
+    #browser()
+    try(
+      ahpTree <- DoCalculation(input)
+    )
+    output$table <- renderFormattable(ShowTable(ahpTree, ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker)))
   })
   
   output$downloadFile <- downloadHandler(
@@ -59,3 +82,6 @@ shinyServer(function(input, output, session) {
   })
   
 })
+
+
+

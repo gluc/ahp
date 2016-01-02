@@ -6,7 +6,7 @@ GetPreferences <- function(criteriaNode) {
   
   #shortcut if single decision maker
   if (length(names(criteriaNode$preferences)) == 1 &&
-      names(criteriaNode$preferences) %in% c('pairwise', 'function', 'weight')) {
+      names(criteriaNode$preferences) %in% c('pairwise', 'pairwiseFunction', 'priority', 'score')) {
     criteriaNode$preferences <- list(DecisionMaker = criteriaNode$preferences)
   }
   
@@ -24,9 +24,9 @@ GetPreferences <- function(criteriaNode) {
       prefs <- as.data.frame(prefs, stringsAsFactors = FALSE)
       prefs[,3] <- as.numeric(prefs[,3])
       colnames(prefs) <- c('c1', 'c2', 'preference')
-    } else if (type == "function") {
+    } else if (type == "pairwiseFunction") {
       prefs <- eval(parse(text = prefNode))
-    } else if (type == "weight") {
+    } else if (type == "priority" || type == "score") {
       prefs <- unlist(prefNode)
       prefs <- sapply(prefs, FUN = function(x) eval(parse(text = x)))
     } else {

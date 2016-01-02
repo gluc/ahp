@@ -38,8 +38,21 @@ shinyUI(
     tabPanel(
       "Analysis", 
       mainPanel(
-        uiOutput("decisionMaker"),
-        formattableOutput("table")
+        fluidPage(
+          fluidRow(
+            column(
+              6, 
+              radioButtons(
+                inputId = "ahpmethod", 
+                label = "AHP Priority Calculation Method: ", 
+                choices = c("Eigenvalues", "Mean of Normalized Values", "Geometric Mean"),
+                selected = "Eigenvalues"
+              )
+            ),
+            column(6, uiOutput("decisionMaker"))
+          ),
+          formattableOutput("table")
+        )
       ),
       value = "analysis"
     ),

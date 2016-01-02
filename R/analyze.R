@@ -20,7 +20,7 @@ GetDataFrame <- function(ahpTree, decisionMaker = "Total") {
 
   names(df)[1] <- " "
   
-  for (i in 2:ncol(df)) df[ , i] <- ahp:::percent1(df[ , i])
+  for (i in 2:ncol(df)) df[ , i] <- percent1(df[ , i])
   
   return (df)
   

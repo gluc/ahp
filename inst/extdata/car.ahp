@@ -128,7 +128,7 @@ Goal:
           # is expected to return the pairwise preference, i.e.
           # a number between 1/9 and 9.
           preferences: 
-            function:
+            pairwiseFunction:
               function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
           children: *alternatives
         Maintenance Cost: 
@@ -152,7 +152,7 @@ Goal:
           children: *alternatives
         Resale Value:
           preferences:
-            function: >
+            pairwiseFunction: >
               GetResalePreference <- function(a1, a2) {
                 if (a1$`residual value` < a2$`residual value`) return (1/GetResalePreference(a2, a1))
                 ratio <- a1$`residual value` / a2$`residual value`
@@ -209,7 +209,7 @@ Goal:
       children:
         Cargo Capacity: 
           preferences:
-            function: >
+            pairwiseFunction: >
               CargoPreference <- function(a1, a2) {
                 if (a1$cargo < a2$cargo) return (1/CargoPreference(a2, a1))
                 ratio <- a1$cargo / a2$cargo

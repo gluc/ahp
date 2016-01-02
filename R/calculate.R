@@ -3,17 +3,23 @@
 #'Calculate the Ahp tree
 #'
 #'@param ahpTree a data.tree tree containing the Ahp model specification
+#'@param prioritiesFun lets you overwrite the function that is used to calculate the priorities from 
+#'the pairwise preference matrix.
+#'@param scoresFun lets you overwrite the function that is used to calculate the priorites from scores.
 #'
 #'@import data.tree
 #'
 #'@export
-Calculate <- function(ahpTree) {
+Calculate <- function(ahpTree, 
+                      prioritiesFun = PrioritiesFromPairwiseMatrixEigenvalues, 
+                      scoresFun = PrioritiesFromScoresDefault) {
   
   # go from
   # 1. function to pairwise
   # 2. pairwise to matrix
-  # 3. matrix to weight
-  # 4. from weight into weight matrix
+  # 3. matrix to priority/weight
+  # 4. score to priority
+  # 5. from priority/weight into weight matrix
   
   
   prefTrees <- ahpTree$Get(attribute = function(x) x$preferences, filterFun = function(x) !is.null(x$preferences))
@@ -26,29 +32,38 @@ Calculate <- function(ahpTree) {
                         pw <- x$parent$AddChild(name = "pairwise") 
                         pw$preferences <- GetPairwiseFromFunction(x)
                       },
-                filterFun = function(x) x$name == "function")
+                filterFun = function(x) x$name == "pairwiseFunction")
     
     # 2. from pairwise to matrix
     prefTree$Do(fun = function(x) {
-                        pw <- x$parent$AddChild(name = "matrix") 
+                        pw <- x$parent$AddChild(name = "pairwiseMatrix") 
                         pw$preferences <- AhpMatrix(x$preferences)
                       },
                 filterFun = function(x) x$name == "pairwise")
     
-    # 3. from matrix to weight
+    # 3. from matrix to priority
     prefTree$Do(fun = function(x) {
-                        pw <- x$parent$AddChild(name = "weight") 
-                        ahp <- CalculateAhpMatrix(x$preferences)
-                        pw$preferences <- ahp$ahp
+                        pw <- x$parent$AddChild(name = "priority") 
+                        ahp <- prioritiesFun(x$preferences)
+                        pw$preferences <- ahp$priority
                         pw$consistency <- ahp$consistency
                       },
-                filterFun = function(x) x$name == "matrix")
+                filterFun = function(x) x$name == "pairwiseMatrix")
+    
+    
+    # 4. from score to priority
+    prefTree$Do(
+      fun = function(x) {
+        pw <- x$parent$AddChild(name = "priority") 
+        pw$preferences <- scoresFun(x$preferences)
+      },
+    filterFun = function(x) x$name == "score")
     
     #after this step, all preferences should have a weight
     
-    # 4. put weight and consistency into children
+    # 5. put weight and consistency into children
     for (child in prefTree$myParent$children) {
-      w <- prefTree$Get(function(x) x$preferences[[child$name]], filterFun = function(x) x$name == "weight")
+      w <- prefTree$Get(function(x) x$preferences[[child$name]], filterFun = function(x) x$name == "priority")
       names(w) <-  names(prefTree$children)
       child$weight <- w
       
@@ -56,7 +71,7 @@ Calculate <- function(ahpTree) {
     
     
     # consistency
-    cons <- prefTree$Get(function(x) x$consistency, filterFun = function(x) x$name == "weight")
+    cons <- prefTree$Get(function(x) x$consistency, filterFun = function(x) x$name == "priority")
     names(cons) <-  names(prefTree$children)
     prefTree$myParent$consistency <- cons
     
@@ -64,9 +79,6 @@ Calculate <- function(ahpTree) {
  
   }
   
-  
-  
-  #print(ahpTree, consistency = function(x) FormatPercent(x$consistency), weight = function(x) FormatPercent(x$weight))
   CalculateWeightContribution(ahpTree)
   
   CalculateTotalWeightContribution(ahpTree)
@@ -158,8 +170,11 @@ CalculateTotalWeightContribution <- function(ahpTree) {
 
 CalculateTotalConsistency <- function(ahpTree) {
   
-  ahpTree$Do(function(x) x$consistency <- c(x$consistency, Total = max(x$consistency, na.rm = TRUE)),
+  ahpTree$Do(function(x) x$consistency <- c(x$consistency, Total = if (!all(is.na(x$consistency))) max(x$consistency, na.rm = TRUE)),
              filterFun = isNotLeaf
              )
   
 }
+
+
+
