@@ -1,4 +1,6 @@
 library(shiny)
+library(shinyAce)
+library(formattable)
 
 # Define UI for application that draws a histogram
 shinyUI(
