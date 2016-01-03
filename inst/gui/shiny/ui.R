@@ -14,24 +14,25 @@ shinyUI(
       mainPanel(
         fluidPage(
           fluidRow(
+            
             column(
               4,
-              selectInput("examples", "Examples: ", choices = c("car.ahp", "vacation.ahp"), selected = "car.ahp")
-            ),
-            column(
-              4,
-              HTML('<label class="control-label" for="examples">Load file from disk: </label>'),
+              HTML('<label class="control-label" for="examples">Load file: </label>'),
               br(),
+              actionButton("showUpload", "Upload", icon = icon("upload"))
               #done on server so the progress bar disappears after upload
-              uiOutput("uploadFileOutput")
+              #uiOutput("uploadFileOutput")
             ),
             column(
               4,
-              HTML('<label class="control-label" for="examples">Save file to disk: </label>'),
+              HTML('<label class="control-label" for="examples">Save file: </label>'),
               br(),
               downloadButton('downloadFile', 'Download')
             )
           ),
+          br(),
+          uiOutput("uploadFileOutput"),
+          br(),
         
           
           aceEditor("ace", mode = "yaml", theme = "clouds", value = "define ahp model here")

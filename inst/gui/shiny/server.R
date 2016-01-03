@@ -5,7 +5,7 @@ ahpTree <- NULL
 
 DoCalculation <- function(input) {
   modelString <- input$ace
-  print(modelString)
+  #print(modelString)
   ahpTree <<- LoadString(modelString)
   Calculate(ahpTree, GetMethod(input))
   return (ahpTree)
@@ -23,13 +23,18 @@ GetMethod <- function(input) {
 shinyServer(function(input, output, session) {
   
   observeEvent(input$examples, {
-    #print(input$examples)
-    ahpFile <- system.file("extdata", input$examples, package="ahp")
-    fileContent <- readChar(ahpFile, file.info(ahpFile)$size)
-    updateAceEditor(session, "ace", value = fileContent)
+    print("event: examples")
+    if (nchar(input$examples) > 0) {
+      ahpFile <- system.file("extdata", input$examples, package="ahp")
+      fileContent <- readChar(ahpFile, file.info(ahpFile)$size)
+      updateAceEditor(session, "ace", value = fileContent)
+      output$uploadFileOutput <- renderUI("")
+    }
+    
   })
   
   observeEvent(input$navbar, {
+    print(paste0("event: navbar ", input$navbar))
     if (input$navbar == "analysis") {
       ahpTree <- DoCalculation(input)
       #print(GetDataFrame(ahpTree))
@@ -42,30 +47,46 @@ shinyServer(function(input, output, session) {
         output$decisionMaker <- renderUI("")
       }
       output$table <- renderFormattable(ShowTable(ahpTree, decisionMaker =  ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker)))
-    } else if(input$navbar == "AHP File Format") {
+    } else {
+      ahpTree <- NULL
+    }
+    
+    
+    if(input$navbar == "AHP File Format") {
       output$fileFormat <- renderUI(fluidRow(column(6, includeMarkdown(system.file("doc", "file-format.Rmd", package="ahp")))))
     }
   })
   
   observeEvent(input$decisionMaker, {
-    #browser()
+    print("event: decisionMaker")
     output$table <- renderFormattable(ShowTable(ahpTree, input$decisionMaker))
   })
   
   observeEvent(input$ahpmethod, {
-    #browser()
-    try(
-      ahpTree <- DoCalculation(input)
-    )
-    output$table <- renderFormattable(ShowTable(ahpTree, ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker)))
+    print("event: ahpmethod")
+    #recalculate if method changed
+    if(!is.null(ahpTree)) {
+      try(
+        ahpTree <- DoCalculation(input)
+      )
+      output$table <- renderFormattable(ShowTable(ahpTree, ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker)))
+    }
   })
   
   output$downloadFile <- downloadHandler(
     
+    
     filename = function() {
-      modelString <- input$ace
-      myAhpTree <- LoadString(modelString)
-      nme <- paste0(gsub('[^a-zA-Z]', '', myAhpTree$name), ".ahp")
+      nme <- 'model.ahp'
+      try(
+        {
+          #try to derive name from model spec
+          modelString <- input$ace
+          myAhpTree <- LoadString(modelString)
+          nme <- paste0(gsub('[^a-zA-Z]', '', myAhpTree$name), ".ahp")
+        },
+        silent = TRUE
+      )
       return (nme)
     },
     content = function(file) {
@@ -73,15 +94,33 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  observeEvent(input$showUpload ,{
+    print("event: showUpload")
+    output$uploadFileOutput <- renderUI({
+      #input$uploadFile
+      fluidRow(
+        column(
+          4,
+          selectInput("examples", "Load package example: ", choices = c("", "car.ahp", "vacation.ahp"), selected = "")
+        ),
+        column(
+          8,
+          HTML('<label class="control-label" for="examples">Load file from disk: </label>'),
+          br(),
+          fileInput('uploadFile', NULL, width="80%")
+        )
+      )
+      
+    })
+  })
+  
   observeEvent(input$uploadFile, {
     fileContent <- readChar(input$uploadFile$datapath, file.info(input$uploadFile$datapath)$size)
     updateAceEditor(session, "ace", value = fileContent)
+    output$uploadFileOutput <- renderUI("")
   })
+
   
-  output$uploadFileOutput <- renderUI({
-    input$uploadFile
-    fileInput('uploadFile', NULL, width="80%")
-  })
   
 })
 
