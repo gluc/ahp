@@ -4,6 +4,7 @@ library(shiny)
 shinyUI(
   
   navbarPage(
+    theme = "bootstrap.css",
     "AHP",
     tabPanel(
       "Model", 
@@ -19,6 +20,9 @@ shinyUI(
             ),
             column(
               4,
+              HTML('<label class="control-label" for="examples">Load file from disk: </label>'),
+              br(),
+              #done on server so the progress bar disappears after upload
               uiOutput("uploadFileOutput")
             ),
             column(
@@ -61,11 +65,15 @@ shinyUI(
       tabPanel(
         "About",
         fluidRow(column(6, includeMarkdown("about.md")))
-        ),
+      ),
       tabPanel(
         "Help",
-        fluidRow(column(6, "Help"))
-        )
+        fluidRow(column(6, includeMarkdown("help.md")))
+      ),
+      tabPanel(
+        "AHP File Format",
+        uiOutput("fileFormat")
+      )
     ),
     id = "navbar"
   )

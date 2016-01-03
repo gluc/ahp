@@ -1,0 +1,16 @@
+---
+title: "AHP File Format"
+author: "Christoph Glur"
+date: '`r Sys.Date()`'
+output: 
+  html_document:
+    theme: united
+    toc: yes
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{AHP File Format}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+Describe the AHP file format.

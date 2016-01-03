@@ -7,7 +7,13 @@ output: html_document
 
 ## AHP Shiny App
 
-Author: Christoph Glur
+Authors: [Christoph Glur](http://ipub.com/about/christoph-glur/)
 
-Here is the About page
+More information about ahp and the R package can be found here: http://ipub.com/tag/ahp/
+
+The github repository is here: http://github.com/gluc/ahp/
+Please star the package on github if you like it.
+
+This package is published under the GPL3 license.
+
 

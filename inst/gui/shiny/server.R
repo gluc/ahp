@@ -42,6 +42,8 @@ shinyServer(function(input, output, session) {
         output$decisionMaker <- renderUI("")
       }
       output$table <- renderFormattable(ShowTable(ahpTree, decisionMaker =  ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker)))
+    } else if(input$navbar == "AHP File Format") {
+      output$fileFormat <- renderUI(fluidRow(column(6, includeMarkdown(system.file("doc", "file-format.Rmd", package="ahp")))))
     }
   })
   
