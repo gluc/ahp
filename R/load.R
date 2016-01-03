@@ -30,7 +30,7 @@ GetPreferences <- function(criteriaNode) {
       prefs <- unlist(prefNode)
       prefs <- sapply(prefs, FUN = function(x) eval(parse(text = x)))
     } else {
-      stop(paste0("Unknown preference type <", type, "> for node ", criteriaNode$pathString, "! Must be <pairwise>, <function>, or <weight>."))
+      stop(paste0("Unknown preference type <", type, "> for node ", criteriaNode$pathString, "! Must be <pairwise>, <pairwiseFunction>, <priority> or <score>."))
     }
     
     prefTr <- newPreferences$AddChild(name = decisionMaker)
@@ -56,7 +56,7 @@ GetPreferences <- function(criteriaNode) {
 #' 
 #' To look at a sample file, type, see examples below.
 #' 
-#' @param file The full path to the file to be loaded, or a connection.
+#' @param ahpFile The full path to the file to be loaded, or a connection.
 #' @return A \code{\link{data.tree}} containing the model specification.
 #' 
 #' @examples 
@@ -69,27 +69,37 @@ GetPreferences <- function(criteriaNode) {
 #' carAhp <- LoadFile(ahpFile)
 #'
 #' @export
-LoadFile <- function(file) {
-
-  oMat <- yaml::yaml.load_file(file)
-  
-  return (DoLoad(oMat))
-  
-  
+LoadFile <- function(ahpFile) {
+  fileContent <- readChar(ahpFile, file.info(ahpFile)$size)
+  return (LoadString(fileContent))
 }
 
 
-#' @param string A character string to load.
+#' @param string A character string to be loaded.
 #' 
 #' @rdname LoadFile
 #' @export
 LoadString <- function(string) {
-  oMat <- yaml::yaml.load(string)
-  return (DoLoad(oMat))
+  oMat <- NULL
+  tryCatch({
+    oMat <- yaml::yaml.load(string)
+  },
+  error = function(e) {
+    stop(paste0("Could not load ahp model. File must be a valid YAML file. Exception caught when parsing YAML file: ", e))
+  })
+  
+  tryCatch({
+    ahpTree <- DoLoad(oMat)
+    return (ahpTree)
+  },
+  error = function(e) {
+    stop(paste0("Could not load ahp model. Exception caught when converting into a data.tree: ", e))
+  })
 }
 
 
 DoLoad <- function(oMat) {
+  if (!"Goal" %in% names(oMat)) stop("Could not load ahp model. Model does not contain a Goal!")
   tr <- FromListExplicit(oMat[["Goal"]])
   
   tr$Do(fun = function(x) x$preferences <- GetPreferences(x),

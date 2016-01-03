@@ -5,14 +5,14 @@
 \alias{LoadString}
 \title{Load an ahp model from file}
 \usage{
-LoadFile(file)
+LoadFile(ahpFile)
 
 LoadString(string)
 }
 \arguments{
-\item{file}{The full path to the file to be loaded, or a connection.}
+\item{ahpFile}{The full path to the file to be loaded, or a connection.}
 
-\item{string}{A character string to load.}
+\item{string}{A character string to be loaded.}
 }
 \value{
 A \code{\link{data.tree}} containing the model specification.

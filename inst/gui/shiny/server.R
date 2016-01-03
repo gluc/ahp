@@ -39,25 +39,37 @@ shinyServer(function(input, output, session) {
   # Navbar
   observeEvent(input$navbar, {
     print(paste0("event: navbar ", input$navbar))
+    
+    # Analysis
     if (input$navbar == "analysis") {
-      ahpTree <- DoCalculation(input)
-      #print(GetDataFrame(ahpTree))
-      decisionMakers <- ahp:::GetDecisionMakers(ahpTree)
-      if(length(decisionMakers) > 1) {
-        output$decisionMaker <- renderUI({
-          radioButtons("decisionMaker", 
-                       "Decision Maker: ", 
-                       choices = c("Total", decisionMakers), 
-                       selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
-        })
-      } else {
-        output$decisionMaker <- renderUI("")
-      }
-      output$table <- renderFormattable(ShowTable(ahpTree, 
-                                                  decisionMaker =  ifelse(is.null(input$decisionMaker), 
-                                                                          yes = "Total", 
-                                                                          no = input$decisionMaker)))
+      tryCatch({
+        ahpTree <- DoCalculation(input)
+        #print(GetDataFrame(ahpTree))
+        decisionMakers <- ahp:::GetDecisionMakers(ahpTree)
+        if(length(decisionMakers) > 1) {
+          output$decisionMaker <- renderUI({
+            radioButtons("decisionMaker", 
+                         "Decision Maker: ", 
+                         choices = c("Total", decisionMakers), 
+                         selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
+          })
+        } else {
+          output$decisionMaker <- renderUI("")
+        }
+        output$table <- renderFormattable(ShowTable(ahpTree, 
+                                                    decisionMaker =  ifelse(is.null(input$decisionMaker), 
+                                                                            yes = "Total", 
+                                                                            no = input$decisionMaker)
+                                                    )
+                                          )
+       
+      },
+      error = function(e) {
+        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e), no = "blu"))
+        
+      })
     } else {
+      # Remove calculated model to prevent warning message from ahpmodel radiobuttons
       ahpTree <- NULL
     }
     
@@ -130,15 +142,19 @@ shinyServer(function(input, output, session) {
     print("event: ahpmethod")
     #recalculate if method changed
     if(!is.null(ahpTree)) {
-      try(
+      tryCatch({
         ahpTree <- DoCalculation(input)
-      )
-      output$table <- renderFormattable(ShowTable(ahpTree, 
-                                                  ifelse(is.null(input$decisionMaker), 
-                                                         yes = "Total", 
-                                                         no = input$decisionMaker)
-                                                  )
-                                        )
+        output$table <- renderFormattable(ShowTable(ahpTree, 
+                                                    ifelse(is.null(input$decisionMaker), 
+                                                           yes = "Total", 
+                                                           no = input$decisionMaker)
+                                                    )
+                                          )
+      },
+      error = function(e) {
+        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e), no = "blu"))
+      })
+      
     }
   })
   
