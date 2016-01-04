@@ -81,12 +81,26 @@ Calculate <- function(ahpTree,
     # Calculate Total priority
     CalculateTotalPriority(prefTree)
     
-    # 5. put weight and consistency into children
+    # 5. put priority, score and consistency into children
    
+    #priority
     for (child in prefTree$myParent$children) {
       w <- prefTree$Get(function(x) x$preferences[[child$name]], filterFun = function(x) x$name == "priority")
-      names(w) <-  names(prefTree$children)
+      nms <- prefTree$Get(function(x) x$parent$name, filterFun = function(x) x$name == "priority")
+      names(w) <-  nms
       child$priority <- w
+    }
+    
+    
+    #score
+    for (child in prefTree$myParent$children) {
+      w <- prefTree$Get(function(x) x$preferences[[child$name]], filterFun = function(x) x$name == "score")
+      nms <- prefTree$Get(function(x) x$parent$name, filterFun = function(x) x$name == "score")
+      if (!is.null(w)) {
+        names(w) <-  nms
+        child$score <- w
+      }
+      
     }
     
     # consistency
