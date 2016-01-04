@@ -18,8 +18,9 @@ Calculate <- function(ahpTree,
   # 1. function to pairwise
   # 2. pairwise to matrix
   # 3. matrix to priority/weight
-  # 4. score to priority
-  # 5. from priority/weight into weight matrix
+  # 4. score function to score
+  # 5. score to priority
+  # 6. from priority/weight into weight matrix
   
   
   prefTrees <- ahpTree$Get(attribute = function(x) x$preferences, filterFun = function(x) !is.null(x$preferences))
@@ -28,61 +29,76 @@ Calculate <- function(ahpTree,
   for(prefTree in prefTrees) {
   
     # 1. from function to pairwise
-    prefTree$Do(fun = function(x) {
-                        pw <- x$parent$AddChild(name = "pairwise") 
-                        pw$preferences <- GetPairwiseFromFunction(x)
-                      },
-                filterFun = function(x) x$name == "pairwiseFunction")
+    prefTree$Do(
+      fun = function(x) {
+        pw <- x$parent$AddChild(name = "pairwise") 
+        pw$preferences <- GetPairwiseFromFunction(x)
+      },
+      filterFun = function(x) x$name == "pairwiseFunction"
+    )
     
     # 2. from pairwise to matrix
-    prefTree$Do(fun = function(x) {
-                        pw <- x$parent$AddChild(name = "pairwiseMatrix") 
-                        pw$preferences <- AhpMatrix(x$preferences)
-                      },
-                filterFun = function(x) x$name == "pairwise")
+    prefTree$Do(
+      fun = function(x) {
+        pw <- x$parent$AddChild(name = "pairwiseMatrix") 
+        pw$preferences <- AhpMatrix(x$preferences)
+      },
+      filterFun = function(x) x$name == "pairwise"
+    )
     
     # 3. from matrix to priority
-    prefTree$Do(fun = function(x) {
-                        pw <- x$parent$AddChild(name = "priority") 
-                        ahp <- prioritiesFun(x$preferences)
-                        pw$preferences <- ahp$priority
-                        pw$consistency <- ahp$consistency
-                      },
-                filterFun = function(x) x$name == "pairwiseMatrix")
+    prefTree$Do(
+      fun = function(x) {
+        pw <- x$parent$AddChild(name = "priority") 
+        ahp <- prioritiesFun(x$preferences)
+        pw$preferences <- ahp$priority
+        pw$consistency <- ahp$consistency
+      },
+      filterFun = function(x) x$name == "pairwiseMatrix"
+    )
     
     
-    # 4. from score to priority
+    # 4. from scoreFunction to score
+    prefTree$Do(
+      fun = function(x) {
+        pw <- x$parent$AddChild(name = "score") 
+        pw$preferences <- GetScoreFromFunction(x)
+      },
+      filterFun = function(x) x$name == "scoreFunction"
+    )
+    
+    # 5. from score to priority
     prefTree$Do(
       fun = function(x) {
         pw <- x$parent$AddChild(name = "priority") 
         pw$preferences <- scoresFun(x$preferences)
       },
-    filterFun = function(x) x$name == "score")
+      filterFun = function(x) x$name == "score"
+    )
     
-    #after this step, all preferences should have a weight
+    #after this step, all preferences should have a priority
+    
+    # Calculate Total priority
+    CalculateTotalPriority(prefTree)
     
     # 5. put weight and consistency into children
+   
     for (child in prefTree$myParent$children) {
       w <- prefTree$Get(function(x) x$preferences[[child$name]], filterFun = function(x) x$name == "priority")
       names(w) <-  names(prefTree$children)
-      child$weight <- w
-      
+      child$priority <- w
     }
-    
     
     # consistency
     cons <- prefTree$Get(function(x) x$consistency, filterFun = function(x) x$name == "priority")
     names(cons) <-  names(prefTree$children)
     prefTree$myParent$consistency <- cons
-    
-    
- 
+
   }
   
   CalculateWeightContribution(ahpTree)
-  
-  CalculateTotalWeightContribution(ahpTree)
   CalculateTotalConsistency(ahpTree)
+  PutContributionIntoPreferences(ahpTree)
   
 }
 
@@ -104,6 +120,16 @@ GetPairwiseFromFunction <- function(node) {
 }
 
 
+GetScoreFromFunction <- function(node) {
+  #combn(names(node$children), m = 2, FUN = function(x) node$preferenceFunction(node[[x[[1]]]], node[[x[[2]]]]))
+  alternatives <- node$root$myParent$children
+  
+  scores <- sapply(alternatives, function(x) node$preferences(x), simplify = "array")
+  
+  return (scores)
+}
+
+
 GetPreference <- function(node, type, decisionMaker, attribute = "preferences") {
   node$preferences[[decisionMaker]][[type]][[attribute]]
 }
@@ -113,7 +139,19 @@ GetDecisionMakers <- function(ahpTree) {
   return (decisionMakers)
 }
 
-
+CalculateTotalPriority <- function(prefTree) {
+  priorityList <- prefTree$Get("preferences", filterFun = function(x) x$name == "priority", simplify = FALSE)
+  mat <- sapply(priorityList, cbind)
+  colnames(mat) <- names(prefTree$children)
+  rownames(mat) <- names(priorityList[[1]])
+  dm <- GetAttribute(prefTree$myParent, attribute = "decision-makers", inheritFromAncestors = TRUE, nullAsNa = FALSE)
+  totalPriorities <- c(mat %*% dm)
+  names(totalPriorities) <- rownames(mat)
+  tp <- prefTree$AddChild(name = "Total")
+  tpp <- tp$AddChild(name = "priority")
+  tpp$preferences <- totalPriorities
+  
+}
 
 CalculateWeightContribution <- function(ahpTree) {
   
@@ -121,60 +159,75 @@ CalculateWeightContribution <- function(ahpTree) {
   #ahpTree$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
   
   #calculate weight contribution for alternatives
-  dm <- GetDecisionMakers(ahpTree)
-  ahpTree$Do(function(x) {
-          weights <- sapply(x$Get("weight", traversal = "ancestor")[-x$level], cbind)
-          if (!is.matrix(weights)) weights <- matrix(weights, nrow = 1)
-          x$weightContribution <- apply(weights, MARGIN = 1, FUN = prod)
-          names(x$weightContribution) <- dm
-        },
-        filterFun = isLeaf)
+  
+  ahpTree$Do(
+    function(x) {
+      weights <- sapply(x$Get("priority", traversal = "ancestor")[-x$level], cbind)
+      if (!is.matrix(weights)) weights <- matrix(weights, nrow = 1)
+      x$weightContribution <- apply(weights, MARGIN = 1, FUN = prod)
+      names(x$weightContribution) <- names(x$parent$preferences$children)
+    },
+    filterFun = isLeaf
+  )
   
   
   #put into matrix on parent of alternatives
-  ahpTree$Do(function(x) {
-              x$weightContribution <- sapply(x$children, function(x) x$weightContribution)
-              if (!is.matrix(x$weightContribution)) {
-                x$weightContribution <- matrix(x$weightContribution, nrow = 1)
-                rownames(x$weightContribution) <- dm
-                colnames(x$weightContribution) <- names(x$children)
-              }
-            },
-            filterFun = function(x) x$height == 2)
-  
-  #sum up for criteria (custom aggregation)
-  ahpTree$Do(function(x) x$weightContribution <- Reduce('+', Get(x$children, "weightContribution", simplify = FALSE)),
-        traversal = 'post-order',
-        filterFun = function(x) x$height >= 3)
-  
-  
-  
-  
-}
-
-
-CalculateTotalWeightContribution <- function(ahpTree) {
-  
-  ahpTree$Do(function(x) {
-                dm <- GetAttribute(x, attribute = "decision-makers", inheritFromAncestors = TRUE, nullAsNa = FALSE)
-                if (is.null(dm)) dm <- rep(1/nrow(x$weightContribution), nrow(x$weightContribution))
-                totals <- t(t(x$weightContribution) %*% dm)
-                rownames(totals) <- "Total"
-                x$weightContribution <- rbind(x$weightContribution, Total = totals)
-              },
-             filterFun = isNotLeaf
+  ahpTree$Do(
+    function(x) {
+      x$weightContribution <- sapply(x$children, function(x) x$weightContribution)
+      if (!is.matrix(x$weightContribution)) {
+        x$weightContribution <- matrix(x$weightContribution, nrow = 1)
+      }
+      rownames(x$weightContribution) <- names(x$preferences$children)
+      colnames(x$weightContribution) <- names(x$children)
+    },
+    filterFun = function(x) x$height == 2
   )
   
+  #sum up for criteria (custom aggregation)
+  ahpTree$Do(
+    function(x) x$weightContribution <- Reduce('+', Get(x$children, "weightContribution", simplify = FALSE)),
+    traversal = 'post-order',
+    filterFun = function(x) x$height >= 3
+  )
+  
+  
+
+  
+  
+  
 }
+
 
 
 CalculateTotalConsistency <- function(ahpTree) {
-  
-  ahpTree$Do(function(x) x$consistency <- c(x$consistency, Total = if (!all(is.na(x$consistency))) max(x$consistency, na.rm = TRUE)),
-             filterFun = isNotLeaf
-             )
-  
+
+    ahpTree$Do(
+      function(x) {
+        x$consistency["Total"] <- ifelse (!all(is.na(x$consistency)), max(x$consistency, na.rm = TRUE), NA)
+        x$preferences$Total$priority$consistency <- x$consistency["Total"]
+      },
+      filterFun = isNotLeaf
+    )
+
 }
 
 
 
+
+PutContributionIntoPreferences <- function(ahpTree) {
+  #put into preferences
+  ahpTree$Do(
+    function(x) {
+      #browser()
+      wc <- x$weightContribution
+      cons <- x$consistency
+      for(dm in rownames(wc)) {
+        wcn <- x$preferences[[dm]]$AddChild(name = "weightContribution")
+        wcn$preferences <- c(wc[dm, ])
+        #names(wcn$preferences) <- rownames(wc)
+      }
+      
+    }
+  )
+}

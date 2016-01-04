@@ -1,8 +1,6 @@
 context("ahp calculate")
 
 
-
-
 test_that("Calculate Mean", {
   ahpFile <- system.file("extdata", "car.ahp", package="ahp")
   fileContent <- readChar(ahpFile, file.info(ahpFile)$size)

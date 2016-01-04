@@ -6,7 +6,7 @@ GetPreferences <- function(criteriaNode) {
   
   #shortcut if single decision maker
   if (length(names(criteriaNode$preferences)) == 1 &&
-      names(criteriaNode$preferences) %in% c('pairwise', 'pairwiseFunction', 'priority', 'score')) {
+      names(criteriaNode$preferences) %in% c('pairwise', 'pairwiseFunction', 'priority', 'score', 'scoreFunction')) {
     criteriaNode$preferences <- list(DecisionMaker = criteriaNode$preferences)
   }
   
@@ -24,13 +24,13 @@ GetPreferences <- function(criteriaNode) {
       prefs <- as.data.frame(prefs, stringsAsFactors = FALSE)
       prefs[,3] <- as.numeric(prefs[,3])
       colnames(prefs) <- c('c1', 'c2', 'preference')
-    } else if (type == "pairwiseFunction") {
+    } else if (type == "pairwiseFunction" || type == "scoreFunction") {
       prefs <- eval(parse(text = prefNode))
     } else if (type == "priority" || type == "score") {
       prefs <- unlist(prefNode)
       prefs <- sapply(prefs, FUN = function(x) eval(parse(text = x)))
     } else {
-      stop(paste0("Unknown preference type <", type, "> for node ", criteriaNode$pathString, "! Must be <pairwise>, <pairwiseFunction>, <priority> or <score>."))
+      stop(paste0("Unknown preference type <", type, "> for node ", criteriaNode$pathString, "! Must be <pairwise>, <pairwiseFunction>, <priority>, <score> or <scoreFunction>."))
     }
     
     prefTr <- newPreferences$AddChild(name = decisionMaker)
