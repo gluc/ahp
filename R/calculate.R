@@ -82,27 +82,9 @@ Calculate <- function(ahpTree,
     CalculateTotalPriority(prefTree)
     
     # 5. put priority, score and consistency into children
-   
-    #priority
-    for (child in prefTree$myParent$children) {
-      w <- prefTree$Get(function(x) x$preferences[[child$name]], filterFun = function(x) x$name == "priority")
-      nms <- prefTree$Get(function(x) x$parent$name, filterFun = function(x) x$name == "priority")
-      names(w) <-  nms
-      child$priority <- w
-    }
-    
-    
-    #score
-    for (child in prefTree$myParent$children) {
-      w <- prefTree$Get(function(x) x$preferences[[child$name]], filterFun = function(x) x$name == "score")
-      nms <- prefTree$Get(function(x) x$parent$name, filterFun = function(x) x$name == "score")
-      if (!is.null(w)) {
-        names(w) <-  nms
-        child$score <- w
-      }
-      
-    }
-    
+  
+
+
     # consistency
     cons <- prefTree$Get(function(x) x$consistency, filterFun = function(x) x$name == "priority")
     names(cons) <-  names(prefTree$children)
@@ -110,10 +92,27 @@ Calculate <- function(ahpTree,
 
   }
   
+  SetVariable(ahpTree, "priority")
+  SetVariable(ahpTree, "score")
+  
   CalculateWeightContribution(ahpTree)
   CalculateTotalConsistency(ahpTree)
   PutContributionIntoPreferences(ahpTree)
   
+}
+
+SetVariable <- function(ahpTree, variable) {
+  ahpTree$Do(
+    function(x) {
+      prefTree <- x$preferences
+      prios <- prefTree$Get( "preferences", filterFun = function(x) x$name == variable)
+      if (!is.null(prios)) {
+        colnames(prios) <- prefTree$Get( function(x) x$parent$name, filterFun = function(x) x$name == variable)
+        x[[variable]] <- t(prios)
+      }
+    },
+    filterFun = function(x) !is.null(x$preferences)
+  )
 }
 
 
@@ -159,6 +158,7 @@ CalculateTotalPriority <- function(prefTree) {
   colnames(mat) <- names(prefTree$children)
   rownames(mat) <- names(priorityList[[1]])
   dm <- GetAttribute(prefTree$myParent, attribute = "decision-makers", inheritFromAncestors = TRUE, nullAsNa = FALSE)
+  if (is.null(dm)) dm <- rep(1/ncol(mat), ncol(mat))
   totalPriorities <- c(mat %*% dm)
   names(totalPriorities) <- rownames(mat)
   tp <- prefTree$AddChild(name = "Total")
@@ -176,7 +176,7 @@ CalculateWeightContribution <- function(ahpTree) {
   
   ahpTree$Do(
     function(x) {
-      weights <- sapply(x$Get("priority", traversal = "ancestor")[-x$level], cbind)
+      weights <- sapply(x$Get(function(x) x$parent$priority[ , x$name ], traversal = "ancestor")[-x$level], cbind)
       if (!is.matrix(weights)) weights <- matrix(weights, nrow = 1)
       x$weightContribution <- apply(weights, MARGIN = 1, FUN = prod)
       names(x$weightContribution) <- names(x$parent$preferences$children)

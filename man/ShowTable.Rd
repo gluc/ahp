@@ -5,8 +5,10 @@
 \title{Displays the AHP analysis in form of an html table, with gradient
 colors and nicely formatted.}
 \usage{
-ShowTable(ahpTree, decisionMaker = "Total", weightColor = "honeydew3",
-  consistencyColor = "wheat2", alternativeColor = "thistle4")
+ShowTable(ahpTree, decisionMaker = "Total",
+  variable = c("weightContribution", "priority", "score"),
+  weightColor = "honeydew3", consistencyColor = "wheat2",
+  alternativeColor = "thistle4")
 }
 \arguments{
 \item{ahpTree}{The calculated ahp tree}

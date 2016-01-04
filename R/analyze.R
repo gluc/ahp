@@ -9,18 +9,23 @@
 #' @return a \code{data.frame} containing the contribution of each criteria
 #' 
 #' @export
-GetDataFrame <- function(ahpTree, decisionMaker = "Total") {
+GetDataFrame <- function(ahpTree, decisionMaker = "Total", variable = c("weightContribution", "priority", "score")) {
 
   df <- do.call(ToDataFrameTree, 
                 c(ahpTree,
                   Weight = function(x) sum(x$weightContribution[decisionMaker, ]),
-                  GetWeightContributionV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), decisionMaker),
+                  GetVariableV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), 
+                                         decisionMaker = decisionMaker, 
+                                         variable = variable[1]),
                   Consistency = function(x) x$consistency[decisionMaker],
                   filterFun = isNotLeaf))
 
   names(df)[1] <- " "
   
-  for (i in 2:ncol(df)) df[ , i] <- percent1(df[ , i])
+  
+  if (!variable[1] == "score") percentColumns <- 2:ncol(df)
+  else percentColumns <- c(2, ncol(df))
+  for (i in percentColumns) df[ , i] <- percent1(df[ , i])
   
   return (df)
   
@@ -28,11 +33,14 @@ GetDataFrame <- function(ahpTree, decisionMaker = "Total") {
 
 
 
-GetWeightContribution <- function(alternative, decisionMaker, formatter = identity) {
+GetVariable <- function(alternative, decisionMaker, variable = "weightContribution", formatter = identity) {
   f <- function(node) {
-    formatter(node$weightContribution[decisionMaker, alternative])
+    if (is.null(node[[variable]])) return (formatter(NA))
+    if (! alternative %in% colnames(node[[variable]])) return (formatter(NA))
+    if (! decisionMaker %in% rownames(node[[variable]])) return (formatter(NA))
+    formatter(node[[variable]][decisionMaker, alternative])
   }
   return (f)
 }
 
-GetWeightContributionV <- Vectorize(GetWeightContribution, vectorize.args = 'alternative')
+GetVariableV <- Vectorize(GetVariable, vectorize.args = 'alternative')

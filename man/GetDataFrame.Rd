@@ -5,7 +5,8 @@
 \title{Converts the tree into a data.frame, containing all the weights contributions
 to the overall decision.}
 \usage{
-GetDataFrame(ahpTree, decisionMaker = "Total")
+GetDataFrame(ahpTree, decisionMaker = "Total",
+  variable = c("weightContribution", "priority", "score"))
 }
 \arguments{
 \item{ahpTree}{the calculated AHP \code{data.tree}}

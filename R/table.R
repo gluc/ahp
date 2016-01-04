@@ -15,6 +15,7 @@
 #' @export 
 ShowTable <- function(ahpTree,
                       decisionMaker = "Total",
+                      variable = c("weightContribution", "priority", "score"),
                       weightColor = "honeydew3", 
                       consistencyColor = "wheat2",
                       alternativeColor = "thistle4") {
@@ -24,7 +25,7 @@ ShowTable <- function(ahpTree,
                   'name',
                   'level',
                   Weight = function(x) sum(x$weightContribution[decisionMaker, ]),
-                  GetWeightContributionV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), decisionMaker),
+                  GetVariableV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), decisionMaker, variable),
                   Consistency = function(x) x$consistency[decisionMaker],
                   filterFun = isNotLeaf))[,-1]
   
@@ -40,7 +41,9 @@ ShowTable <- function(ahpTree,
   
   myFormatters <- vector("list", length(alternatives))
   names(myFormatters) <- alternatives
-  for(a in alternatives) myFormatters[[a]] <- ColorTileRowWithFormatting(cols[,a], percent1)
+  alternativesFormatter <- percent1
+  if (variable == "score") alternativesFormatter <- identity
+  for(a in alternatives) myFormatters[[a]] <- ColorTileRowWithFormatting(cols[,a], alternativesFormatter)
   
   myFormatters$Weight <- ColorTileWithFormatting("white", weightColor, percent1)
   myFormatters$Consistency <- ConsistencyFormatter("white", consistencyColor, percent1)
