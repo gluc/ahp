@@ -35,11 +35,12 @@ GetDataFrame <- function(ahpTree, decisionMaker = "Total", variable = c("weightC
 
 GetVariable <- function(alternative, decisionMaker, variable = "weightContribution", formatter = identity) {
   f <- function(node) {
-    if (is.null(node[[variable]])) return (formatter(NA))
-    if (! alternative %in% colnames(node[[variable]])) return (formatter(NA))
-    if (! decisionMaker %in% rownames(node[[variable]])) return (formatter(NA))
-    formatter(node[[variable]][decisionMaker, alternative])
-  }
+          print(paste0("Node: ", node$name, " DecisionMaker: ", decisionMaker, " Variable: ", variable))
+          if (is.null(node[[variable]])) return (formatter(NA))
+          if (! alternative %in% colnames(node[[variable]])) return (formatter(NA))
+          if (! decisionMaker %in% rownames(node[[variable]])) return (formatter(NA))
+          formatter(node[[variable]][decisionMaker, alternative])
+       }
   return (f)
 }
 

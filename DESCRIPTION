@@ -13,6 +13,7 @@ Imports:
 Suggests:
     shiny,
     shinyAce,
+    shinyjs,
     testthat,
     knitr,
     rmarkdown

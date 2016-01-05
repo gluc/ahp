@@ -149,6 +149,7 @@ GetPreference <- function(node, type, decisionMaker, attribute = "preferences") 
 
 GetDecisionMakers <- function(ahpTree) {
   decisionMakers <- unique(c(ahpTree$Get(attribute = function(x) names(x$preferences$children), filterFun = function(x) !is.null(x$preferences))))
+  decisionMakers <- decisionMakers[decisionMakers!="Total"]
   return (decisionMakers)
 }
 

@@ -25,7 +25,7 @@ ShowTable <- function(ahpTree,
                   'name',
                   'level',
                   Weight = function(x) sum(x$weightContribution[decisionMaker, ]),
-                  GetVariableV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), decisionMaker, variable),
+                  GetVariableV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), decisionMaker = decisionMaker, variable = variable),
                   Consistency = function(x) x$consistency[decisionMaker],
                   filterFun = isNotLeaf))[,-1]
   

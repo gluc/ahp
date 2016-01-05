@@ -1,11 +1,15 @@
 library(shiny)
 library(shinyAce)
 library(formattable)
+library(shinyjs)
 
 # Define UI for application that draws a histogram
 shinyUI(
   
+  
+  
   navbarPage(
+    useShinyjs(),
     theme = "bootstrap.css",
     "AHP",
     tabPanel(
@@ -48,7 +52,7 @@ shinyUI(
         fluidPage(
           fluidRow(
             column(
-              6, 
+              4, 
               radioButtons(
                 inputId = "ahpmethod", 
                 label = "AHP Priority Calculation Method: ", 
@@ -56,7 +60,16 @@ shinyUI(
                 selected = "Eigenvalues"
               )
             ),
-            column(6, uiOutput("decisionMaker"))
+            column(
+              4, 
+              radioButtons(
+                inputId = "variable", 
+                label = "Variable: ", 
+                choices = c("Total Contribution", "Priority", "Score"),
+                selected = "Total Contribution"
+              )
+            ),
+            column(4, uiOutput("decisionMaker"))
           ),
           formattableOutput("table")
         )

@@ -1,6 +1,8 @@
 library(shiny)
 library(shinyAce)
 library(formattable)
+library(shinyjs)
+
 
 ahpTree <- NULL
 
@@ -28,6 +30,29 @@ GetMethod <- function(input) {
 }
 
 
+GetVariable <- function(input) {
+  vv <- switch (
+          input$variable,
+          `Total Contribution` = "weightContribution",
+          `Score` = "score",
+          `Priority` = "priority"
+        )
+  return (vv)
+}
+
+GetTable <- function(input) {
+  renderFormattable(
+    ShowTable(
+      ahpTree, 
+      decisionMaker = ifelse(
+        is.null(input$decisionMaker),                                                                             
+        yes = "Total", 
+        no = input$decisionMaker
+      ),
+      variable = GetVariable(input)
+    )
+  )
+}
 ## Helpers
 #########################
 
@@ -56,18 +81,15 @@ shinyServer(function(input, output, session) {
                          selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
           })
         } else {
-          output$decisionMaker <- renderUI("")
+          updateRadioButtons(session, "decisionMaker", selected = "Total")
+          hide(id = "decisionMaker", anim = TRUE)
         }
-        output$table <- renderFormattable(ShowTable(ahpTree, 
-                                                    decisionMaker =  ifelse(is.null(input$decisionMaker), 
-                                                                            yes = "Total", 
-                                                                            no = input$decisionMaker)
-                                                    )
-                                          )
+        #browser()
+        output$table <- GetTable(input)
        
       },
       error = function(e) {
-        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e), no = "blu"))
+        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e)))
         
       })
     } else {
@@ -132,11 +154,19 @@ shinyServer(function(input, output, session) {
     
   })
   
+  
+  
+  # Variable
+  observeEvent(input$variable, {
+    print("event: variable")
+    output$table <- GetTable(input)
+                      
+  })
 
   # Decision Maker
   observeEvent(input$decisionMaker, {
     print("event: decisionMaker")
-    output$table <- renderFormattable(ShowTable(ahpTree, input$decisionMaker))
+    output$table <- GetTable(input)
   })
   
   # Ahp Method
@@ -146,15 +176,10 @@ shinyServer(function(input, output, session) {
     if(!is.null(ahpTree)) {
       tryCatch({
         ahpTree <- DoCalculation(input)
-        output$table <- renderFormattable(ShowTable(ahpTree, 
-                                                    ifelse(is.null(input$decisionMaker), 
-                                                           yes = "Total", 
-                                                           no = input$decisionMaker)
-                                                    )
-                                          )
+        output$table <- GetTable(input)
       },
       error = function(e) {
-        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e), no = "blu"))
+        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e)))
       })
       
     }
