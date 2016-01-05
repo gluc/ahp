@@ -66,53 +66,45 @@ GetPreferences <- function(criteriaNode) {
 #' cat(readChar(ahpFile, file.info(ahpFile)$size))
 #' 
 #' #load the file into R
-#' carAhp <- LoadFile(ahpFile)
+#' carAhp <- Load(ahpFile)
 #'
 #' @export
-LoadFile <- function(ahpFile) {
+Load <- function(ahpFile) {
+  if (is.character(ahpFile))
   fileContent <- readChar(ahpFile, file.info(ahpFile)$size)
   return (LoadString(fileContent))
 }
 
 
-#' @param string A character string to be loaded.
+#' @param ahpString A character string to be loaded.
 #' 
-#' @rdname LoadFile
+#' @rdname Load
 #' @export
-LoadString <- function(string) {
+LoadString <- function(ahpString) {
   oMat <- NULL
   tryCatch({
-    oMat <- yaml::yaml.load(string)
+    oMat <- yaml::yaml.load(ahpString)
   },
   error = function(e) {
     stop(paste0("Could not load ahp model. File must be a valid YAML file. Exception caught when parsing YAML file: ", e))
   })
   
   tryCatch({
-    ahpTree <- DoLoad(oMat)
-    return (ahpTree)
+    if (!"Goal" %in% names(oMat)) stop("Could not load ahp model. Model does not contain a Goal!")
+    tr <- FromListExplicit(oMat[["Goal"]])
+    
+    tr$Do(fun = function(x) x$preferences <- GetPreferences(x),
+          filterFun = function(x) !is.null(x$preferences)
+    )
+    
+    if (!is.null(tr$`decision-makers`)) {
+      wc <- unlist(tr$`decision-makers`)
+      wc <- sapply(wc, FUN = function(x) eval(parse(text = x)))
+      tr$`decision-makers` <- wc
+    }
+    return (tr)
   },
   error = function(e) {
     stop(paste0("Could not load ahp model. Exception caught when converting into a data.tree: ", e))
   })
-}
-
-
-DoLoad <- function(oMat) {
-  if (!"Goal" %in% names(oMat)) stop("Could not load ahp model. Model does not contain a Goal!")
-  tr <- FromListExplicit(oMat[["Goal"]])
-  
-  tr$Do(fun = function(x) x$preferences <- GetPreferences(x),
-        filterFun = function(x) !is.null(x$preferences)
-  )
-  
-  if (!is.null(tr$`decision-makers`)) {
-    wc <- unlist(tr$`decision-makers`)
-    wc <- sapply(wc, FUN = function(x) eval(parse(text = x)))
-    tr$`decision-makers` <- wc
-  }
-  
-  #TODO: test validity of tree
-  
-  return (tr)
 }

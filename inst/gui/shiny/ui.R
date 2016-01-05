@@ -52,7 +52,7 @@ shinyUI(
         fluidPage(
           fluidRow(
             column(
-              4, 
+              3, 
               radioButtons(
                 inputId = "ahpmethod", 
                 label = "AHP Priority Calculation Method: ", 
@@ -60,8 +60,9 @@ shinyUI(
                 selected = "Eigenvalues"
               )
             ),
+            column(3, uiOutput("sort")),
             column(
-              4, 
+              3, 
               radioButtons(
                 inputId = "variable", 
                 label = "Variable: ", 
@@ -69,7 +70,7 @@ shinyUI(
                 selected = "Total Contribution"
               )
             ),
-            column(4, uiOutput("decisionMaker"))
+            column(3, uiOutput("decisionMaker"))
           ),
           formattableOutput("table")
         )

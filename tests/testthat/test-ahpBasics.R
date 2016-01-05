@@ -1,11 +1,11 @@
 context("ahp integration")
 
-#carAhp <- LoadFile("../../inst/extdata/car.ahp")
+
 ahpFile <- system.file("extdata", "car.ahp", package="ahp")
-carAhp <- LoadFile(ahpFile)
+carAhp <- Load(ahpFile)
 Calculate(carAhp)
-df <- GetDataFrame(carAhp)
-tbl <- ShowTable(carAhp)
+df <- Analyze(carAhp)
+tbl <- AnalyzeTable(carAhp)
 
 test_that("ncol", {
   expect_equal(ncol(df), 9)

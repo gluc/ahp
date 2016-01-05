@@ -22,34 +22,45 @@ DoCalculation <- function(input) {
 }
 
 GetMethod <- function(input) {
-  switch (input$ahpmethod,
-          `Eigenvalues` = PrioritiesFromPairwiseMatrixEigenvalues,
-          `Mean of Normalized Values` = PrioritiesFromPairwiseMatrixMeanNormalization,
-          `Geometric Mean` = PrioritiesFromPairwiseMatrixGeometricMean
+  switch (
+    input$ahpmethod,
+    `Eigenvalues` = PrioritiesFromPairwiseMatrixEigenvalues,
+    `Mean of Normalized Values` = PrioritiesFromPairwiseMatrixMeanNormalization,
+    `Geometric Mean` = PrioritiesFromPairwiseMatrixGeometricMean
   )
 }
 
 
 GetVariable <- function(input) {
-  vv <- switch (
-          input$variable,
-          `Total Contribution` = "weightContribution",
-          `Score` = "score",
-          `Priority` = "priority"
-        )
-  return (vv)
+  switch (
+    input$variable,
+    `Total Contribution` = "weightContribution",
+    `Score` = "score",
+    `Priority` = "priority"
+  )
+}
+
+GetSort <- function(input) {
+  
+  switch (
+    input$sort,
+    `Priority` = "priority",
+    `Total Priority` = "totalPriority",
+    `Original` = "orig"
+  )
 }
 
 GetTable <- function(input) {
   renderFormattable(
-    ShowTable(
+    AnalyzeTable(
       ahpTree, 
       decisionMaker = ifelse(
         is.null(input$decisionMaker),                                                                             
         yes = "Total", 
         no = input$decisionMaker
       ),
-      variable = GetVariable(input)
+      variable = GetVariable(input),
+      sort = GetSort(input)
     )
   )
 }
@@ -80,7 +91,25 @@ shinyServer(function(input, output, session) {
                          choices = c("Total", decisionMakers), 
                          selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
           })
+          
+          output$sort <- renderUI({
+            radioButtons(
+              inputId = "sort",
+              label = "Sort: ",
+              choices = c("Priority", "Total Priority", "Original"),
+              selected = "Total Priority"
+            )
+          })
+          
         } else {
+          output$sort <- renderUI({
+            radioButtons(
+              inputId = "sort",
+              label = "Sort: ",
+              choices = c("Priority", "Original"),
+              selected = "Priority"
+            )
+          })
           updateRadioButtons(session, "decisionMaker", selected = "Total")
           hide(id = "decisionMaker", anim = TRUE)
         }
@@ -156,16 +185,11 @@ shinyServer(function(input, output, session) {
   
   
   
-  # Variable
-  observeEvent(input$variable, {
-    print("event: variable")
-    output$table <- GetTable(input)
-                      
-  })
-
-  # Decision Maker
-  observeEvent(input$decisionMaker, {
-    print("event: decisionMaker")
+  # Sort Order
+  observe({
+    input$variable
+    input$decisionMaker
+    input$sort
     output$table <- GetTable(input)
   })
   

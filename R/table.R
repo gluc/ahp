@@ -11,27 +11,30 @@
 #' @param alternativeColor The name of the color used to highlight big contributors to alternative choices.
 #' @return a \code{\link{formattable}} data.frame object which, in most environments, will be displayed as an HTML table
 #' 
+#' @rdname Analyze
 #' @import formattable
 #' @export 
-ShowTable <- function(ahpTree,
-                      decisionMaker = "Total",
-                      variable = c("weightContribution", "priority", "score"),
-                      weightColor = "honeydew3", 
-                      consistencyColor = "wheat2",
-                      alternativeColor = "thistle4") {
+AnalyzeTable <- function(ahpTree,
+                         decisionMaker = "Total",
+                         variable = c("weightContribution", "priority", "score"),
+                         sort = c("priority", "totalPriority", "orig"),
+                         weightColor = "honeydew3",
+                         consistencyColor = "wheat2",
+                         alternativeColor = "thistle4") {
+  
+                           
 
-  df <- do.call(ToDataFrameTree, 
-                c(ahpTree,
-                  'name',
-                  'level',
-                  Weight = function(x) sum(x$weightContribution[decisionMaker, ]),
-                  GetVariableV(names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE)), decisionMaker = decisionMaker, variable = variable),
-                  Consistency = function(x) x$consistency[decisionMaker],
-                  filterFun = isNotLeaf))[,-1]
+  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort)
+  df <- df[ , -1]
   
   alternatives <- names(df)[-c(1:3, ncol(df))]
-  cols <- 2*df[,alternatives]/max(df[,alternatives]) + df[,alternatives]/df$Weight
+  dfw <- df[ , alternatives]
+  dfw[is.na(dfw)] <- 1
+  #cols <- 2 * dfw/max(dfw) + dfw/df[ , 3]
   #cols <- df[,-(1:4)]
+  if (variable[1] == "weightContribution") cols <- dfw/max(dfw)
+  else cols <- dfw/apply(dfw, MARGIN = 1, FUN = max)
+  
   cols$zero <- 0
   cols$max <- max(cols)
   cols <- t(apply(cols, MARGIN = 1, function(x) csscolor(gradient(x, "white", alternativeColor))))
@@ -42,10 +45,11 @@ ShowTable <- function(ahpTree,
   myFormatters <- vector("list", length(alternatives))
   names(myFormatters) <- alternatives
   alternativesFormatter <- percent1
-  if (variable == "score") alternativesFormatter <- identity
+  if (variable[1] == "score") alternativesFormatter <- identity
   for(a in alternatives) myFormatters[[a]] <- ColorTileRowWithFormatting(cols[,a], alternativesFormatter)
   
-  myFormatters$Weight <- ColorTileWithFormatting("white", weightColor, percent1)
+  
+  myFormatters[[colnames(df)[3]]] <- ColorTileWithFormatting("white", weightColor, percent1)
   myFormatters$Consistency <- ConsistencyFormatter("white", consistencyColor, percent1)
   myFormatters$` ` <- formatter("span", 
                                 style = style(`white-space` = "nowrap",
