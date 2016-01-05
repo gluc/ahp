@@ -6,6 +6,8 @@
 - ADD: Multiple methods to derive priorities from scores and pairwise matrix (see ?Calculate)
 - ADD: Customize methods to derive priorities from scores and pairwise matrix
 - ADD: Shiny GUI. Use ahp::RunGUI()
+- CHANGE: Renamed GetDataFrame to Analyze
+- CHANGE: Renamed ShowTable to AnalyzeTable
 - CHANGE/ADD: Added LoadString, renamed LoadFile into Load
 - CHANGE: Major change in file format, without backwards compatibility
 - CHANGE: Renamed all tr attributes to ahpTree
