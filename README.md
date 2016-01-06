@@ -37,21 +37,30 @@ vignette("multiple-decisionmakers", package = "ahp")
 # run analysis
 library(ahp)
 ahpFile <- system.file("extdata", "car.ahp", package="ahp")
-carAhp <- LoadFile(ahpFile)
+carAhp <- Load(ahpFile)
 Calculate(carAhp)
-GetDataFrame(carAhp)
-ShowTable(carAhp)
+Analyze(carAhp)
+AnalyzeTable(carAhp)
 
-# looking at the vacation example
+# looking at the vacation example, a multi-decision-maker model
 ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
-vacationAhp <- LoadFile(ahpFile)
+vacationAhp <- Load(ahpFile)
 Calculate(vacationAhp)
-GetDataFrame(vacationAhp, decisionMaker = "Dad")
-ShowTable(vacationAhp, decisionMaker = "Mom")
-ShowTable(vacationAhp)
+Analyze(vacationAhp, decisionMaker = "Dad")
+AnalyzeTable(vacationAhp, decisionMaker = "Mom")
+AnalyzeTable(vacationAhp)
 ```
 
-To play around with the example files, you may want to copy them out of the lib path, e.g. like so:
+To play around with the package, you may want to run the Shiny GUI that comes with the package:
+
+```
+RunGUI()
+```
+
+![alt text](www/shiny.png)
+
+
+To play around with the example files in your dev environment, you may want to copy them out of the lib path, e.g. like so:
 
 ```
 # On Windows
