@@ -8,16 +8,19 @@
 #' @param decisionMaker the name of the decision maker. The default returns the joint decision.
 #' @param variable the variable to display, i.e. either weightContribution (the default), priority, or score
 #' @param sort sort either by priority according to the decision maker (the default), by totalPriority, or as originally specified (orig) 
+#' @param cutOffWeightContributionBelow nodes in the ahp tree whose weight contribution falls below this value are pruned.
+#' Leave at 0 to see the full ahp tree.
 #' @return a \code{data.frame} containing the contribution of each criteria
 #' 
 #' @export
 Analyze <- function(ahpTree, 
                     decisionMaker = "Total", 
                     variable = c("weightContribution", "priority", "score"),
-                    sort = c("priority", "totalPriority", "orig")) {
+                    sort = c("priority", "totalPriority", "orig"),
+                    cutOffWeightContributionBelow = 0) {
  
   
-  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort)
+  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort, cutOffWeightContributionBelow)
   df <- df[ , -c(2, 3)]
   if (!variable[1] == "score") percentColumns <- 2:ncol(df)
   else percentColumns <- c(2, ncol(df))
@@ -30,7 +33,8 @@ Analyze <- function(ahpTree,
 GetDataFrame <- function(ahpTree, 
                          decisionMaker = "Total", 
                          variable = c("weightContribution", "priority", "score"),
-                         sort = c("priority", "totalPriority", "orig")) {
+                         sort = c("priority", "totalPriority", "orig"),
+                         cutOffWeightContributionBelow = 0) {
   
   if (sort[1] == "priority" || sort[1] == "totalPriority") ahpTree <- Clone(ahpTree)
   if (sort[1] == "priority") ahpTree$Sort(function(x) ifelse(x$isLeaf, x$position, x$parent$priority[decisionMaker, x$name]), decreasing = TRUE)
@@ -51,7 +55,13 @@ GetDataFrame <- function(ahpTree,
                                decisionMaker = decisionMaker, 
                                variable = variable[1]),
                   Consistency = function(x) x$consistency[decisionMaker],
-                  filterFun = isNotLeaf))
+                  pruneFun = function(x) {
+                    if (x$isLeaf) return (FALSE)
+                    res <- sum(x$weightContribution[decisionMaker, ]) >= cutOffWeightContributionBelow
+                    return (res)
+                  }
+                  )
+                )
 
   names(df)[1] <- " "
   

@@ -7,11 +7,13 @@
 to the overall decision.}
 \usage{
 Analyze(ahpTree, decisionMaker = "Total", variable = c("weightContribution",
-  "priority", "score"), sort = c("priority", "totalPriority", "orig"))
+  "priority", "score"), sort = c("priority", "totalPriority", "orig"),
+  cutOffWeightContributionBelow = 0)
 
 AnalyzeTable(ahpTree, decisionMaker = "Total",
   variable = c("weightContribution", "priority", "score"),
-  sort = c("priority", "totalPriority", "orig"), weightColor = "honeydew3",
+  sort = c("priority", "totalPriority", "orig"),
+  cutOffWeightContributionBelow = 0, weightColor = "honeydew3",
   consistencyColor = "wheat2", alternativeColor = "thistle4")
 }
 \arguments{
@@ -22,6 +24,9 @@ AnalyzeTable(ahpTree, decisionMaker = "Total",
 \item{variable}{the variable to display, i.e. either weightContribution (the default), priority, or score}
 
 \item{sort}{sort either by priority according to the decision maker (the default), by totalPriority, or as originally specified (orig)}
+
+\item{cutOffWeightContributionBelow}{nodes in the ahp tree whose weight contribution falls below this value are pruned.
+Leave at 0 to see the full ahp tree.}
 
 \item{weightColor}{The name of the color to be used to emphasize weights of categories. See \code{color} for a list of possible colors.}
 

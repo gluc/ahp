@@ -16,13 +16,14 @@ AnalyzeTable <- function(ahpTree,
                          decisionMaker = "Total",
                          variable = c("weightContribution", "priority", "score"),
                          sort = c("priority", "totalPriority", "orig"),
+                         cutOffWeightContributionBelow = 0,
                          weightColor = "honeydew3",
                          consistencyColor = "wheat2",
                          alternativeColor = "thistle4") {
   
                            
 
-  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort)
+  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort, cutOffWeightContributionBelow)
   df <- df[ , -1]
   
   alternatives <- names(df)[-c(1:3, ncol(df))]
