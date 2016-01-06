@@ -110,6 +110,7 @@ shinyServer(function(input, output, session) {
                          choices = c("Total", decisionMakers), 
                          selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
           })
+          show(id = "decisionMaker", anim = TRUE)
           
           output$sort <- renderUI({
             radioButtons(
@@ -129,6 +130,7 @@ shinyServer(function(input, output, session) {
               selected = "Priority"
             )
           })
+          #Cannot just remove, because otherwise the value sticks!
           updateRadioButtons(session, "decisionMaker", selected = "Total")
           hide(id = "decisionMaker", anim = TRUE)
         }
