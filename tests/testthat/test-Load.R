@@ -1,6 +1,14 @@
 context("ahp load")
 
 
+test_that("Load v1.0", {
+  ahpFile <- system.file("extdata", "tom_dick_harry.ahp", package="ahp")
+  carAhp <- Load(ahpFile)
+  Calculate(carAhp)
+  df <- Analyze(carAhp)
+  expect_equal(ncol(df), 6)
+})
+
 
 
 test_that("Load from string", {

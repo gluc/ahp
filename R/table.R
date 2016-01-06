@@ -84,12 +84,12 @@ PruneByCutoff <- function(node, decisionMaker, minWeight = 0) {
 
 
 
-#' @param n cuts the \code{n} heightest levels of the ahp tree 
+#' @param levelsToPrune cuts the \code{n} hightest levels of the ahp tree 
 #' 
 #' @rdname Analyze
 #' @export
-PruneLevels <- function(node, decisionMaker, n = 0) {
-  return (node$level <= (node$root$height - n - 1))
+PruneLevels <- function(node, decisionMaker, levelsToPrune = 0) {
+  return (node$level <= (node$root$height - levelsToPrune - 1))
 }
 
 

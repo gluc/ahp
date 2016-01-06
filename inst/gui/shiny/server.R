@@ -34,15 +34,16 @@ GetTable <- function(input, ahpTree) {
         yes = "Total", 
         no = input$decisionMaker
       )
+      print(paste0("level: ", input$level))
       renderFormattable(
         AnalyzeTable(
           ahpTree, 
           decisionMaker = dm,
           variable = GetVariable(input),
           sort = GetSort(input),
-          pruneFun = function(x, decisionMaker) {
-            PruneByCutoff(x, dm, ifelse(is.null(input$cutoff), 0, input$cutoff)) &&
-              PruneLevels(x, dm, ifelse(is.null(input$level), 0, input$level))
+          pruneFun = function(x, dm) {
+            PruneByCutoff(x, dm, ifelse(is.null(input$cutoff), 0, as.numeric(input$cutoff))) &&
+              PruneLevels(x, dm, ifelse(is.null(input$level), 0, as.numeric(input$level)))
           }
           
         )
@@ -177,7 +178,7 @@ shinyServer(function(input, output, session) {
           4,
           selectInput("examples", 
                       "Load package example: ", 
-                      choices = c("", "car.ahp", "vacation.ahp"), 
+                      choices = c("", list.files(system.file("extdata", package="ahp"), full.names = FALSE)), 
                       selected = "")
         ),
         column(
