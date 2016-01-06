@@ -4,9 +4,6 @@ library(formattable)
 library(shinyjs)
 
 
-ahpTree <- NULL
-
-
 
 #########################
 ## Helpers
@@ -14,14 +11,48 @@ ahpTree <- NULL
 
 
 DoCalculation <- function(input) {
-  modelString <- input$ace
-  #print(modelString)
-  ahpTree <<- LoadString(modelString)
-  Calculate(ahpTree, GetMethod(input))
-  return (ahpTree)
+  
+  tryCatch({
+    modelString <- input$ace
+    #print(modelString)
+    ahpTree <- LoadString(modelString)
+    Calculate(ahpTree, GetMethod(input))
+    return (ahpTree)
+  },
+  error = function(e) {
+    return (NULL)
+  })
+  
+}
+
+
+GetTable <- function(input, ahpTree) {
+  
+  tryCatch({
+    if (!is.null(ahpTree)) {
+      renderFormattable(
+        AnalyzeTable(
+          ahpTree, 
+          decisionMaker = ifelse(
+            is.null(input$decisionMaker),                                                                             
+            yes = "Total", 
+            no = input$decisionMaker
+          ),
+          variable = GetVariable(input),
+          sort = GetSort(input)
+        )
+      )
+    } else {
+      renderUI("")
+    }
+  },
+  error = function(e) {
+    renderUI(as.character(e))
+  })
 }
 
 GetMethod <- function(input) {
+  if (is.null(input$ahpmethod)) return (PrioritiesFromPairwiseMatrixEigenvalues)
   switch (
     input$ahpmethod,
     `Eigenvalues` = PrioritiesFromPairwiseMatrixEigenvalues,
@@ -32,6 +63,7 @@ GetMethod <- function(input) {
 
 
 GetVariable <- function(input) {
+  if (is.null(input$variable)) return ("weightContribution")
   switch (
     input$variable,
     `Total Contribution` = "weightContribution",
@@ -41,7 +73,7 @@ GetVariable <- function(input) {
 }
 
 GetSort <- function(input) {
-  
+  if (is.null(input$sort)) return ("priority")
   switch (
     input$sort,
     `Priority` = "priority",
@@ -50,20 +82,7 @@ GetSort <- function(input) {
   )
 }
 
-GetTable <- function(input) {
-  renderFormattable(
-    AnalyzeTable(
-      ahpTree, 
-      decisionMaker = ifelse(
-        is.null(input$decisionMaker),                                                                             
-        yes = "Total", 
-        no = input$decisionMaker
-      ),
-      variable = GetVariable(input),
-      sort = GetSort(input)
-    )
-  )
-}
+
 ## Helpers
 #########################
 
@@ -114,7 +133,7 @@ shinyServer(function(input, output, session) {
           hide(id = "decisionMaker", anim = TRUE)
         }
         #browser()
-        output$table <- GetTable(input)
+        output$table <- GetTable(input, ahpTree)
        
       },
       error = function(e) {
@@ -190,23 +209,16 @@ shinyServer(function(input, output, session) {
     input$variable
     input$decisionMaker
     input$sort
-    output$table <- GetTable(input)
+    ahpTree <- DoCalculation(input)
+    output$table <- GetTable(input, ahpTree)
   })
   
   # Ahp Method
   observeEvent(input$ahpmethod, {
     print("event: ahpmethod")
-    #recalculate if method changed
-    if(!is.null(ahpTree)) {
-      tryCatch({
-        ahpTree <- DoCalculation(input)
-        output$table <- GetTable(input)
-      },
-      error = function(e) {
-        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e)))
-      })
-      
-    }
+
+    ahpTree <- DoCalculation(input)
+    output$table <- GetTable(input, ahpTree)
   })
   
 

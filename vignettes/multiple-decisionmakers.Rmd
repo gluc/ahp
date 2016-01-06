@@ -111,7 +111,7 @@ To make the full analysis, averaging the decision-makers' preferences, you use t
 ```{r}
 library(ahp)
 ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
-carAhp <- LoadFile(ahpFile)
+carAhp <- Load(ahpFile)
 Calculate(carAhp)
 
 ```
@@ -121,7 +121,7 @@ Calculate(carAhp)
 ### Total
 
 ```{r}
-ShowTable(carAhp)
+AnalyzeTable(carAhp)
 ```
 
 However, you may also drill down into each decision maker.
@@ -129,19 +129,19 @@ However, you may also drill down into each decision maker.
 ### Dad
 
 ```{r}
-ShowTable(carAhp, decisionMaker = "Dad")
+AnalyzeTable(carAhp, decisionMaker = "Dad")
 ```
 
 ### Mom
 
 ```{r}
-ShowTable(carAhp, decisionMaker = "Mom")
+AnalyzeTable(carAhp, decisionMaker = "Mom")
 ```
 
 
 ### Kid
 
 ```{r}
-ShowTable(carAhp, decisionMaker = "Kid")
+AnalyzeTable(carAhp, decisionMaker = "Kid")
 ```
 

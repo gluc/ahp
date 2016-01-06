@@ -214,7 +214,7 @@ Loading the file is done by calling `LoadFile`:
 ```{r}
 library(ahp)
 ahpFile <- system.file("extdata", "car.ahp", package="ahp")
-carAhp <- LoadFile(ahpFile)
+carAhp <- Load(ahpFile)
 ```
 
 
@@ -239,7 +239,7 @@ print(carAhp, "weight")
 
 ```{r}
 
-GetDataFrame(carAhp)
+Analyze(carAhp)
 
 ```
 Note that, thanks to the `formattable` package, the columns are `numerics`, even though they are formatted as percentages.
@@ -247,7 +247,7 @@ Note that, thanks to the `formattable` package, the columns are `numerics`, even
 Another way to display the AHP analysis is with the `ShowTable` function, which displays an html table with color codings to help interpret the numbers:
 
 ```{r}
-ShowTable(carAhp)
+AnalyzeTable(carAhp)
 ```
 
 

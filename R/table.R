@@ -4,8 +4,6 @@
 #' Displays the AHP analysis in form of an html table, with gradient
 #' colors and nicely formatted.
 #' 
-#' @param ahpTree The calculated ahp tree
-#' @param decisionMaker the name of the decision maker. The default returns the joint decision.
 #' @param weightColor The name of the color to be used to emphasize weights of categories. See \code{color} for a list of possible colors.
 #' @param consistencyColor The name of the color to be used to highlight bad consistency
 #' @param alternativeColor The name of the color used to highlight big contributors to alternative choices.

@@ -28,10 +28,6 @@ AnalyzeTable(ahpTree, decisionMaker = "Total",
 \item{consistencyColor}{The name of the color to be used to highlight bad consistency}
 
 \item{alternativeColor}{The name of the color used to highlight big contributors to alternative choices.}
-
-\item{ahpTree}{The calculated ahp tree}
-
-\item{decisionMaker}{the name of the decision maker. The default returns the joint decision.}
 }
 \value{
 a \code{data.frame} containing the contribution of each criteria
