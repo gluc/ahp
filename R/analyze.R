@@ -23,7 +23,7 @@
 #' Analyze(
 #'    carAhp, 
 #'    pruneFun = function(x, decisionMaker) {
-#'      PruneLevels(x, decisionMaker, 1) && PruneByCutoff(x, decisionMaker, minWeight = 0)
+#'      PruneLevels(x, decisionMaker, 1) && PruneByCutoff(x, decisionMaker, minWeight = 0.05)
 #'    }
 #' )
 #'    
@@ -64,7 +64,7 @@ GetDataFrame <- function(ahpTree,
   
   
   if (!class(ahpTree)[1] == "Node") stop("Argument ahpTree must be a data.tree structure")
-  if (!decisionMaker == "Total" || decisionMaker %in% GetDecisionMakers(ahpTree)) stop(paste0("decisionMaker ", decisionMaker, " is not a decision maker of ahpTree"))
+  if (!(decisionMaker == "Total" || decisionMaker %in% GetDecisionMakers(ahpTree))) stop(paste0("decisionMaker ", decisionMaker, " is not a decision maker of ahpTree"))
   if (!variable[1] %in% c("weightContribution", "priority", "score")) stop(paste0("variable must be weightContribution, priority, or score, but is ", variable))
   if (!sort[1] %in% c("priority", "totalPriority", "orig")) stop(paste0("sort must be priority, totalPriority, or orig, but is ", sort))
   if (length(formals(pruneFun))!=2) stop(paste0("pruneFun must have two arguments: node and decisionMaker"))  

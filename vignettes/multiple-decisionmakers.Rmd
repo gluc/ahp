@@ -32,7 +32,7 @@ In this example we look at a family that wants to decide where to go on vacation
 
 The file is provided by the `ahp` package, and you may look at its content as so:
 
-```{r}
+```{r, comment = NA}
 ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
 cat(readChar(ahpFile, file.info(ahpFile)$size))
 ```
@@ -111,8 +111,8 @@ To make the full analysis, averaging the decision-makers' preferences, you use t
 ```{r}
 library(ahp)
 ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
-carAhp <- Load(ahpFile)
-Calculate(carAhp)
+vacationAhp <- Load(ahpFile)
+Calculate(vacationAhp)
 
 ```
 
@@ -121,7 +121,7 @@ Calculate(carAhp)
 ### Total
 
 ```{r}
-AnalyzeTable(carAhp)
+AnalyzeTable(vacationAhp)
 ```
 
 However, you may also drill down into each decision maker.
@@ -129,19 +129,19 @@ However, you may also drill down into each decision maker.
 ### Dad
 
 ```{r}
-AnalyzeTable(carAhp, decisionMaker = "Dad")
+AnalyzeTable(vacationAhp, decisionMaker = "Dad")
 ```
 
 ### Mom
 
 ```{r}
-AnalyzeTable(carAhp, decisionMaker = "Mom")
+AnalyzeTable(vacationAhp, decisionMaker = "Mom")
 ```
 
 
 ### Kid
 
 ```{r}
-AnalyzeTable(carAhp, decisionMaker = "Kid")
+AnalyzeTable(vacationAhp, decisionMaker = "Kid")
 ```
 

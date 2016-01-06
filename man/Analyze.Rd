@@ -45,8 +45,6 @@ argument. The default (\code{NULL}) returns the full AHP tree}
 \item{minWeight}{prunes the nodes whose weightContribution is smaller than the minWeight}
 
 \item{n}{cuts the \code{n} heightest levels of the ahp tree}
-
-\item{node}{the \code{Node}}
 }
 \value{
 Analyze returns a \code{data.frame} containing the contribution of each criteria
@@ -69,7 +67,7 @@ Calculate(carAhp)
 Analyze(
    carAhp,
    pruneFun = function(x, decisionMaker) {
-     PruneLevels(x, decisionMaker, 1) && PruneByCutoff(x, decisionMaker, minWeight = 0)
+     PruneLevels(x, decisionMaker, 1) && PruneByCutoff(x, decisionMaker, minWeight = 0.05)
    }
 )
 

@@ -51,3 +51,5 @@ test_that("table", {
 test_that("table values", {
   expect_true(all(as.data.frame(tbl)[,2:9] == df[,2:9]))
 })
+
+
