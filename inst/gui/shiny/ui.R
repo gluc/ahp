@@ -72,6 +72,16 @@ shinyUI(
             ),
             column(3, uiOutput("decisionMaker"))
           ),
+          fluidRow(
+            column(
+              3,
+              textInput(inputId = "cutoff", label = "Filter rows with weight contribution smaller than: ", value = "0")
+            ),
+            column(
+              3,
+              textInput(inputId = "level", label = "Filter n levels: ", value = "0")
+            )
+          ),
           formattableOutput("table")
         )
       ),

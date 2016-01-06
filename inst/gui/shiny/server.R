@@ -27,26 +27,33 @@ DoCalculation <- function(input) {
 
 
 GetTable <- function(input, ahpTree) {
-  
   tryCatch({
     if (!is.null(ahpTree)) {
+      dm <- ifelse(
+        is.null(input$decisionMaker),                                                                             
+        yes = "Total", 
+        no = input$decisionMaker
+      )
       renderFormattable(
         AnalyzeTable(
           ahpTree, 
-          decisionMaker = ifelse(
-            is.null(input$decisionMaker),                                                                             
-            yes = "Total", 
-            no = input$decisionMaker
-          ),
+          decisionMaker = dm,
           variable = GetVariable(input),
-          sort = GetSort(input)
+          sort = GetSort(input),
+          pruneFun = function(x, decisionMaker) {
+            PruneByCutoff(x, dm, ifelse(is.null(input$cutoff), 0, input$cutoff)) &&
+              PruneLevels(x, dm, ifelse(is.null(input$level), 0, input$level))
+          }
+          
         )
       )
     } else {
+      print("not printing table")
       renderUI("")
     }
   },
   error = function(e) {
+    warning(as.character(e))
     renderUI(as.character(e))
   })
 }

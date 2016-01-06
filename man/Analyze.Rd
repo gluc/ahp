@@ -3,18 +3,23 @@
 \name{Analyze}
 \alias{Analyze}
 \alias{AnalyzeTable}
-\title{Converts the tree into a data.frame, containing all the weights contributions
-to the overall decision.}
+\alias{PruneByCutoff}
+\alias{PruneLevels}
+\title{Analyze your AHP model}
 \usage{
 Analyze(ahpTree, decisionMaker = "Total", variable = c("weightContribution",
   "priority", "score"), sort = c("priority", "totalPriority", "orig"),
-  cutOffWeightContributionBelow = 0)
+  pruneFun = function(node, decisionMaker) TRUE)
 
 AnalyzeTable(ahpTree, decisionMaker = "Total",
   variable = c("weightContribution", "priority", "score"),
-  sort = c("priority", "totalPriority", "orig"),
-  cutOffWeightContributionBelow = 0, weightColor = "honeydew3",
+  sort = c("priority", "totalPriority", "orig"), pruneFun = function(node,
+  decisionMaker) TRUE, weightColor = "honeydew3",
   consistencyColor = "wheat2", alternativeColor = "thistle4")
+
+PruneByCutoff(node, decisionMaker, minWeight = 0)
+
+PruneLevels(node, decisionMaker, n = 0)
 }
 \arguments{
 \item{ahpTree}{the calculated AHP \code{data.tree}}
@@ -25,25 +30,58 @@ AnalyzeTable(ahpTree, decisionMaker = "Total",
 
 \item{sort}{sort either by priority according to the decision maker (the default), by totalPriority, or as originally specified (orig)}
 
-\item{cutOffWeightContributionBelow}{nodes in the ahp tree whose weight contribution falls below this value are pruned.
-Leave at 0 to see the full ahp tree.}
+\item{pruneFun}{use this to filter the what rows are shown in the analysis
+\code{pruneFun} must be a function taking a \code{Node} as its first argument, and the \code{decisionMaker} as its second
+argument. The default (\code{NULL}) returns the full AHP tree}
 
 \item{weightColor}{The name of the color to be used to emphasize weights of categories. See \code{color} for a list of possible colors.}
 
 \item{consistencyColor}{The name of the color to be used to highlight bad consistency}
 
 \item{alternativeColor}{The name of the color used to highlight big contributors to alternative choices.}
+
+\item{node}{the \code{Node}}
+
+\item{minWeight}{prunes the nodes whose weightContribution is smaller than the minWeight}
+
+\item{n}{cuts the \code{n} heightest levels of the ahp tree}
+
+\item{node}{the \code{Node}}
 }
 \value{
-a \code{data.frame} containing the contribution of each criteria
+Analyze returns a \code{data.frame} containing the contribution of each criteria
 
-a \code{\link{formattable}} data.frame object which, in most environments, will be displayed as an HTML table
+AnalyzeTable returns a \code{\link{formattable}} data.frame object which, in most environments, will be displayed as an HTML table
+
+the Prune methods must return \code{TRUE} for nodes to be kept, \code{FALSE} for nodes to be pruned
 }
 \description{
-Converts the tree into a data.frame, containing all the weights contributions
-to the overall decision.
+Converts the calculated AHP tree into a \code{data.frame} or an HTML table, containing all the weight contributions or
+priorities to/of the overall decision. You can also sort and filter the output.
 
 Displays the AHP analysis in form of an html table, with gradient
 colors and nicely formatted.
+}
+\examples{
+ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+carAhp <- Load(ahpFile)
+Calculate(carAhp)
+Analyze(
+   carAhp,
+   pruneFun = function(x, decisionMaker) {
+     PruneLevels(x, decisionMaker, 1) && PruneByCutoff(x, decisionMaker, minWeight = 0)
+   }
+)
+
+
+ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+vacationAhp <- Load(ahpFile)
+Calculate(vacationAhp)
+AnalyzeTable(
+   vacationAhp,
+   decisionMaker = "Kid",
+   variable = "score",
+   sort = "totalPriority"
+)
 }
 

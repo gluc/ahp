@@ -7,7 +7,7 @@
 #' @param weightColor The name of the color to be used to emphasize weights of categories. See \code{color} for a list of possible colors.
 #' @param consistencyColor The name of the color to be used to highlight bad consistency
 #' @param alternativeColor The name of the color used to highlight big contributors to alternative choices.
-#' @return a \code{\link{formattable}} data.frame object which, in most environments, will be displayed as an HTML table
+#' @return AnalyzeTable returns a \code{\link{formattable}} data.frame object which, in most environments, will be displayed as an HTML table
 #' 
 #' @rdname Analyze
 #' @import formattable
@@ -16,14 +16,18 @@ AnalyzeTable <- function(ahpTree,
                          decisionMaker = "Total",
                          variable = c("weightContribution", "priority", "score"),
                          sort = c("priority", "totalPriority", "orig"),
-                         cutOffWeightContributionBelow = 0,
+                         pruneFun = function(node, decisionMaker) TRUE,
                          weightColor = "honeydew3",
                          consistencyColor = "wheat2",
                          alternativeColor = "thistle4") {
   
                            
 
-  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort, cutOffWeightContributionBelow)
+  df <- GetDataFrame(ahpTree = ahpTree, 
+                     decisionMaker = decisionMaker, 
+                     variable = variable, 
+                     sort = sort, 
+                     pruneFun = pruneFun)
   df <- df[ , -1]
   
   alternatives <- names(df)[-c(1:3, ncol(df))]
@@ -64,6 +68,30 @@ AnalyzeTable <- function(ahpTree,
   formattable(df[ , -2], formatters = myFormatters)
 
 }
+
+
+#' @param node the \code{Node}
+#' @param minWeight prunes the nodes whose weightContribution is smaller than the minWeight
+#' 
+#' @return the Prune methods must return \code{TRUE} for nodes to be kept, \code{FALSE} for nodes to be pruned
+#' 
+#' @rdname Analyze
+#' @export
+PruneByCutoff <- function(node, decisionMaker, minWeight = 0) {
+  res <- sum(node$weightContribution[decisionMaker, ]) >= minWeight
+  return (res)
+}
+
+
+#' @param node the \code{Node}
+#' @param n cuts the \code{n} heightest levels of the ahp tree 
+#' 
+#' @rdname Analyze
+#' @export
+PruneLevels <- function(node, decisionMaker, n = 0) {
+  return (node$level <= (node$root$height - n - 1))
+}
+
 
 
 #' @import formattable

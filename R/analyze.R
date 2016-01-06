@@ -1,40 +1,74 @@
 
 
 
-#' Converts the tree into a data.frame, containing all the weights contributions 
-#' to the overall decision.
+#' Analyze your AHP model
+#' 
+#' Converts the calculated AHP tree into a \code{data.frame} or an HTML table, containing all the weight contributions or
+#' priorities to/of the overall decision. You can also sort and filter the output.
 #' 
 #' @param ahpTree the calculated AHP \code{data.tree}
 #' @param decisionMaker the name of the decision maker. The default returns the joint decision.
 #' @param variable the variable to display, i.e. either weightContribution (the default), priority, or score
 #' @param sort sort either by priority according to the decision maker (the default), by totalPriority, or as originally specified (orig) 
-#' @param cutOffWeightContributionBelow nodes in the ahp tree whose weight contribution falls below this value are pruned.
-#' Leave at 0 to see the full ahp tree.
-#' @return a \code{data.frame} containing the contribution of each criteria
+#' @param pruneFun use this to filter the what rows are shown in the analysis
+#' \code{pruneFun} must be a function taking a \code{Node} as its first argument, and the \code{decisionMaker} as its second
+#' argument. The default (\code{NULL}) returns the full AHP tree
+#' @return Analyze returns a \code{data.frame} containing the contribution of each criteria
+#' 
+#' 
+#' @examples 
+#' ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+#' carAhp <- Load(ahpFile)
+#' Calculate(carAhp)
+#' Analyze(
+#'    carAhp, 
+#'    pruneFun = function(x, decisionMaker) {
+#'      PruneLevels(x, decisionMaker, 1) && PruneByCutoff(x, decisionMaker, minWeight = 0)
+#'    }
+#' )
+#'    
+#'    
+#' ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+#' vacationAhp <- Load(ahpFile)
+#' Calculate(vacationAhp)
+#' AnalyzeTable(
+#'    vacationAhp,
+#'    decisionMaker = "Kid",
+#'    variable = "score",
+#'    sort = "totalPriority"
+#' )
 #' 
 #' @export
 Analyze <- function(ahpTree, 
                     decisionMaker = "Total", 
                     variable = c("weightContribution", "priority", "score"),
                     sort = c("priority", "totalPriority", "orig"),
-                    cutOffWeightContributionBelow = 0) {
+                    pruneFun = function(node, decisionMaker) TRUE) {
  
   
-  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort, cutOffWeightContributionBelow)
+  df <- GetDataFrame(ahpTree, decisionMaker, variable, sort, pruneFun)
   df <- df[ , -c(2, 3)]
   if (!variable[1] == "score") percentColumns <- 2:ncol(df)
   else percentColumns <- c(2, ncol(df))
   for (i in percentColumns) df[ , i] <- percent1(df[ , i])
   return (df)
-   
 }
   
+
 
 GetDataFrame <- function(ahpTree, 
                          decisionMaker = "Total", 
                          variable = c("weightContribution", "priority", "score"),
                          sort = c("priority", "totalPriority", "orig"),
-                         cutOffWeightContributionBelow = 0) {
+                         pruneFun = function(node, decisionMaker) TRUE) {
+  
+  
+  if (!class(ahpTree)[1] == "Node") stop("Argument ahpTree must be a data.tree structure")
+  if (!decisionMaker == "Total" || decisionMaker %in% GetDecisionMakers(ahpTree)) stop(paste0("decisionMaker ", decisionMaker, " is not a decision maker of ahpTree"))
+  if (!variable[1] %in% c("weightContribution", "priority", "score")) stop(paste0("variable must be weightContribution, priority, or score, but is ", variable))
+  if (!sort[1] %in% c("priority", "totalPriority", "orig")) stop(paste0("sort must be priority, totalPriority, or orig, but is ", sort))
+  if (length(formals(pruneFun))!=2) stop(paste0("pruneFun must have two arguments: node and decisionMaker"))  
+  
   
   if (sort[1] == "priority" || sort[1] == "totalPriority") ahpTree <- Clone(ahpTree)
   if (sort[1] == "priority") ahpTree$Sort(function(x) ifelse(x$isLeaf, x$position, x$parent$priority[decisionMaker, x$name]), decreasing = TRUE)
@@ -55,11 +89,7 @@ GetDataFrame <- function(ahpTree,
                                decisionMaker = decisionMaker, 
                                variable = variable[1]),
                   Consistency = function(x) x$consistency[decisionMaker],
-                  pruneFun = function(x) {
-                    if (x$isLeaf) return (FALSE)
-                    res <- sum(x$weightContribution[decisionMaker, ]) >= cutOffWeightContributionBelow
-                    return (res)
-                  }
+                  pruneFun = function(x) !x$isLeaf && pruneFun(x, decisionMaker)
                   )
                 )
 
