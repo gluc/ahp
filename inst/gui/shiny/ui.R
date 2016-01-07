@@ -91,7 +91,7 @@ shinyUI(
     
     tabPanel(
       "Visualize", 
-      DiagrammeR::DiagrammeROutput("visualizeTree"),
+      DiagrammeROutput("visualizeTree"),
       value = "visualizePanel"
     ),
     
@@ -99,11 +99,11 @@ shinyUI(
       "More",
       tabPanel(
         "About",
-        fluidRow(column(6, includeMarkdown("about.md")))
+        includeMarkdown("about.md")
       ),
       tabPanel(
         "Help",
-        fluidRow(column(6, includeMarkdown("help.md")))
+        includeMarkdown("help.md")
       ),
       tabPanel(
         "AHP File Format",

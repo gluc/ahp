@@ -361,7 +361,7 @@ The Load process does not perform any calculations, but performs the following s
 
 The `Calculate` process/function traverses the data.tree structure and converts lower-level preferences into higher level preferences. Some of the transformations are customizable. In more detail:
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = TRUE}
 library(DiagrammeR)
 
 grViz('

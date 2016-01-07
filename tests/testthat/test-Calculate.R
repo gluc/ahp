@@ -5,7 +5,7 @@ test_that("Calculate Mean", {
   ahpFile <- system.file("extdata", "car.ahp", package="ahp")
   fileContent <- readChar(ahpFile, file.info(ahpFile)$size)
   carAhp <- LoadString(fileContent)
-  Calculate(carAhp, prioritiesFun = PrioritiesFromPairwiseMatrixMeanNormalization)
+  Calculate(carAhp, pairwiseFun = PrioritiesFromPairwiseMatrixMeanNormalization)
   prio <- carAhp$preferences$DecisionMaker$priority$preferences
   
   expect_equal(sum(prio), 1)

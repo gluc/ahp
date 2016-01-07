@@ -11,12 +11,13 @@ This package lets you model and analyse complex decision making problems accordi
 }
 \details{
 The basic workflow with this package is:
-1. specify your ahp problem in an ahp file
+1. specify your ahp problem in an ahp file. See \code{vignette("file-format", package = "ahp")} for details
 2. load ahp file, using \code{\link{Load}}
 3. calculate model, using \code{\link{Calculate}}
-4. output model analysis, either using \code{\link{Analyze}} or using \code{\link{AnalyzeTable}}
+4. visualize the ahp model using \code{\link{Visualize}}
+5. output model analysis, either using \code{\link{Analyze}} or using \code{\link{AnalyzeTable}}
 
-For more information, see the package vignette using \code{vignette("car-example", package = "ahp")}
+For more information, see the package vignette using \code{vignette("examples", package = "ahp")}
 }
 \examples{
 library(ahp)
@@ -30,6 +31,7 @@ AnalyzeTable(carAhp)
 ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
 vacationAhp <- Load(ahpFile)
 Calculate(vacationAhp)
+Visualize(vacationAhp)
 Analyze(vacationAhp, "Dad")
 AnalyzeTable(vacationAhp, "Mom")
 AnalyzeTable(vacationAhp)

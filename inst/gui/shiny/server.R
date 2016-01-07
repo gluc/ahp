@@ -160,17 +160,7 @@ shinyServer(function(input, output, session) {
     
     
     if(input$navbar == "AHP File Format") {
-      output$fileFormat <- renderUI(fluidRow(column(6, 
-                                                    includeMarkdown(
-                                                      rmarkdown::render(
-                                                        system.file("doc", "file-format.Rmd", package="ahp")                                                                
-                                                      )
-                                                        
-                                                    
-                                                    )
-                                             )
-                                    )
-      )
+      output$fileFormat <- renderUI(includeMarkdown(system.file("doc", "file-format.Rmd", package="ahp")))
     }
   })
   

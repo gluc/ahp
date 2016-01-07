@@ -39,6 +39,7 @@ library(ahp)
 ahpFile <- system.file("extdata", "car.ahp", package="ahp")
 carAhp <- Load(ahpFile)
 Calculate(carAhp)
+Visualize(carAhp)
 Analyze(carAhp)
 AnalyzeTable(carAhp)
 
