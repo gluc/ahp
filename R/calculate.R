@@ -3,7 +3,7 @@
 #'Calculate the Ahp tree
 #'
 #'@param ahpTree a data.tree tree containing the Ahp model specification
-#'@param prioritiesFun lets you overwrite the function that is used to calculate the priorities from 
+#'@param pairwiseFun lets you overwrite the function that is used to calculate the priorities from 
 #'the pairwise preference matrix.
 #'@param scoresFun lets you overwrite the function that is used to calculate the priorites from scores.
 #'
@@ -11,7 +11,7 @@
 #'
 #'@export
 Calculate <- function(ahpTree, 
-                      prioritiesFun = PrioritiesFromPairwiseMatrixEigenvalues, 
+                      pairwiseFun = PrioritiesFromPairwiseMatrixEigenvalues, 
                       scoresFun = PrioritiesFromScoresDefault) {
   
   # go from
@@ -50,7 +50,7 @@ Calculate <- function(ahpTree,
     prefTree$Do(
       fun = function(x) {
         pw <- x$parent$AddChild(name = "priority") 
-        ahp <- prioritiesFun(x$preferences)
+        ahp <- pairwiseFun(x$preferences)
         pw$preferences <- ahp$priority
         pw$consistency <- ahp$consistency
       },

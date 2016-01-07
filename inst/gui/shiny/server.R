@@ -2,6 +2,7 @@ library(shiny)
 library(shinyAce)
 library(formattable)
 library(shinyjs)
+library(DiagrammeR)
 
 
 
@@ -150,21 +151,26 @@ shinyServer(function(input, output, session) {
         output$table <- renderFormattable(formattable(TRUE, yes = as.character(e)))
         
       })
-    } else {
-      # Remove calculated model to prevent warning message from ahpmodel radiobuttons
-      ahpTree <- NULL
+    } 
+    
+    if(input$navbar == "visualizePanel") {
+      ahpTree <- DoCalculation(input)
+      output$visualizeTree <- renderDiagrammeR(GetGraph(ahpTree) )
     }
     
     
     if(input$navbar == "AHP File Format") {
       output$fileFormat <- renderUI(fluidRow(column(6, 
-                                                    includeMarkdown(system.file("doc", 
-                                                                                "file-format.Rmd", 
-                                                                                package="ahp")
-                                                                    )
+                                                    includeMarkdown(
+                                                      rmarkdown::render(
+                                                        system.file("doc", "file-format.Rmd", package="ahp")                                                                
+                                                      )
+                                                        
+                                                    
                                                     )
                                              )
                                     )
+      )
     }
   })
   

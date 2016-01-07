@@ -4,13 +4,13 @@
 \alias{Calculate}
 \title{Calculate the Ahp tree}
 \usage{
-Calculate(ahpTree, prioritiesFun = PrioritiesFromPairwiseMatrixEigenvalues,
+Calculate(ahpTree, pairwiseFun = PrioritiesFromPairwiseMatrixEigenvalues,
   scoresFun = PrioritiesFromScoresDefault)
 }
 \arguments{
 \item{ahpTree}{a data.tree tree containing the Ahp model specification}
 
-\item{prioritiesFun}{lets you overwrite the function that is used to calculate the priorities from
+\item{pairwiseFun}{lets you overwrite the function that is used to calculate the priorities from
 the pairwise preference matrix.}
 
 \item{scoresFun}{lets you overwrite the function that is used to calculate the priorites from scores.}

@@ -2,6 +2,7 @@ library(shiny)
 library(shinyAce)
 library(formattable)
 library(shinyjs)
+library(DiagrammeR)
 
 # Define UI for application that draws a histogram
 shinyUI(
@@ -87,6 +88,13 @@ shinyUI(
       ),
       value = "analysis"
     ),
+    
+    tabPanel(
+      "Visualize", 
+      DiagrammeR::DiagrammeROutput("visualizeTree"),
+      value = "visualizePanel"
+    ),
+    
     navbarMenu(
       "More",
       tabPanel(

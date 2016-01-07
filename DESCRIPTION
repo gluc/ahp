@@ -9,7 +9,8 @@ VignetteBuilder: knitr
 Imports:
     data.tree,
     yaml,
-    formattable
+    formattable,
+    DiagrammeR
 Suggests:
     shiny,
     shinyAce,

@@ -1,5 +1,5 @@
 ---
-title: "AHP Car Example"
+title: "AHP Examples"
 author: "Christoph Glur"
 date: '`r Sys.Date()`'
 output: 
@@ -8,7 +8,7 @@ output:
     toc: yes
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{AHP Car Example}
+  %\VignetteIndexEntry{AHP Examples}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -50,12 +50,9 @@ library(data.tree)
 vignette(package = 'data.tree')
 ```
 
-### What is in this Document?
+## Car Example
 
 This vignette follows a well-known AHP example that you can also find e.g. on [Wikipedia](http://en.wikipedia.org/wiki/Analytic_hierarchy_process_%E2%80%94_Car_example). In this example, the Jones family wants to buy a new car and uses AHP to decide systematically which car they should buy. Even though a few details are different from the original article, it is recommended to consider this vignette as an extension of that article, and not as a self sufficient document.
-
-
-## Creating the AHP criteria tree
 
 When deciding which car to buy, the family considers the following criteria: cost, safety, style, and capacity. Additionally, some of the criteria have sub-criteria. 
 
@@ -65,7 +62,7 @@ We can draw the hierarchy like this:
 
 ![Ahp Tree](AHP_tree.png)
 
-### The ahp file format
+### Model Specification
 
 Using the ahp package, the AHP hierarchy tree can be defined in an ahp file. An ahp file is a text file in yaml format, following a few conventions. For example:
 
@@ -207,7 +204,7 @@ Resale Value:
     children: *alternatives 
 ```
 
-### Loading the ahp file
+### Load
 
 Loading the file is done by calling `LoadFile`:
 
@@ -218,8 +215,6 @@ carAhp <- Load(ahpFile)
 ```
 
 
-### The ahp tree structure
-
 `carAhp`, the return value of `LoadFile`, is a `data.tree` structure. Its structure is the same as the one of the file. If you are interested in solving AHP problems programmatically, all you need to do is to create a tree with that structure, using the `data.tree` functions.
 
 ```{r}
@@ -227,15 +222,24 @@ library(data.tree)
 print(carAhp, filterFun = isNotLeaf)
 ```
 
-## Calculating the AHP problem
+### Calculate
 
 ```{r}
 Calculate(carAhp)
-print(carAhp, "weight")
+print(carAhp, priority = function(x) x$parent$priority["Total", x$name])
+```
+
+Don't worry if you don't understand this command. But if you are interested you might want to look into the structure of carAhp, and read up on `data.tree` documentation.
+
+### Visualize
+
+```{r}
+Visualize(carAhp)
 ```
 
 
-## Running the analysis
+
+### Analyze
 
 ```{r}
 
@@ -250,4 +254,147 @@ Another way to display the AHP analysis is with the `ShowTable` function, which 
 AnalyzeTable(carAhp)
 ```
 
+Finally, note that the `Analyze` and `AnalyzeTable` functions have many more options, e.g. to sort, filter, and further customize the output. For example:
+
+```{r}
+AnalyzeTable(carAhp, 
+             variable = "priority", 
+             sort = "orig",
+             pruneFun = function(node, decisionMaker) PruneByCutoff(node, decisionMaker, 0.05),
+             weightColor = "skyblue",
+             consistencyColor = "red",
+             alternativeColor = "green")
+```
+
+
+
+## Vacation Example (Multiple Decision Makers)
+
+The `ahp` package also supports multiple decision makers, as shown by the vacation example, provided with the `ahp` package.
+The basic idea is that multiple people get to formulate their pairwise preferences, and then the AHP calculates the average. Often, each decision maker has the same voting weight, but that does not need to be the case. 
+
+In this example we look at a family that wants to decide where to go on vacation. There are two options: to the mountains, or to the beach. The family has already found a suitable hotel at each destination, and has calculated to total price of each destination. All three family members can vote on the destination, but mom and dad have twice the voting power of the kid.
+
+### Model Specification
+
+The file is provided by the `ahp` package, and you may look at its content as so:
+
+```{r, comment = NA}
+ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+cat(readChar(ahpFile, file.info(ahpFile)$size))
+```
+
+The file structure is similar to the `car.ahp` file. There are two main differences, however:
+
+* there is a `decision-maker` section
+* for each `preferences` section, there are sub-nodes, one for each decision maker
+
+#### The `decision-maker` section
+
+In our example, this section is directly below the Goal:
+
+```
+  decision-makers:
+    #optional node, needed only if not all decision-makers have equal voting power
+    - Dad: 0.4
+    - Mom: 2/5
+    - Kid: 0.2
+```
+
+The node contains a map of decision makers, together with their respective weights. As the commentary says, this section is optional, and only required if you do not have equal voting power.
+
+Additionally, there may be more than a single `decision-makers` section. If, for example, Dad has more voting power on the Cost criteria, and Mom more on the Spa, then you can add multiple `decision-makers` nodes. These weights are *inherited*, i.e. each criteria node checks if it has a `decision-makers` directive. If it doesn't, it walks toward the root and checks on each ancestor. If it cannot find a directive, even at the root, it assumes equal voting power.
+
+#### The `preferences` section
+
+In the case of multiple decision makers, the preferences look like this:
+
+```
+  preferences:
+    Dad:
+      pairwise:
+      - [Costs, Fun, 4]
+      - [Costs, Spa, 9]
+      - [Fun, Spa, 4]
+    Mom:
+      pairwise:
+      - [Costs, Fun, 1/4]
+      - [Costs, Spa, 1/9]
+      - [Fun, Spa, 1/5]
+    Kid:
+      pairwise:
+      - [Costs, Fun, 1/9]
+      - [Costs, Spa, 1]
+      - [Fun, Spa, 9]
+```
+
+Note, however, that different decision-makers can have different types of preferences, for instance:
+
+```
+    Costs:
+      preferences:
+        Dad:
+          function: 
+            function(a1, a2) min(9, max(1/9, a2$cost/a1$cost))
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 1/3]
+        Kid:
+          weight:
+            - Beach: 1/2
+            - Mountains: 0.5
+      children: *alternatives
+    
+```
+
+Here, Dad says that if alternative 1 has half the cost of alternative 2, it is twice as preferred. Mom wants to keep it simple and says that, cost-wise, whe prefers the mountains over the beach. The kid, finally, has not yet fully grasped the concept of money, so he simply gives a 0.5 weight to each alternative, essentially saying he's indifferent.
+
+### Load and Calculate
+
+To make the full analysis, averaging the decision-makers' preferences, you use the same functions as for the single decision-maker case:
+
+```{r}
+library(ahp)
+ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
+vacationAhp <- Load(ahpFile)
+Calculate(vacationAhp)
+
+```
+
+### Visualize
+
+```{r}
+Visualize(vacationAhp)
+```
+
+
+
+### Analyze
+
+#### Total
+
+```{r}
+AnalyzeTable(vacationAhp)
+```
+
+However, you may also drill down into each decision maker.
+
+#### Dad
+
+```{r}
+AnalyzeTable(vacationAhp, decisionMaker = "Dad")
+```
+
+#### Mom
+
+```{r}
+AnalyzeTable(vacationAhp, decisionMaker = "Mom")
+```
+
+
+#### Kid
+
+```{r}
+AnalyzeTable(vacationAhp, decisionMaker = "Kid")
+```
 
