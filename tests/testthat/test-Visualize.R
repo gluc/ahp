@@ -7,7 +7,7 @@ test_that("Visualize", {
   Calculate(carAhp)
   graph <- GetGraph(carAhp)
   expect_equal(class(graph), "dgr_graph")
-  expect_equal(dim(graph$nodes_df), c(17, 4))
+  expect_equal(dim(graph$nodes_df), c(18, 9))
   
 })
 

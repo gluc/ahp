@@ -1,10 +1,10 @@
 ---
 title: "AHP File Format"
 author: "Christoph Glur"
-date: '`r Sys.Date()`'
+date: '2016-01-08'
 output: 
   html_document:
-    theme: flatly
+    theme: united
     toc: yes
     toc_depth: 4
 vignette: >
@@ -12,14 +12,6 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
-
-
-```{r set-options, echo=FALSE, cache=FALSE}
-options(width=120)
-#opts_chunk$set(comment = "", warning = FALSE, message = FALSE, echo = TRUE, tidy = FALSE, size="small")
-#read_chunk("some/script/I/want/to/load.R")
-```
-
 
 ahp File version: 2.0
 
@@ -118,19 +110,6 @@ Goal:
   name: Vacation
 ```
 
-This is the only node that has a `name`, the criteria, subcriteria and alternatives are named implicitly.
-
-If you want, you can also add other properties, except the reserved names (such as `preferences`, `children`, `weightContribution`, and others). For example:
-
-```
-Goal:
-  name: Vacation
-  description: |
-    A family wants to go on vacation,
-    but cannot decide where about.
-```
-These attributes can make your model more expressive, and they are displayed as tool tip when using the `Visualize` function.
-
 ### Hierarchy
 
 The `Goal` constitutes the root of a criteria tree. Typically, you nest multiple levels of criteria into a hierarchy. For this, you use the `children` element, like so: 
@@ -157,8 +136,6 @@ Goal:
     Risk:
     Opportunities:
 ```
-
-Again, you can add other attributes which will be shown as tool tips in the `Visualize` function.
 
 #### Alternatives
 
@@ -409,33 +386,8 @@ The `Calculate` process/function traverses the data.tree structure and converts 
 
 <!--
 
-```{r, echo = FALSE, eval = FALSE}
-library(DiagrammeR)
-
-grViz('
-digraph AHP {
-        rankdir=LR;
-	node [shape = box, style = filled, color = cornflowerblue, fontname="helvetica"];
-        fun1 [label="function(a1, a2)\nin ahp file"];
-        fun2 [label="function(a) in\nahp file", shape = none];
-        fun3 [label="scoreFun param\nof Calculate()", shape = none];
-        fun4 [label="pairwiseFun param\nof Calculate()", shape = none];
-        node [shape = none, style = empty];
-
-  pairwiseFunction -> fun1 [arrowhead=none]
-  fun1 -> pairwise
-  pairwise -> fun4 [arrowhead=none]
-  fun4 -> priority
-  priority -> weightContribution
-  scoreFunction -> fun2 [arrowhead=none]
-  fun2 -> score
-  score -> fun3 [arrowhead=none]
-  fun3 -> priority
-}
-
-')
-
-```
+<!--html_preserve--><div id="htmlwidget-74" style="width:504px;height:504px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-74">{"x":{"diagram":"\ndigraph AHP {\n        rankdir=LR;\n\tnode [shape = box, style = filled, color = cornflowerblue, fontname=\"helvetica\"];\n        fun1 [label=\"function(a1, a2)\nin ahp file\"];\n        fun2 [label=\"function(a) in\nahp file\", shape = none];\n        fun3 [label=\"scoreFun param\nof Calculate()\", shape = none];\n        fun4 [label=\"pairwiseFun param\nof Calculate()\", shape = none];\n        node [shape = none, style = empty];\n\n  pairwiseFunction -> fun1 [arrowhead=none]\n  fun1 -> pairwise\n  pairwise -> fun4 [arrowhead=none]\n  fun4 -> priority\n  priority -> weightContribution\n  scoreFunction -> fun2 [arrowhead=none]\n  fun2 -> score\n  score -> fun3 [arrowhead=none]\n  fun3 -> priority\n}\n\n","config":{"engine":"dot","options":null}},"evals":[]}</script><!--/html_preserve-->
 
 -->
 
@@ -513,8 +465,84 @@ Goal:
 ```
 
 <!--
-```{r, comment = NA}
+
+```r
 ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
 cat(readChar(ahpFile, file.info(ahpFile)$size))
+```
+
+```
+Version: 2.0
+Alternatives: &alternatives
+  Beach:
+    cost: 10000
+  Mountains:
+    cost: 5000
+Goal:
+  name: Vacation
+  decision-makers:
+    #optional node, needed only if not all decision-makers have equal voting power
+    - Dad: 0.4
+    - Mom: 2/5
+    - Kid: 0.2
+  preferences:
+    Dad:
+      pairwise:
+      - [Costs, Fun, 4]
+      - [Costs, Spa, 9]
+      - [Fun, Spa, 4]
+    Mom:
+      pairwise:
+      - [Costs, Fun, 1/4]
+      - [Costs, Spa, 1/9]
+      - [Fun, Spa, 1/5]
+    Kid:
+      pairwise:
+      - [Costs, Fun, 1/9]
+      - [Costs, Spa, 1]
+      - [Fun, Spa, 9]
+  children:
+    Costs:
+      preferences:
+        Dad:
+          pairwiseFunction: 
+            function(a1, a2) min(9, max(1/9, a2$cost/a1$cost))
+        Mom:
+          scoreFunction:
+            function(a) a$cost
+        Kid:
+          priority:
+            - Beach: 1/2
+            - Mountains: 0.5
+      children: *alternatives
+    Fun:
+      preferences:
+        Dad:
+          pairwise:
+            - [Beach, Mountains, 1/6]
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 2]
+        Kid:
+        # Often, entering pairwise preferences is lengthy, especially if you
+        # have multiple alternatives. Instead, you can enter scores, i.e. rate
+        # each alternative on a scale. The scale can be chosen freely. The 
+        # priorities are derived as score / sum(scores)
+          score:
+            - Beach: 5
+            - Mountains: 0
+      children: *alternatives
+    Spa:
+      preferences:
+        Dad:
+          pairwise:
+            - [Beach, Mountains, 2]
+        Mom:
+          pairwise:
+            - [Beach, Mountains, 6]
+        Kid:
+          pairwise:
+            - [Beach, Mountains, 1/2]
+      children: *alternatives
 ```
 -->

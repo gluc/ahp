@@ -38,7 +38,14 @@ In the navigation bar on top, go to `Model`, and specify your model using the ah
 
 Go to `More > AHP File Format` to learn more about the ahp file format.
 
-## Model Analysis
+## Model Visualization
 
-Once you have specified your model, you can click on `Analysis` to calculate and review the analysis of your model. Chose any of the different calculation methods. Also, you can drill down into each decision maker, if aplicable. 
+To visualize the hierarchy of your AHP model, click on `Visualize`. Note that the nodes have tool tips!
+The output is the same as when you call `Visualize(ahpTree)` from R, albeit in R you have full flexibility on the styling options.
+
+## Analyze
+
+Once you have specified your model, you can click on `Analyze` to calculate and review the analysis of your model. Chose any of the different calculation methods. Also, you can drill down into each decision maker, if aplicable. Finally, you can filter the content of the table by setting filters.
+
+In R, you can do the same thing using the function `AnalyzeTable(ahpTree)`.
 

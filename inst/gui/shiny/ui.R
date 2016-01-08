@@ -1,4 +1,5 @@
 library(shiny)
+library(shinythemes)
 library(shinyAce)
 library(formattable)
 library(shinyjs)
@@ -11,7 +12,7 @@ shinyUI(
   
   navbarPage(
     useShinyjs(),
-    theme = "bootstrap.css",
+    theme = shinytheme("flatly"),
     "AHP",
     tabPanel(
       "Model", 
@@ -24,17 +25,13 @@ shinyUI(
             
             column(
               4,
-              HTML('<label class="control-label" for="examples">Load file: </label>'),
-              br(),
-              actionButton("showUpload", "Upload", icon = icon("upload"))
+              actionButton("showUpload", "Load", icon = icon("upload"))
               #done on server so the progress bar disappears after upload
               #uiOutput("uploadFileOutput")
             ),
             column(
               4,
-              HTML('<label class="control-label" for="examples">Save file: </label>'),
-              br(),
-              downloadButton('downloadFile', 'Download')
+              downloadButton('downloadFile', 'Save')
             )
           ),
           br(),
@@ -48,7 +45,13 @@ shinyUI(
     ),
     
     tabPanel(
-      "Analysis", 
+      "Visualize", 
+      grVizOutput("visualizeTree"),
+      value = "visualizePanel"
+    ),
+    
+    tabPanel(
+      "Analyze", 
       mainPanel(
         fluidPage(
           fluidRow(
@@ -87,12 +90,6 @@ shinyUI(
         )
       ),
       value = "analysis"
-    ),
-    
-    tabPanel(
-      "Visualize", 
-      DiagrammeROutput("visualizeTree"),
-      value = "visualizePanel"
     ),
     
     navbarMenu(

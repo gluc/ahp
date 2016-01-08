@@ -76,6 +76,10 @@ Alternatives: &alternatives
 Goal:
 # The goal spans a tree of criteria and the alternatives
   name: Buy Car
+  description: >
+    This is a classic single decision maker problem. It models
+    the situation facing by a family that wants to buy a new car.
+  author: unknown
   preferences:
     # preferences are typically defined pairwise
     # 1 means: A is equal to B
@@ -131,7 +135,7 @@ Goal:
           # a number between 1/9 and 9.
           preferences: 
             pairwiseFunction:
-              function(a1, a2) min(9, max(1/9, a1$mpg/a2$mpg))
+              function(a1, a2) min(9, max(1/9, a2$mpg/a1$mpg))
           children: *alternatives
         Maintenance Cost: 
           preferences:

@@ -3,9 +3,9 @@ context("ahp load")
 
 test_that("Load v1.0", {
   ahpFile <- system.file("extdata", "tom_dick_harry.ahp", package="ahp")
-  carAhp <- Load(ahpFile)
-  Calculate(carAhp)
-  df <- Analyze(carAhp)
+  tdhAhp <- Load(ahpFile)
+  Calculate(tdhAhp)
+  df <- Analyze(tdhAhp)
   expect_equal(ncol(df), 6)
 })
 

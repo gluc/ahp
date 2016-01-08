@@ -4,7 +4,7 @@ author: "Christoph Glur"
 date: '`r Sys.Date()`'
 output: 
   html_document:
-    theme: united
+    theme: flatly
     toc: yes
     toc_depth: 3
 vignette: >
@@ -233,10 +233,11 @@ Don't worry if you don't understand this command. But if you are interested you 
 
 ### Visualize
 
-```{r}
+```{r, eval = FALSE}
 Visualize(carAhp)
 ```
 
+![visualize](visualize.png) 
 
 
 ### Analyze
@@ -354,20 +355,20 @@ Here, Dad says that if alternative 1 has half the cost of alternative 2, it is t
 To make the full analysis, averaging the decision-makers' preferences, you use the same functions as for the single decision-maker case:
 
 ```{r}
-library(ahp)
 ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
 vacationAhp <- Load(ahpFile)
 Calculate(vacationAhp)
 
 ```
 
+
 ### Visualize
 
-```{r}
+```{r, eval = FALSE}
 Visualize(vacationAhp)
 ```
 
-
+![visualize](visualize_vacation.png) 
 
 ### Analyze
 

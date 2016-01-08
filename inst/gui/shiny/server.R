@@ -28,6 +28,7 @@ DoCalculation <- function(input) {
 
 
 GetTable <- function(input, ahpTree) {
+  
   tryCatch({
     if (!is.null(ahpTree)) {
       dm <- ifelse(
@@ -35,18 +36,17 @@ GetTable <- function(input, ahpTree) {
         yes = "Total", 
         no = input$decisionMaker
       )
-      print(paste0("level: ", input$level))
+      
+      co <- TryAsNumeric(input$cutoff, 0)
+      le <- TryAsNumeric(input$level, 0)
       renderFormattable(
         AnalyzeTable(
           ahpTree, 
           decisionMaker = dm,
           variable = GetVariable(input),
           sort = GetSort(input),
-          pruneFun = function(x, dm) {
-            PruneByCutoff(x, dm, ifelse(is.null(input$cutoff), 0, as.numeric(input$cutoff))) &&
-              PruneLevels(x, dm, ifelse(is.null(input$level), 0, as.numeric(input$level)))
-          }
-          
+          pruneFun = function(x, dm) PruneByCutoff(x, dm, co) && PruneLevels(x, dm, le)
+
         )
       )
     } else {
@@ -91,6 +91,18 @@ GetSort <- function(input) {
   )
 }
 
+TryAsNumeric <- function(input, defaultVal) {
+  if (is.numeric(input)) return (input)
+  
+  res <- tryCatch(
+    as.numeric(input),
+    warning = function(e) defaultVal,
+    error = function(e) defaultVal
+    
+  )
+  if (!is.na(defaultVal) && is.na(res)) res <- defaultVal
+  return (res)
+}
 
 ## Helpers
 #########################
@@ -155,12 +167,15 @@ shinyServer(function(input, output, session) {
     
     if(input$navbar == "visualizePanel") {
       ahpTree <- DoCalculation(input)
-      output$visualizeTree <- renderDiagrammeR(GetGraph(ahpTree) )
+      #output$visualizeTree <- renderDiagrammeR(GetGraph(ahpTree) )
+      output$visualizeTree <- renderGrViz(grViz(GetGraph(ahpTree)$dot_code) )
     }
     
     
     if(input$navbar == "AHP File Format") {
-      output$fileFormat <- renderUI(includeMarkdown(system.file("doc", "file-format.Rmd", package="ahp")))
+      #output$fileFormat <- renderUI(includeMarkdown(rmarkdown::render(system.file("doc", "file-format.Rmd", package="ahp"))))
+      #output$fileFormat <- renderUI(includeMarkdown(system.file("doc", "file-format.Rmd", package="ahp")))
+      output$fileFormat <- renderUI(includeHTML(system.file("doc", "file-format.html", package="ahp")))
     }
   })
   

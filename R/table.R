@@ -31,7 +31,8 @@ AnalyzeTable <- function(ahpTree,
   df <- df[ , -1]
   
   alternatives <- names(df)[-c(1:3, ncol(df))]
-  dfw <- df[ , alternatives]
+  dfw <- df[ , alternatives, drop = FALSE]
+  
   dfw[is.na(dfw)] <- 1
   #cols <- 2 * dfw/max(dfw) + dfw/df[ , 3]
   #cols <- df[,-(1:4)]
@@ -41,7 +42,7 @@ AnalyzeTable <- function(ahpTree,
   cols$zero <- 0
   cols$max <- max(cols)
   cols <- t(apply(cols, MARGIN = 1, function(x) csscolor(gradient(x, "white", alternativeColor))))
-  cols <- cols[,1:(ncol(cols)-2)]
+  cols <- cols[,1:(ncol(cols)-2), drop = FALSE]
   
   names(df)[1] <- " "
   

@@ -19,3 +19,20 @@ test_that("Analyze Prune", {
 
 
 
+test_that("Analyze Prune", {
+  ahpFile <- system.file("extdata", "car.ahp", package="ahp")
+  carAhp <- Load(ahpFile)
+  Calculate(carAhp)
+  df <- AnalyzeTable(
+    carAhp,
+    pruneFun = function(x, decisionMaker) {
+      PruneByCutoff(x, decisionMaker, minWeight = 0.6)
+    }
+  )
+  
+  expect_equal(nrow(df), 4)
+  
+})
+
+
+
