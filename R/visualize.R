@@ -33,7 +33,6 @@ GetGraph <- function(ahpTree,
                     ) {
 
   # criteria  
-  browser()
   tr <- Traverse(ahpTree, filterFun = isNotLeaf)
   critNodes <- create_nodes(nodes = Get(tr, "name"), 
                             tooltip = Get(tr, GetTooltip)
@@ -51,7 +50,7 @@ GetGraph <- function(ahpTree,
   
   alternatives <- unique(Get(ahpTree$leaves, "name"))
   for (style in names(alternativeNodesStyle)) altNodes[ , style] <- alternativeNodesStyle[style]
-  browser()
+  
   nodes <- combine_nodes(critNodes, alt, altNodes)
   
   #nodes <- nodes[!names(nodes)=="tooltip"]

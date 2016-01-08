@@ -30,7 +30,7 @@ test_that("Analyze Prune", {
     }
   )
   
-  expect_equal(nrow(df), 4)
+  expect_equal(nrow(df), 1)
   
 })
 
