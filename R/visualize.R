@@ -86,7 +86,7 @@ GetTooltip <- function(x) {
   #browser()
   myfields <- x$fields[!x$fields %in% c("preferences", "weightContribution", "name", "consistency", "priority", "preferenceFunction")]
   if (length(myfields) > 0) {
-    mylist <- as.list(x)[myfields] 
+    mylist <- as.list.environment(x)[myfields] 
     props <- as.yaml(mylist)
     tt <- paste0(tt, props)
   }
