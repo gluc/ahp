@@ -21,19 +21,8 @@ shinyUI(
       
       mainPanel(
         fluidPage(
-          fluidRow(
-            
-            column(
-              4,
-              actionButton("showUpload", "Load", icon = icon("upload"))
-              #done on server so the progress bar disappears after upload
-              #uiOutput("uploadFileOutput")
-            ),
-            column(
-              4,
-              downloadButton('downloadFile', 'Save')
-            )
-          ),
+          actionButton("showUpload", "Load", icon = icon("upload")),
+          downloadButton('downloadFile', 'Save'),
           br(),
           uiOutput("uploadFileOutput"),
           br(),
@@ -54,39 +43,35 @@ shinyUI(
       "Analyze", 
       mainPanel(
         fluidPage(
-          fluidRow(
-            column(
-              3, 
+          sidebarLayout(
+            sidebarPanel(
               radioButtons(
                 inputId = "ahpmethod", 
                 label = "AHP Priority Calculation Method: ", 
                 choices = c("Eigenvalues", "Mean of Normalized Values", "Geometric Mean"),
                 selected = "Eigenvalues"
-              )
-            ),
-            column(3, uiOutput("sort")),
-            column(
-              3, 
+              ),
+             
+              radioButtons(
+                inputId = "sort", 
+                label = "Sort Order: ", 
+                choices = c("Total Priority", "Priority", "Original"),
+                selected = "Total Priority"
+              ),
+             
               radioButtons(
                 inputId = "variable", 
                 label = "Variable: ", 
                 choices = c("Total Contribution", "Priority", "Score"),
                 selected = "Total Contribution"
-              )
-            ),
-            column(3, uiOutput("decisionMaker"))
-          ),
-          fluidRow(
-            column(
-              3,
-              textInput(inputId = "cutoff", label = "Filter rows with weight contribution smaller than: ", value = "0")
-            ),
-            column(
-              3,
+              ),
+           
+              uiOutput("decisionMaker"),
+              textInput(inputId = "cutoff", label = "Filter by weight contribution: ", value = "0"),
               textInput(inputId = "level", label = "Filter n levels: ", value = "0")
-            )
-          ),
-          formattableOutput("table")
+            ),
+            mainPanel(formattableOutput("table"))
+          )
         )
       ),
       value = "analysis"

@@ -1,5 +1,11 @@
 # All changes to ahp are documented here.
 
+## Version 0.2.1
+- ADD: enable Shiny app as stand-alone
+- ADD: Visualize: Show decision makers in tool tip of root
+- CHANGE: Changes in layout of Shiny app
+- FIX: Various small bug fixes in Shiny app
+
 ## Version 0.2.0
 - ADD: Support for multiple decision makers
 - ADD: Support for scores / scales

@@ -78,18 +78,32 @@ GetGraph <- function(ahpTree,
 
 
 GetTooltip <- function(x) {
+  
   tt <- ""
+  if (x$isRoot) {
+    dm <- GetDecisionMakers(x)
+    if (length(dm) > 1) {
+      browser()
+      tt <- paste(dm, collapse = ", ")
+      tt <- paste0("Decision Makers: ", tt, "\n")
+    }
+  } 
   if (!is.null(x$parent$priority)) {
     prio <- x$parent$priority["Total", x$name]
     tt <- paste0("priority: ", ahp:::percent1(prio), "\n")
   }
   #browser()
-  myfields <- x$fields[!x$fields %in% c("preferences", "weightContribution", "name", "consistency", "priority", "preferenceFunction")]
+  myfields <- x$fields[!x$fields %in% c("preferences", 
+                                        "weightContribution", 
+                                        "name", 
+                                        "consistency", 
+                                        "priority", 
+                                        "preferenceFunction",
+                                        "decision-makers")]
   if (length(myfields) > 0) {
     mylist <- as.list.environment(x)[myfields] 
     props <- as.yaml(mylist)
     tt <- paste0(tt, props)
   }
-  
   return (tt)
 }
