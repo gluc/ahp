@@ -90,7 +90,7 @@ GetTooltip <- function(x) {
   } 
   if (!is.null(x$parent$priority)) {
     prio <- x$parent$priority["Total", x$name]
-    tt <- paste0("priority: ", ahp:::percent1(prio), "\n")
+    tt <- paste0("priority: ", percent1(prio), "\n")
   }
   #browser()
   myfields <- x$fields[!x$fields %in% c("preferences", 
