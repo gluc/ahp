@@ -118,63 +118,21 @@ shinyServer(function(input, output, session) {
   observeEvent(input$navbar, {
     print(paste0("event: navbar ", input$navbar))
     
-    # Analysis
-    if (input$navbar == "analysis") {
-      tryCatch({
-        ahpTree <- DoCalculation(input)
-        #print(GetDataFrame(ahpTree))
-        decisionMakers <- ahp:::GetDecisionMakers(ahpTree)
-        if(length(decisionMakers) > 1) {
-          output$decisionMaker <- renderUI({
-            radioButtons("decisionMaker", 
-                         "Decision Maker: ", 
-                         choices = c("Total", decisionMakers), 
-                         selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
-          })
-          show(id = "decisionMaker", anim = TRUE)
-          
-          output$sort <- renderUI({
-            radioButtons(
-              inputId = "sort",
-              label = "Sort: ",
-              choices = c("Priority", "Total Priority", "Original"),
-              selected = "Total Priority"
-            )
-          })
-          
-        } else {
-          output$sort <- renderUI({
-            radioButtons(
-              inputId = "sort",
-              label = "Sort: ",
-              choices = c("Priority", "Original"),
-              selected = "Priority"
-            )
-          })
-          #Cannot just remove, because otherwise the value sticks!
-          updateRadioButtons(session, "decisionMaker", selected = "Total")
-          hide(id = "decisionMaker", anim = TRUE)
-        }
-        #browser()
-        output$table <- GetTable(input, ahpTree)
-       
-      },
-      error = function(e) {
-        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e)))
-        
-      })
-    } 
-    
+    # Visualize
     if(input$navbar == "visualizePanel") {
       ahpTree <- DoCalculation(input)
-      #output$visualizeTree <- renderDiagrammeR(GetGraph(ahpTree) )
       output$visualizeTree <- renderGrViz(grViz(GetGraph(ahpTree)$dot_code) )
     }
     
     
     if(input$navbar == "AHP File Format") {
+      #cannot find images
       #output$fileFormat <- renderUI(includeMarkdown(rmarkdown::render(system.file("doc", "file-format.Rmd", package="ahp"))))
+      
+      #does not produce toc
       #output$fileFormat <- renderUI(includeMarkdown(system.file("doc", "file-format.Rmd", package="ahp")))
+      
+      #only works nicely if theme is the same for shiny app and for vignette
       output$fileFormat <- renderUI(includeHTML(system.file("doc", "file-format.html", package="ahp")))
     }
   })
@@ -223,25 +181,68 @@ shinyServer(function(input, output, session) {
     
   })
   
-  
-  
-  # Sort Order
+  # Calculate AHP
   observe({
+    
     input$variable
     input$decisionMaker
+    input$ahpmethod
     input$sort
-    ahpTree <- DoCalculation(input)
-    output$table <- GetTable(input, ahpTree)
+    #input$ace
+    input$cutoff
+    input$level
+    input$navbar
+    
+    if (input$navbar == "analysis") {
+      print("Calculate tree")
+      tryCatch({
+        ahpTree <- DoCalculation(input)
+        #print(GetDataFrame(ahpTree))
+        decisionMakers <- ahp:::GetDecisionMakers(ahpTree)
+        if(length(decisionMakers) > 1) {
+          output$decisionMaker <- renderUI({
+            radioButtons("decisionMaker", 
+                         "Decision Maker: ", 
+                         choices = c("Total", decisionMakers), 
+                         selected = ifelse(is.null(input$decisionMaker), yes = "Total", no = input$decisionMaker))
+          })
+          show(id = "decisionMaker", anim = TRUE)
+          
+          output$sort <- renderUI({
+            radioButtons(
+              inputId = "sort",
+              label = "Sort: ",
+              choices = c("Priority", "Total Priority", "Original"),
+              selected = "Total Priority"
+            )
+          })
+          
+        } else {
+          output$sort <- renderUI({
+            radioButtons(
+              inputId = "sort",
+              label = "Sort: ",
+              choices = c("Priority", "Original"),
+              selected = "Priority"
+            )
+          })
+          #Cannot just remove, because otherwise the value sticks!
+          updateRadioButtons(session, "decisionMaker", selected = "Total")
+          hide(id = "decisionMaker", anim = TRUE)
+        }
+        #browser()
+        output$table <- GetTable(input, ahpTree)
+        
+      },
+      error = function(e) {
+        output$table <- renderFormattable(formattable(TRUE, yes = as.character(e)))
+        
+      })
+    } 
   })
   
-  # Ahp Method
-  observeEvent(input$ahpmethod, {
-    print("event: ahpmethod")
+  
 
-    ahpTree <- DoCalculation(input)
-    output$table <- GetTable(input, ahpTree)
-  })
-  
 
   
   ## Event Handlers

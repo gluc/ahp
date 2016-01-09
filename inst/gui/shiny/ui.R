@@ -104,6 +104,8 @@ shinyUI(
       ),
       tabPanel(
         "AHP File Format",
+        #done on server because the file format is a vignette
+        #that is not directly included with the shiny app
         uiOutput("fileFormat")
       )
     ),
