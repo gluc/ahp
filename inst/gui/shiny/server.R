@@ -3,6 +3,7 @@ library(shinyAce)
 library(formattable)
 library(shinyjs)
 library(DiagrammeR)
+library(ahp)
 
 
 
