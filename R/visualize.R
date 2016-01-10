@@ -83,7 +83,6 @@ GetTooltip <- function(x) {
   if (x$isRoot) {
     dm <- GetDecisionMakers(x)
     if (length(dm) > 1) {
-      browser()
       tt <- paste(dm, collapse = ", ")
       tt <- paste0("Decision Makers: ", tt, "\n")
     }
@@ -99,7 +98,8 @@ GetTooltip <- function(x) {
                                         "consistency", 
                                         "priority", 
                                         "preferenceFunction",
-                                        "decision-makers")]
+                                        "decision-makers",
+                                        "score")]
   if (length(myfields) > 0) {
     mylist <- as.list.environment(x)[myfields] 
     props <- as.yaml(mylist)
