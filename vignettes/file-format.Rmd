@@ -25,7 +25,7 @@ ahp File version: 2.0
 
 ## Introduction
 
-This vignette describes the details of the ahp file format, as well as the basics of the `Calculate` process.
+This vignette describes the details of the ahp file format, as well as the basics of the `Calculate` process. Read this if you want to understand how to specify your AHP problem in an ahp file.
 
 ## Basics
 
