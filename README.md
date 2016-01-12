@@ -26,7 +26,7 @@ The basic workflow with this package is:
  
 For more information, see the package vignette using `vignette("AHP car example")`
 
-There is also a Shiny app that complements that package. You can try it out at http://ipub.com/apps/ahp-app/
+There is also a Shiny app that complements that package. You can try it out at http://ipub.com/apps/ahp/
 
 # Example
 
