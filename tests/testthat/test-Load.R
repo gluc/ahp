@@ -34,7 +34,7 @@ test_that("Load vacation", {
 
 
 test_that("Load all examples", {
-  for ( ahpFile in list.files(system.file("extdata", package="ahp"), full.names = TRUE) ) {
+  for ( ahpFile in list.files(system.file("extdata", package = "ahp"), recursive = TRUE, include.dirs = FALSE, full.names = TRUE) ) {
     ahpTree <- Load(ahpFile)
     Calculate(ahpTree)
     df <- Analyze(ahpTree)

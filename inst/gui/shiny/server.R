@@ -141,6 +141,8 @@ shinyServer(function(input, output, session) {
   # Show Upload
   observeEvent(input$showUpload ,{
     print("event: showUpload")
+    sampleFiles <- list.files(system.file("extdata", package="ahp"), full.names = TRUE)
+    sampleFiles <- basename(sampleFiles[!file.info(sampleFiles)$isdir])
     output$uploadFileOutput <- renderUI({
       #input$uploadFile
       fluidRow(
@@ -148,8 +150,9 @@ shinyServer(function(input, output, session) {
           4,
           selectInput("examples", 
                       "Load package example: ", 
-                      choices = c("", list.files(system.file("extdata", package="ahp"), full.names = FALSE)), 
-                      selected = "")
+                      choices = c("", sampleFiles), 
+                      selected = ""
+                      )
         ),
         column(
           8,

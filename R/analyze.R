@@ -62,13 +62,12 @@ GetDataFrame <- function(ahpTree,
                          sort = c("priority", "totalPriority", "orig"),
                          pruneFun = function(node, decisionMaker) TRUE) {
   
-  
+  dms <- GetDecisionMakers(ahpTree)
   if (!class(ahpTree)[1] == "Node") stop("Argument ahpTree must be a data.tree structure")
-  if (!(decisionMaker == "Total" || decisionMaker %in% GetDecisionMakers(ahpTree))) stop(paste0("decisionMaker ", decisionMaker, " is not a decision maker of ahpTree"))
+  if (!(decisionMaker == "Total" || decisionMaker %in% dms)) stop(paste0("decisionMaker ", decisionMaker, " is not a decision maker of ahpTree"))
   if (!variable[1] %in% c("weightContribution", "priority", "score")) stop(paste0("variable must be weightContribution, priority, or score, but is ", variable))
   if (!sort[1] %in% c("priority", "totalPriority", "orig")) stop(paste0("sort must be priority, totalPriority, or orig, but is ", sort))
   if (length(formals(pruneFun))!=2) stop(paste0("pruneFun must have two arguments: node and decisionMaker"))  
-  
   
   if (sort[1] == "priority" || sort[1] == "totalPriority") ahpTree <- Clone(ahpTree)
   if (sort[1] == "priority") ahpTree$Sort(function(x) ifelse(x$isLeaf, x$position, x$parent$priority[decisionMaker, x$name]), decreasing = TRUE)
@@ -78,6 +77,8 @@ GetDataFrame <- function(ahpTree,
   if (sort[1] == "priority") nms <- names(sort( ahpTree$weightContribution[decisionMaker, ], decreasing = TRUE))
   else if (sort[1] == "totalPriority") nms <- names(sort( ahpTree$weightContribution["Total", ], decreasing = TRUE))
   else nms <- names(ahpTree$weightContribution["Total", ])
+  
+  if (decisionMaker == "Total" && length(dms) == 1) decisionMaker <- "DecisionMaker" #otherwise score is not shown
   
   df <- do.call(ToDataFrameTree, 
                 c(ahpTree,

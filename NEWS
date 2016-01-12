@@ -1,5 +1,11 @@
 # All changes to ahp are documented here.
 
+## Version 0.2.2
+- ADD: Navbar in Shiny app is now floating
+- ADD: tom_dick_harry.ahp converted to v2.0
+- FIX: Removed old v1.0 tom_dick_harry.ahp from examples
+- FIX: score is now displayed also for single decision maker model
+
 ## Version 0.2.1
 - ADD: enable Shiny app as stand-alone
 - ADD: Visualize: Show decision makers in tool tip of root

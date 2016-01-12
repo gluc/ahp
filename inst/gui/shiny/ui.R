@@ -5,7 +5,7 @@ library(formattable)
 library(shinyjs)
 library(DiagrammeR)
 
-# Define UI for application that draws a histogram
+
 shinyUI(
   
   navbarPage(
@@ -13,7 +13,7 @@ shinyUI(
     tabPanel(
       "Model", 
       
-      mainPanel(
+      
         fluidPage(
           useShinyjs(),
           fluidRow(
@@ -21,20 +21,21 @@ shinyUI(
             column(2, downloadButton('downloadFile', 'Save'))
           ),
           fluidRow(uiOutput("uploadFileOutput")),
+          br(),
           fluidRow(aceEditor("ace", mode = "yaml", theme = "clouds", value = "define ahp model here"))
         )
-      )
+      
     ),
     
     tabPanel(
       "Visualize", 
-      mainPanel(grVizOutput("visualizeTree")),
+      grVizOutput("visualizeTree"),
       value = "visualizePanel"
     ),
     
     tabPanel(
       "Analyze", 
-      mainPanel(
+     
         sidebarLayout(
           sidebarPanel(
             radioButtons(
@@ -63,7 +64,7 @@ shinyUI(
             textInput(inputId = "level", label = "Filter n levels: ", value = "0")
           ),
           mainPanel(formattableOutput("table"))
-        )
+        
       ),
       value = "analysis"
     ),
@@ -87,7 +88,9 @@ shinyUI(
     ),
     position = "fixed-top",
     theme = shinytheme("flatly"),
+    tags$style(type="text/css", "body {padding-top: 70px;}"),
     id = "navbar"
+    
   )
  
   
