@@ -123,6 +123,7 @@ GetAlternativesNames <- function(ahpTree) {
 
 
 #' Create table from function
+#' @param node The node
 #' @import utils
 GetPairwiseFromFunction <- function(node) {
   #combn(names(node$children), m = 2, FUN = function(x) node$preferenceFunction(node[[x[[1]]]], node[[x[[2]]]]))
