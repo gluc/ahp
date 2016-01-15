@@ -1,6 +1,6 @@
 Package: ahp
 Type: Package
-Title: Creating Analytic Hierarchy Process (AHP) Models
+Title: Analytic Hierarchy Process
 Version: 0.2.4
 Date: 2016-01-15
 Author: Christoph Glur

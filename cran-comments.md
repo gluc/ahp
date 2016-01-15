@@ -1,7 +1,7 @@
 ## Test environments
-* windows (appveyor), R 3.2.3
-* ubuntu 14.04 (travis-ci) R 3.2.3
-* win-builder devel, R 3.3.0
+* windows R 3.2.3
+* ubuntu 14.04 R 3.2.3
+* win-builder devel
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
