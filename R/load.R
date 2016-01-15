@@ -11,10 +11,11 @@
 #' may have a number of attributes.
 #' 
 #' The \bold{goal} section is a tree of criteria, 
-#' each criteria having a \code{name}, a \code{preferences} or a \code{preferenceFunction} 
+#' each criteria having a \code{name}, a \code{preferences}  
 #' attribute, and possible child criteria or alternatives.
 #' 
-#' To look at a sample file, type, see examples below.
+#' To look at a sample file, type, see examples below or type \code{vignette("examples", package = "ahp")}. To learn
+#' the details about the ahp file format, type \code{vignette("file-format", package = "ahp")}.
 #' 
 #' @param ahpFile The full path to the file to be loaded, or a connection.
 #' @return A \code{\link{data.tree}} containing the model specification.

@@ -17,10 +17,14 @@ The basic workflow with this package is:
 4. visualize the ahp model using \code{\link{Visualize}}
 5. output model analysis, either using \code{\link{Analyze}} or using \code{\link{AnalyzeTable}}
 
-For more information, see the package vignette using \code{vignette("examples", package = "ahp")}
+For more information, see the package vignette using \code{vignette("examples", package = "ahp")}. To learn
+the details about the ahp file format, type \code{vignette("file-format", package = "ahp")}
 }
 \examples{
 library(ahp)
+#list example files provided by the package
+list.files(system.file("extdata", package="ahp"))
+#load a specific example
 ahpFile <- system.file("extdata", "car.ahp", package="ahp")
 carAhp <- Load(ahpFile)
 Calculate(carAhp)
@@ -32,8 +36,12 @@ ahpFile <- system.file("extdata", "vacation.ahp", package="ahp")
 vacationAhp <- Load(ahpFile)
 Calculate(vacationAhp)
 Visualize(vacationAhp)
-Analyze(vacationAhp, "Dad")
-AnalyzeTable(vacationAhp, "Mom")
-AnalyzeTable(vacationAhp)
+Analyze(vacationAhp, decisionMaker = "Dad")
+AnalyzeTable(vacationAhp, decisionMaker = "Mom")
+AnalyzeTable(vacationAhp,
+             decisionMaker = "Kid",
+             variable = "priority",
+             sort = "orig",
+             pruneFun = function(node, dm) PruneByCutoff(node, dm, minWeight = 0.1))
 }
 

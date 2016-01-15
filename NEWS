@@ -1,5 +1,8 @@
 # All changes to ahp are documented here.
 
+## Version 0.2.4
+- CHANGE: Minor corrections in documentation
+
 ## Version 0.2.2
 - ADD: Navbar in Shiny app is now floating
 - ADD: tom_dick_harry.ahp converted to v2.0

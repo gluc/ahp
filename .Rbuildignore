@@ -4,3 +4,4 @@
 ^appveyor\.yml$
 vignettes/rsconnect
 www
+cran-comments.md
