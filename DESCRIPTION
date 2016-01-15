@@ -7,6 +7,7 @@ Author: Christoph Glur
 Maintainer: Christoph Glur <christoph.glur@ipub.com>
 VignetteBuilder: knitr
 Imports:
+    utils,
     data.tree,
     yaml,
     formattable,
