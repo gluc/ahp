@@ -1,7 +1,7 @@
 Package: ahp
 Type: Package
 Title: Analytic Hierarchy Process
-Version: 0.2.4
+Version: 0.2.5
 Date: 2016-01-15
 Author: Christoph Glur
 Maintainer: Christoph Glur <christoph.glur@ipub.com>
