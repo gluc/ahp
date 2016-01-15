@@ -86,9 +86,9 @@ shinyUI(
         uiOutput("fileFormat")
       )
     ),
-    position = "fixed-top",
+    #position = "fixed-top",
+    #tags$style(type="text/css", "body {padding-top: 70px;}"),
     theme = shinytheme("flatly"),
-    tags$style(type="text/css", "body {padding-top: 70px;}"),
     id = "navbar"
     
   )
