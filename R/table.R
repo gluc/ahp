@@ -54,7 +54,7 @@ AnalyzeTable <- function(ahpTree,
   
   
   myFormatters[[colnames(df)[3]]] <- ColorTileWithFormatting("white", weightColor, percent1)
-  myFormatters$Consistency <- ConsistencyFormatter("white", consistencyColor, percent1)
+  myFormatters$Inconsistency <- ConsistencyFormatter("white", consistencyColor, percent1)
   myFormatters$` ` <- formatter("span", 
                                 style = style(`white-space` = "nowrap",
                                               `text-align` = "left",

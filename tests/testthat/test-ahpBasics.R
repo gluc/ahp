@@ -17,7 +17,7 @@ test_that("nrow", {
 })
 
 test_that("colnames", {
-  expect_equal(colnames(df), c(" ", "Weight", "Odyssey", "Accord Sedan", "CR-V", "Element", "Accord Hybrid", "Pilot", "Consistency"))
+  expect_equal(colnames(df), c(" ", "Weight", "Odyssey", "Accord Sedan", "CR-V", "Element", "Accord Hybrid", "Pilot", "Inconsistency"))
 })
 
 test_that("total weight", {

@@ -89,7 +89,7 @@ GetDataFrame <- function(ahpTree,
                   GetVariableV(nms, 
                                decisionMaker = decisionMaker, 
                                variable = variable[1]),
-                  Consistency = function(x) x$consistency[decisionMaker],
+                  Inconsistency = function(x) x$consistency[decisionMaker],
                   pruneFun = function(x) !x$isLeaf && pruneFun(x, decisionMaker)
                   )
                 )
@@ -97,6 +97,7 @@ GetDataFrame <- function(ahpTree,
   names(df)[1] <- " "
   
   if (variable[1] == "priority") df <- df[ , -4]
+  if (all(is.na(df$Inconsistency))) df <- subset(df, select=-c(Inconsistency))
   else df <- df[ , -5]
   
   return (df)
