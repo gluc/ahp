@@ -6,6 +6,9 @@
 \usage{
 GetPairwiseFromFunction(node)
 }
+\arguments{
+\item{node}{The node}
+}
 \description{
 Create table from function
 }
