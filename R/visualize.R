@@ -69,8 +69,7 @@ GetGraph <- function(ahpTree,
   
   edges <- combine_edges(edges, edgesAlt, edgesAlts)
   
-  graph <- create_graph(nodes)
-  graph <- add_edges(graph, edges)
+  graph <- create_graph(nodes, edges)
   
   return (graph)
   

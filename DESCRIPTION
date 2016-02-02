@@ -1,8 +1,8 @@
 Package: ahp
 Type: Package
 Title: Analytic Hierarchy Process
-Version: 0.2.6
-Date: 2016-01-15
+Version: 0.2.7
+Date: 2016-02-02
 Author: Christoph Glur
 Maintainer: Christoph Glur <christoph.glur@ipub.com>
 VignetteBuilder: knitr
@@ -27,3 +27,4 @@ URL: http://github.com/gluc/ahp
 BugReports: http://github.com/gluc/ahp/issues
 Depends:
     R (>= 3.0)
+RoxygenNote: 5.0.1

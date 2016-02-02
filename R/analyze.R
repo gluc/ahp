@@ -96,9 +96,11 @@ GetDataFrame <- function(ahpTree,
 
   names(df)[1] <- " "
   
-  if (variable[1] == "priority") df <- df[ , -4]
-  if (all(is.na(df$Inconsistency))) df <- subset(df, select=-c(Inconsistency))
-  else df <- df[ , -5]
+  if (variable[1] == "priority") df$Weight <- NULL
+  else df$Priority <- NULL
+  
+  if (all(is.na(df$Inconsistency))) df$Inconsistency <- NULL
+  
   
   return (df)
   
