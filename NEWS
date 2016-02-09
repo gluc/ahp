@@ -1,5 +1,8 @@
 # All changes to ahp are documented here.
 
+## Version 0.2.8
+- FIX: Added dependency on R 3.2
+
 ## Version 0.2.7
 - FIX: Adopted to changes of DiagrammeR
 - FIX: Analyze sometimes doesn't show all alternatives
