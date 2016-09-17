@@ -9,7 +9,7 @@
 #' @param criteriaEdgesStyle a list of graphviz / dot language styling elements
 #' @param alternativeEdgesStyle a list of graphviz / dot language styling elements
 #' 
-#' @import yaml
+#' @importFrom yaml as.yaml
 #' @export
 Visualize <- function(ahpTree,
                       criteriaNodesStyle = list(style = "filled,rounded", shape = "box", color = "honeydew4", fillcolor = "honeydew", penwidth = 4, fontname="helvetica"),
@@ -23,7 +23,7 @@ Visualize <- function(ahpTree,
   
 
 #' @rdname Visualize
-#' @import DiagrammeR
+#' @importFrom DiagrammeR create_nodes render_graph combine_nodes create_edges combine_edges create_graph
 #' @export
 GetGraph <- function(ahpTree,
                      criteriaNodesStyle = list(style = "filled,rounded", shape = "box", color = "honeydew4", fillcolor = "honeydew", penwidth = 4, fontname="helvetica"),

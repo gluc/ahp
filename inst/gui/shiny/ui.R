@@ -7,7 +7,6 @@ library(DiagrammeR)
 
 
 shinyUI(
-  
   navbarPage(
     "AHP",
     tabPanel(

@@ -10,7 +10,7 @@
 #' @return AnalyzeTable returns a \code{\link{formattable}} data.frame object which, in most environments, will be displayed as an HTML table
 #' 
 #' @rdname Analyze
-#' @import formattable
+#' @importFrom formattable formattable formatter style csscolor gradient is.formattable icontext
 #' @export 
 AnalyzeTable <- function(ahpTree,
                          decisionMaker = "Total",
@@ -96,7 +96,7 @@ PruneLevels <- function(node, decisionMaker, levelsToPrune = 0) {
 
 
 
-#' @import formattable
+#' @importFrom formattable percent
 percent1 <- function(x) {
   if (all(is.na(x))) return (x)
   percent(x, digits = 1)

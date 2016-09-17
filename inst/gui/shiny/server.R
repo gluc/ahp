@@ -11,7 +11,6 @@ library(ahp)
 ## Helpers
 
 
-
 DoCalculation <- function(input) {
   
   tryCatch({
@@ -110,7 +109,6 @@ TryAsNumeric <- function(input, defaultVal) {
 
 
 shinyServer(function(input, output, session) {
-  
   
   #####################
   ## Event Handlers
