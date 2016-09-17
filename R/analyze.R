@@ -70,8 +70,8 @@ GetDataFrame <- function(ahpTree,
   if (length(formals(pruneFun))!=2) stop(paste0("pruneFun must have two arguments: node and decisionMaker"))  
   
   if (sort[1] == "priority" || sort[1] == "totalPriority") ahpTree <- Clone(ahpTree)
-  if (sort[1] == "priority") ahpTree$Sort(function(x) ifelse(x$isLeaf, x$position, x$parent$priority[decisionMaker, x$name]), decreasing = TRUE)
-  else if (sort[1] == "totalPriority") ahpTree$Sort(function(x) ifelse(x$isLeaf, x$position, x$parent$priority[decisionMaker, x$name]), decreasing = TRUE)
+  if (sort[1] == "priority") Sort(ahpTree, function(x) ifelse(x$isLeaf, x$position, x$parent$priority[decisionMaker, x$name]), decreasing = TRUE)
+  else if (sort[1] == "totalPriority") Sort(ahpTree, function(x) ifelse(x$isLeaf, x$position, x$parent$priority[decisionMaker, x$name]), decreasing = TRUE)
                                         
   
   if (sort[1] == "priority") nms <- names(sort( ahpTree$weightContribution[decisionMaker, ], decreasing = TRUE))
