@@ -2,6 +2,7 @@
 
 ## Version 0.2.9
 - FIX: Removed warning (masking of formattable::currency by DiagrammeR::currency)
+- UPDATE: Removed references to deprecated data.tree packages
 
 ## Version 0.2.8
 - FIX: Added dependency on R 3.2
