@@ -1,11 +1,10 @@
 ## General comments
 
-Minor upgrade to avoid warning about masking (which is coming from new version of formattable and DiagrammeR)
+Minor upgrade to avoid warning about masking (which is coming from new version of formattable and DiagrammeR). This version depends on the new data.tree version 0.6.2 which will be made available to CRAN shortly.
 
 ## Test environments
-* windows R 3.2.4
-* ubuntu 14.04 R 3.2.4
-* appveyor windows devel
+* linux / travis (release, devel) -> ok
+* Win / appveyor (devel 32, devel 64, release 64, stable, patched) -> ok
 
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
