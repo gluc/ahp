@@ -3,8 +3,7 @@ title: "AHP File Format"
 author: "Christoph Glur"
 date: '`r Sys.Date()`'
 output: 
-  html_document:
-    theme: flatly
+  rmarkdown::html_vignette:
     toc: yes
     toc_depth: 4
 vignette: >
