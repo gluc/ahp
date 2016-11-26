@@ -9,7 +9,13 @@ Minor upgrade to avoid warning about deprecated function.
 ## R CMD check results
 There were no ERRORs or WARNINGs. 
 
-There was no NOTE
+There was a NOTE:
+
+Possibly mis-spelled words in DESCRIPTION:
+  AHP (13:43)
+  Saaty (13:58)
+  
+Both are not misspelled.
 
 ## Downstream dependencies
 
