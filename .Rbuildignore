@@ -5,3 +5,5 @@
 vignettes/rsconnect
 www
 cran-comments.md
+README.md
+revdep
