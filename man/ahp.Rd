@@ -45,4 +45,9 @@ AnalyzeTable(vacationAhp,
              pruneFun = function(node, dm) PruneByCutoff(node, dm, minWeight = 0.1))
 
 }
+\references{
+Saaty, T. L. (2001). Decision Making for Leaders: 
+The Analytic Hierarchy Process for Decisions in a Complex World, New Edition 2001 (3 Revised). 
+Pittsburgh, PA: RWS Publications, ISBN 978-0962031786.
+}
 
