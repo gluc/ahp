@@ -1,10 +1,6 @@
 ## General comments
 
-Uwe requested to provide a doi for the Saaty reference in the vignette. However, it's a book, so
-I included the ISBN instead. Hope that works. I also added the same reference to the package
-documentation.
-
-Minor upgrade to avoid warning about deprecated function.
+Update to avoid errors (due to DiagrammeR release).
 
 ## Test environments
 
