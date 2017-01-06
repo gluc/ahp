@@ -18,12 +18,11 @@ Visualize <- function(ahpTree,
                       alternativeEdgesStyle = list(dir = "none", color = "grey35", penwidth = 2)
                  ) {
   graph <- GetGraph(ahpTree, criteriaNodesStyle, alternativeNodesStyle, criteriaEdgesStyle, alternativeEdgesStyle)
-  render_graph(graph) 
+  DiagrammeR::render_graph(graph) 
 }
   
 
 #' @rdname Visualize
-#' @importFrom DiagrammeR create_nodes render_graph combine_nodes create_edges combine_edges create_graph
 #' @export
 GetGraph <- function(ahpTree,
                      criteriaNodesStyle = list(style = "filled,rounded", shape = "box", color = "honeydew4", fillcolor = "honeydew", penwidth = 4, fontname="helvetica"),
@@ -32,45 +31,59 @@ GetGraph <- function(ahpTree,
                      alternativeEdgesStyle = list(dir = "none", color = "grey35", penwidth = 2)
                     ) {
 
+
+  
+  # nodes
+  # =====
+  
   # criteria  
-  tr <- Traverse(ahpTree, filterFun = isNotLeaf)
-  critNodes <- create_nodes(nodes = Get(tr, "name"), 
-                            tooltip = Get(tr, GetTooltip)
-                            #tooltip = Get(tr, "name") 
+  trCriteria <- Traverse(ahpTree, filterFun = isNotLeaf)
+  Set(trCriteria, `.id` = 1:length(trCriteria))
+  critNodes <- DiagrammeR::create_node_df(n = length(trCriteria), label = Get(trCriteria, "name"), 
+                            tooltip = Get(trCriteria, GetTooltip)
                             )
   for (style in names(criteriaNodesStyle)) critNodes[ , style] <- criteriaNodesStyle[style]
   
-  alt <- create_nodes(nodes = "Alternatives")
+  # alternative hard-coded box
+  alt <- DiagrammeR::create_node_df(n = 1, label = "Alternatives")
   for (style in names(alternativeNodesStyle)) alt[ , style] <- alternativeNodesStyle[style]
   
-  altNodes <- as.data.frame(ahpTree$leaves[[1]]$parent, 
-                            nodes = "name", 
-                            tooltip = GetTooltip,
-                            filterFun = isLeaf)[,-1]
-  
-  alternatives <- unique(Get(ahpTree$leaves, "name"))
+  # alternatives
+  trAlternatives <- ahpTree$leaves[[1]]$parent$leaves
+  altNodes <- DiagrammeR::create_node_df(n = length(trAlternatives), 
+                                         label = Get(trAlternatives, "name"),
+                                         tooltip = Get(trAlternatives, GetTooltip))
+
   for (style in names(alternativeNodesStyle)) altNodes[ , style] <- alternativeNodesStyle[style]
   
-  nodes <- combine_nodes(critNodes, alt, altNodes)
+  nodes <- DiagrammeR::combine_ndfs(critNodes, alt, altNodes)
   
-  #nodes <- nodes[!names(nodes)=="tooltip"]
+  # edges
+  # =====
   
-  edges <- ToDataFrameNetwork( Clone(ahpTree, pruneFun = isNotLeaf)) 
+  #tree
+  edges <- ToDataFrameNetwork( Clone(ahpTree, pruneFun = isNotLeaf), fromId = function(node) node$parent$`.id`, toId = ".id") 
+  edges <- DiagrammeR::create_edge_df(edges$fromId, edges$toId)
+  
   for (style in names(criteriaEdgesStyle)) edges[ , style] <- criteriaEdgesStyle[style]
   
+  # to hard-coded alternatives
   edgesAlt <- as.data.frame(ahpTree, 
-                               from = function(x) x$name, 
-                               to = function(x) "Alternatives", 
+                               from = function(x) x$`.id`, 
+                               to = function(x) length(trCriteria) + 1, 
                                filterFun = function(x) x$height == 2)[ , -1]
+  edgesAlt <- DiagrammeR::create_edge_df(edgesAlt$from, edgesAlt$to)
   for (style in names(criteriaEdgesStyle)) edgesAlt[ , style] <- criteriaEdgesStyle[style]
   
-  edgesAlts <- create_edges(from = rep("Alternatives", length(alternatives)), to = alternatives)
+  # from hc alternatives to alternatives
+  
+  edgesAlts <- DiagrammeR::create_edge_df(from = rep(length(trCriteria) + 1, length(trAlternatives)), to = 1:length(trAlternatives) + length(trCriteria) + 1)
   for (style in names(alternativeEdgesStyle)) edgesAlts[ , style] <- alternativeEdgesStyle[style]
   
-  edges <- combine_edges(edges, edgesAlt, edgesAlts)
+  edges <- DiagrammeR::combine_edfs(edges, edgesAlt, edgesAlts)
   
-  graph <- create_graph(nodes, edges)
-  
+  graph <- DiagrammeR::create_graph(nodes, edges)
+  graph <- DiagrammeR::set_global_graph_attrs(graph, "rankdir", "TB", "graph")
   return (graph)
   
 }

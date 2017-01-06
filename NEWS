@@ -1,5 +1,9 @@
 # All changes to ahp are documented here.
 
+## Version 0.2.11 (CRAN)
+- IMPROVE: Update to latest DiagrammeR updates
+- ADD: RunGUI now contains an optional port parameter
+
 ## Version 0.2.10 (CRAN)
 - FIX: Removed warning becaues of deprecated method in data.tree
 

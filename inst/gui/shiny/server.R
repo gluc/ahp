@@ -120,7 +120,7 @@ shinyServer(function(input, output, session) {
     # Visualize
     if(input$navbar == "visualizePanel") {
       ahpTree <- DoCalculation(input)
-      output$visualizeTree <- renderGrViz(grViz(GetGraph(ahpTree)$dot_code) )
+      output$visualizeTree <- renderGrViz(grViz(generate_dot(GetGraph(ahpTree))))
     }
     
     
