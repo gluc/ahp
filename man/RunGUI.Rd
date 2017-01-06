@@ -4,7 +4,13 @@
 \alias{RunGUI}
 \title{Shows a GUI (Graphical User Interface) that lets you specify AHP models and view the results.}
 \usage{
-RunGUI()
+RunGUI(port = getOption("shiny.port"))
+}
+\arguments{
+\item{port}{The TCP port that the application should listen on. If the
+\code{port} is not specified, and the \code{shiny.port} option is set (with
+\code{options(shiny.port = XX)}), then that port will be used. Otherwise,
+use a random port.}
 }
 \description{
 Shows a GUI (Graphical User Interface) that lets you specify AHP models and view the results.
