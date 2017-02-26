@@ -10,7 +10,7 @@ RI <- function(n){ #Saaty 1980
   if (n==8) return (1.41)
   if (n==9) return (1.46)
   if (n==10) return (1.49)
-  return (1)
+  return (1.51) # sufficient value for 11+
 }
 
 #' Calculate the ahp priority weights from the AHP matrix.
