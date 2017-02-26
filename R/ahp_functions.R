@@ -1,6 +1,6 @@
 # Define methods to calculate and tweak AHP (Analytic Hierarchy Process)
 
-RI <- function(n){ #see handout
+RI <- function(n){ #Saaty 1980
   if (n==2) return (100)
   if (n==3) return (0.58)
   if (n==4) return (0.90)
@@ -8,6 +8,8 @@ RI <- function(n){ #see handout
   if (n==6) return (1.24)
   if (n==7) return (1.32)
   if (n==8) return (1.41)
+  if (n==9) return (1.46)
+  if (n==10) return (1.49)
   return (1)
 }
 
