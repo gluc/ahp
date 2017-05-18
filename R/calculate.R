@@ -172,14 +172,18 @@ CalculateTotalPriority <- function(prefTree) {
 
 CalculateWeightContribution <- function(ahpTree) {
   
-  #TODO: add whenever newest version of data.tree is on CRAN
-  #ahpTree$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
+  ahpTree$Do(function(x) x$RemoveAttribute('weightContribution', FALSE))
   
   #calculate weight contribution for alternatives
   
   ahpTree$Do(
     function(x) {
-      weights <- sapply(x$Get(function(x) x$parent$priority[ , x$name ], traversal = "ancestor")[-x$level], cbind)
+      #print(x$pathString)
+      weights <- sapply(x$Get(
+        function(node) {
+          #print(paste0("  ", node$name))
+          node$parent$priority[ , node$name ]
+        }, traversal = "ancestor")[-x$level], cbind)
       if (!is.matrix(weights)) weights <- matrix(weights, nrow = 1)
       x$weightContribution <- apply(weights, MARGIN = 1, FUN = prod)
       names(x$weightContribution) <- names(x$parent$preferences$children)
