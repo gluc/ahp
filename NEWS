@@ -1,5 +1,9 @@
 # All changes to ahp are documented here.
 
+## Version 0.2.12 (in progress)
+- FIX: Visualize fontcolor of criteria nodes is now black
+
+
 ## Version 0.2.11 (CRAN)
 - IMPROVE: Update to latest DiagrammeR updates
 - ADD: RunGUI now contains an optional port parameter
