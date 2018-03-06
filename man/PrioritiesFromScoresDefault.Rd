@@ -17,4 +17,3 @@ While pure AHP limits itself to pairwise preferences, scoring alternatives
 on an arbitrary scale is often much less time consuming in practice. This method
 calculates the priority weight as \code{score / sum(scores)}
 }
-

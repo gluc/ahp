@@ -18,4 +18,3 @@ an AHP preference matrix
 Create the AHP preference matrix from a dataframe containing
 the pairwiswe preferences.
 }
-

@@ -2,8 +2,8 @@
 % Please edit documentation in R/ahp_functions.R
 \name{PrioritiesFromPairwiseMatrixEigenvalues}
 \alias{PrioritiesFromPairwiseMatrixEigenvalues}
-\alias{PrioritiesFromPairwiseMatrixGeometricMean}
 \alias{PrioritiesFromPairwiseMatrixMeanNormalization}
+\alias{PrioritiesFromPairwiseMatrixGeometricMean}
 \title{Calculate the ahp priority weights from the AHP matrix.}
 \usage{
 PrioritiesFromPairwiseMatrixEigenvalues(mat, allowedConsistency = 1)
@@ -25,4 +25,3 @@ the ahp preference weights
 For a comparison of different methods, see for example \bold{How to derive priorities in AHP: a comparative study}, 
 by Alessio Ishizaka and Markus Lusti, as available here: http://eprints.port.ac.uk/9041/1/filetodownload,70633,en.pdf
 }
-

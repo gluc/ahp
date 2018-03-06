@@ -1,8 +1,8 @@
 # All changes to ahp are documented here.
 
-## Version 0.2.12 (in progress)
+## Version 0.2.12 (CRAN)
 - FIX: Visualize fontcolor of criteria nodes is now black
-
+- FIX: Fixed problems relating to DiagrammeR changes
 
 ## Version 0.2.11 (CRAN)
 - IMPROVE: Update to latest DiagrammeR updates

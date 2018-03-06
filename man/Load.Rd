@@ -42,4 +42,3 @@ cat(readChar(ahpFile, file.info(ahpFile)$size))
 carAhp <- Load(ahpFile)
 
 }
-

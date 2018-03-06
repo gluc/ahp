@@ -18,4 +18,3 @@ the pairwise preference matrix.}
 \description{
 Calculate the Ahp tree
 }
-

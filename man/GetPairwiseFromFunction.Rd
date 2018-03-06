@@ -12,4 +12,3 @@ GetPairwiseFromFunction(node)
 \description{
 Create table from function
 }
-

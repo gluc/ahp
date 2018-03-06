@@ -82,8 +82,8 @@ GetGraph <- function(ahpTree,
   
   edges <- DiagrammeR::combine_edfs(edges, edgesAlt, edgesAlts)
   
-  graph <- DiagrammeR::create_graph(nodes, edges)
-  graph <- DiagrammeR::set_global_graph_attrs(graph, "rankdir", "TB", "graph")
+  graph <- DiagrammeR::create_graph(nodes, edges, attr_theme = NULL)
+  graph <- DiagrammeR::add_global_graph_attrs(graph, "rankdir", "TB", "graph")
   return (graph)
   
 }
