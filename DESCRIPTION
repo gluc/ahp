@@ -11,7 +11,7 @@ Imports:
     data.tree,
     yaml,
     formattable,
-    DiagrammeR
+    DiagrammeR (>= 1.0.0)
 Suggests:
     shiny,
     shinyAce,
